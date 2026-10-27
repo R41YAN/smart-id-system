@@ -37,8 +37,9 @@ const admit = async (req, res) => {
   if (!batch_id || !department_id || !name)
     return res.status(400).json({ message: 'batch_id, department_id, and name are required' });
 
-  const client = await pool.connect();
+  let client;
   try {
+    client = await pool.connect();
     await client.query('BEGIN');
 
     // ── LOCK batch row (prevents race conditions) ──────────────────────────
@@ -96,13 +97,15 @@ const admit = async (req, res) => {
     await client.query('COMMIT');
     res.status(201).json({ message: 'Student admitted successfully', student: studentResult.rows[0] });
   } catch (err) {
-    await client.query('ROLLBACK');
+    if (client) {
+      try { await client.query('ROLLBACK'); } catch (_) {}
+    }
     console.error('Admit error:', err);
     if (err.code === '23505')
       return res.status(409).json({ message: 'ID conflict — please retry' });
     res.status(500).json({ message: 'Server error', error: err.message });
   } finally {
-    client.release();
+    if (client) client.release();
   }
 };
 
