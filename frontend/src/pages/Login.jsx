@@ -2,7 +2,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { ShieldCheckIcon } from '../components/Icons';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
@@ -108,11 +107,10 @@ export default function Login() {
           </form>
         </div>
 
-        {/* Security badge footer */}
-        <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400">
-          <ShieldCheckIcon className="w-4 h-4 text-emerald-400" />
-          <span>PostgreSQL Concurrency-Safe Generation Engine</span>
-        </div>
+        {/* Footer Copyright */}
+        <p className="mt-6 text-center text-xs text-slate-400">
+          &copy; {new Date().getFullYear()} Smart ID Formatting System. All rights reserved.
+        </p>
       </div>
     </div>
   );
