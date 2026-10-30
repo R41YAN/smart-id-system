@@ -1,6 +1,12 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
+import {
+  DownloadIcon,
+  PrinterIcon,
+  TrashIcon,
+  StudentsIcon
+} from '../components/Icons';
 
 const SEM_LABELS = { SP: 'Spring', SM: 'Summer', FL: 'Fall' };
 
@@ -8,7 +14,7 @@ export default function StudentList() {
   const [students, setStudents] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [batches, setBatches] = useState([]);
-  const [filter, setFilter] = useState({ department_id:'', batch_id:'' });
+  const [filter, setFilter] = useState({ department_id: '', batch_id: '' });
   const [loading, setLoading] = useState(false);
 
   const fetchStudents = async () => {
@@ -16,8 +22,12 @@ export default function StudentList() {
     const params = {};
     if (filter.department_id) params.department_id = filter.department_id;
     if (filter.batch_id) params.batch_id = filter.batch_id;
-    const r = await api.get('/students', { params });
-    setStudents(r.data); setLoading(false);
+    try {
+      const r = await api.get('/students', { params });
+      setStudents(r.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -26,25 +36,31 @@ export default function StudentList() {
     fetchStudents();
   }, []);
 
-  useEffect(() => { fetchStudents(); }, [filter]);
+  useEffect(() => {
+    fetchStudents();
+  }, [filter]);
 
   const filteredBatches = filter.department_id
     ? batches.filter(b => String(b.department_id) === String(filter.department_id))
     : batches;
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this student record?')) return;
-    try { await api.delete(`/students/${id}`); fetchStudents(); }
-    catch { alert('Cannot delete'); }
+    if (!window.confirm('Are you sure you want to delete this student record?')) return;
+    try {
+      await api.delete(`/students/${id}`);
+      fetchStudents();
+    } catch {
+      alert('Cannot delete student record.');
+    }
   };
 
   const exportCSV = () => {
     if (students.length === 0) return;
-    const headers = ['#', 'Student ID', 'Full Name', 'Department', 'Intake/Batch', 'Email', 'Phone', 'Admission Date'];
+    const headers = ['#', 'Student ID', 'Full Name', 'Department', 'Intake / Batch', 'Email', 'Phone', 'Admission Date'];
     const rows = students.map((s, i) => [
       i + 1,
       `"${s.student_id}"`,
-      `"${s.name.replace(/"/g, '""')}"`,
+      `"${(s.name || '').replace(/"/g, '""')}"`,
       `"${s.department_name}"`,
       `"${s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${s.batch_number}th Batch ${s.year}`}"`,
       `"${s.email || ''}"`,
@@ -57,7 +73,7 @@ export default function StudentList() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `Student_Roster_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `SIFS_Student_Roster_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -70,92 +86,143 @@ export default function StudentList() {
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Student List</h1>
-        <p className="text-gray-500 mb-6">All admitted students with their generated IDs</p>
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              Student Directory
+            </h1>
+            <p className="text-sm text-slate-500 mt-1">
+              All enrolled students with sequentially generated smart IDs
+            </p>
+          </div>
 
-        {/* Filters and Actions */}
-        <div className="bg-white rounded-xl shadow p-4 mb-6 flex flex-wrap items-center gap-4 print:hidden">
-          <select value={filter.department_id}
-            onChange={e => setFilter({...filter, department_id: e.target.value, batch_id: ''})}
-            className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">All Departments</option>
-            {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-          </select>
-          <select value={filter.batch_id} onChange={e => setFilter({...filter, batch_id: e.target.value})}
-            className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="">All Batches</option>
-            {filteredBatches.map(b => (
-              <option key={b.id} value={b.id}>
-                {b.department_name} — {b.semester_code
-                  ? `${SEM_LABELS[b.semester_code]} ${b.year}`
-                  : `${b.batch_number}th Batch ${b.year}`}
-              </option>
-            ))}
-          </select>
-
-          <span className="text-sm text-gray-500">{students.length} student(s)</span>
-
-          <div className="ml-auto flex gap-2">
+          {/* Export / Print Actions */}
+          <div className="flex items-center gap-2 print:hidden">
             <button
               onClick={exportCSV}
               disabled={students.length === 0}
-              className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer"
-              title="Download as CSV spreadsheet"
+              className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
+              title="Download CSV spreadsheet"
             >
-              📥 Export CSV
+              <DownloadIcon className="w-4 h-4" />
+              <span>Export CSV</span>
             </button>
             <button
               onClick={handlePrint}
               disabled={students.length === 0}
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
               title="Print or Save as PDF"
             >
-              🖨️ Print / PDF
+              <PrinterIcon className="w-4 h-4" />
+              <span>Print / PDF</span>
             </button>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow overflow-hidden print:shadow-none print:border">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b">
-              <tr className="text-left text-gray-500">
-                <th className="px-4 py-4 font-medium">#</th>
-                <th className="px-4 py-4 font-medium">Student ID</th>
-                <th className="px-4 py-4 font-medium">Name</th>
-                <th className="px-4 py-4 font-medium">Dept</th>
-                <th className="px-4 py-4 font-medium">Batch / Intake</th>
-                <th className="px-4 py-4 font-medium">Email</th>
-                <th className="px-4 py-4 font-medium">Date</th>
-                <th className="px-4 py-4 print:hidden"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">Loading...</td></tr>
-              ) : students.length === 0 ? (
-                <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-400">No students found.</td></tr>
-              ) : students.map((s, i) => (
-                <tr key={s.id} className="border-b last:border-0 hover:bg-gray-50">
-                  <td className="px-4 py-3 text-gray-400">{i+1}</td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded text-xs">{s.student_id}</span>
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-800">{s.name}</td>
-                  <td className="px-4 py-3 text-gray-500">{s.department_name}</td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">
-                    {s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${s.batch_number}th — ${s.year}`}
-                  </td>
-                  <td className="px-4 py-3 text-gray-400">{s.email || '—'}</td>
-                  <td className="px-4 py-3 text-gray-400">{new Date(s.admitted_at).toLocaleDateString()}</td>
-                  <td className="px-4 py-3 print:hidden">
-                    <button onClick={() => handleDelete(s.id)}
-                      className="text-red-400 hover:text-red-600 text-xs hover:bg-red-50 px-2 py-1 rounded transition-colors">Delete</button>
-                  </td>
-                </tr>
+        {/* Filter Bar */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 flex flex-wrap items-center gap-3 print:hidden">
+          <div className="w-48">
+            <select
+              value={filter.department_id}
+              onChange={e => setFilter({ ...filter, department_id: e.target.value, batch_id: '' })}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+            >
+              <option value="">All Departments</option>
+              {departments.map(d => (
+                <option key={d.id} value={d.id}>{d.name}</option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </div>
+
+          <div className="w-56">
+            <select
+              value={filter.batch_id}
+              onChange={e => setFilter({ ...filter, batch_id: e.target.value })}
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+            >
+              <option value="">All Batches & Intakes</option>
+              {filteredBatches.map(b => (
+                <option key={b.id} value={b.id}>
+                  {b.department_name} — {b.semester_code ? `${SEM_LABELS[b.semester_code]} ${b.year}` : `${b.batch_number}th Batch ${b.year}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="ml-auto text-xs font-bold text-slate-500">
+            {students.length} student{students.length === 1 ? '' : 's'} enrolled
+          </div>
+        </div>
+
+        {/* Roster Table Card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden print:shadow-none print:border">
+          {loading ? (
+            <div className="p-12 text-center text-slate-400 text-sm">Loading student directory...</div>
+          ) : students.length === 0 ? (
+            <div className="p-12 text-center">
+              <StudentsIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <p className="text-sm font-semibold text-slate-700">No students found</p>
+              <p className="text-xs text-slate-400 mt-1">Try changing filters or admit new students.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="bg-slate-50/75 border-b border-slate-100 text-slate-500">
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">#</th>
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Student ID</th>
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Student Name</th>
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Dept</th>
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Batch / Intake</th>
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Email</th>
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider">Admitted</th>
+                    <th className="px-5 py-3.5 text-xs font-bold uppercase tracking-wider print:hidden text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-normal">
+                  {students.map((s, i) => (
+                    <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="px-5 py-4 text-xs font-mono text-slate-400">{i + 1}</td>
+                      <td className="px-5 py-4">
+                        <span className="font-mono font-bold text-xs bg-blue-50 text-blue-700 border border-blue-200/80 px-2.5 py-1 rounded-lg">
+                          {s.student_id}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 font-bold text-slate-900">{s.name}</td>
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                          {s.department_name}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-xs text-slate-600 font-medium">
+                        {s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${s.batch_number}th Batch (${s.year})`}
+                      </td>
+                      <td className="px-5 py-4 text-xs text-slate-500">{s.email || '—'}</td>
+                      <td className="px-5 py-4 text-xs text-slate-500 font-medium">
+                        {new Date(s.admitted_at).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </td>
+                      <td className="px-5 py-4 print:hidden text-right">
+                        <button
+                          onClick={() => handleDelete(s.id)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Delete student record"
+                        >
+                          <TrashIcon className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
