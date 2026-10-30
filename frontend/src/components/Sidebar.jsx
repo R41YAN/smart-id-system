@@ -22,10 +22,16 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 min-h-screen bg-gray-900 text-white flex flex-col shrink-0 print:hidden">
-      <div className="p-6 border-b border-gray-700">
-        <h1 className="text-lg font-bold text-blue-400 leading-snug">🪪 Smart ID Formatting System</h1>
-        <p className="text-xs text-gray-400 mt-1 truncate">{user?.email}</p>
-        <span className="mt-2 inline-block text-xs bg-blue-600 px-2 py-0.5 rounded-full">
+      <div className="p-5 border-b border-gray-700">
+        <div className="flex items-center gap-3">
+          <img src="/logo.jpg" alt="SIFS Logo" className="w-10 h-10 rounded-lg object-cover shadow border border-gray-600 shrink-0" />
+          <div className="overflow-hidden">
+            <h1 className="text-base font-bold text-blue-400 leading-tight">SIFS</h1>
+            <p className="text-[11px] text-gray-400 truncate">Smart ID Formatting</p>
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mt-3 truncate">{user?.email}</p>
+        <span className="mt-1.5 inline-block text-[11px] bg-blue-600 px-2 py-0.5 rounded-full font-medium">
           {user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin'}
         </span>
       </div>

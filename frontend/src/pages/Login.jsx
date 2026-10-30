@@ -27,8 +27,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900">
       <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">🪪</div>
-          <h1 className="text-3xl font-bold text-gray-800">Smart ID Formatting System</h1>
+          <img src="/logo.jpg" alt="SIFS Logo" className="w-24 h-24 mx-auto mb-4 rounded-2xl shadow-md border border-gray-100 object-cover" />
+          <h1 className="text-2xl font-bold text-gray-800">Smart ID Formatting System</h1>
           <p className="text-gray-500 text-sm mt-1">University Admission Platform</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
