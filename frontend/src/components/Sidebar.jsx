@@ -23,7 +23,7 @@ export default function Sidebar() {
   return (
     <div className="w-64 min-h-screen bg-gray-900 text-white flex flex-col shrink-0 print:hidden">
       <div className="p-6 border-b border-gray-700">
-        <h1 className="text-xl font-bold text-blue-400">🪪 Smart ID System</h1>
+        <h1 className="text-lg font-bold text-blue-400 leading-snug">🪪 Smart ID Formatting System</h1>
         <p className="text-xs text-gray-400 mt-1 truncate">{user?.email}</p>
         <span className="mt-2 inline-block text-xs bg-blue-600 px-2 py-0.5 rounded-full">
           {user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin'}

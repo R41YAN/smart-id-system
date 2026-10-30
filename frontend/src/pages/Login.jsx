@@ -28,7 +28,7 @@ export default function Login() {
       <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🪪</div>
-          <h1 className="text-3xl font-bold text-gray-800">Smart ID System</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Smart ID Formatting System</h1>
           <p className="text-gray-500 text-sm mt-1">University Admission Platform</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
