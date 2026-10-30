@@ -27,11 +27,6 @@ export default function Login() {
     }
   };
 
-  const fillQuick = (e, p) => {
-    setEmail(e);
-    setPassword(p);
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0B132B] via-[#1C2541] to-[#0A1128] p-4 relative overflow-hidden">
       {/* Subtle background glow circles */}
@@ -111,36 +106,6 @@ export default function Login() {
               )}
             </button>
           </form>
-
-          {/* Quick Access Helper */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">
-              Quick Demo Accounts
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => fillQuick('superadmin@smartid.com', 'admin123')}
-                className="px-2 py-1.5 text-[11px] font-medium bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 transition-colors text-center"
-              >
-                Super Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => fillQuick('nsu_admin@smartid.com', 'admin123')}
-                className="px-2 py-1.5 text-[11px] font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg border border-blue-200 transition-colors text-center"
-              >
-                Open Credit
-              </button>
-              <button
-                type="button"
-                onClick={() => fillQuick('mu_admin@smartid.com', 'admin123')}
-                className="px-2 py-1.5 text-[11px] font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg border border-purple-200 transition-colors text-center"
-              >
-                Close Credit
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Security badge footer */}
