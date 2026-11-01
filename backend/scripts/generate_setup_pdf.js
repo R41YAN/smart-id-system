@@ -11,7 +11,7 @@ fs.mkdirSync(path.dirname(brainPath), { recursive: true });
 
 const doc = new PDFDocument({
   size: 'A4',
-  margins: { top: 40, bottom: 45, left: 45, right: 45 },
+  margins: { top: 38, bottom: 42, left: 45, right: 45 },
   bufferPages: true
 });
 
@@ -31,7 +31,6 @@ const C_MUTED = '#64748B';     // Slate 500
 const C_BG_CODE = '#0F172A';   // Dark code block
 const C_TEXT_CODE = '#38BDF8'; // Cyan code text
 const C_BOX_BG = '#F8FAFC';    // Light Slate
-const C_BORDER = '#E2E8F0';    // Border Slate
 const C_WARN_BG = '#FEF3C7';   // Amber 100
 const C_WARN_BORDER = '#F59E0B'; // Amber 500
 const C_WARN_TEXT = '#92400E'; // Amber 800
@@ -40,54 +39,54 @@ const C_SUCCESS_BORDER = '#10B981'; // Emerald 500
 const C_SUCCESS_TEXT = '#065F46'; // Emerald 800
 
 function addHeaderBanner() {
-  doc.rect(45, doc.y, contentWidth, 54).fill(C_PRIMARY);
-  const startY = doc.y - 54;
+  doc.rect(45, doc.y, contentWidth, 52).fill(C_PRIMARY);
+  const startY = doc.y - 52;
   
   doc.fillColor('#FFFFFF')
      .font('Helvetica-Bold')
-     .fontSize(16)
+     .fontSize(15)
      .text('SMART ID CARD FORMULATION SYSTEM (SIFS)', 55, startY + 10, { width: contentWidth - 20, align: 'center' });
 
   doc.font('Helvetica')
-     .fontSize(10)
+     .fontSize(9.5)
      .fillColor('#93C5FD')
-     .text('Friend’s PC Setup & Teacher Presentation Defense Guide', 55, startY + 32, { width: contentWidth - 20, align: 'center' });
+     .text('Friend’s PC Setup & Teacher Presentation Defense Guide', 55, startY + 31, { width: contentWidth - 20, align: 'center' });
 
-  doc.y = startY + 62;
+  doc.y = startY + 58;
 }
 
 function addMetaRow() {
-  doc.rect(45, doc.y, contentWidth, 22).fill('#F1F5F9');
-  const y = doc.y - 22;
-  doc.font('Helvetica-Bold').fontSize(8.5).fillColor(C_DARK);
-  doc.text('Target OS: Windows 10/11', 55, y + 6);
-  doc.text('Database: Cloud Supabase PostgreSQL', 190, y + 6);
-  doc.text('Repo: R41YAN/smart-id-system', 360, y + 6);
-  doc.y = y + 28;
+  doc.rect(45, doc.y, contentWidth, 20).fill('#F1F5F9');
+  const y = doc.y - 20;
+  doc.font('Helvetica-Bold').fontSize(8).fillColor(C_DARK);
+  doc.text('Target OS: Windows 10/11', 55, y + 5);
+  doc.text('Database: Cloud Supabase PostgreSQL', 190, y + 5);
+  doc.text('Repo: R41YAN/smart-id-system', 360, y + 5);
+  doc.y = y + 26;
 }
 
 function sectionTitle(title, stepNumber = '') {
-  if (doc.y > pageHeight - 100) {
+  if (doc.y > pageHeight - 90) {
     doc.addPage();
   }
   
   const y = doc.y;
-  doc.roundedRect(45, y, contentWidth, 24, 3).fill('#EFF6FF');
-  doc.rect(45, y, 4, 24).fill(C_SECONDARY);
+  doc.roundedRect(45, y, contentWidth, 23, 3).fill('#EFF6FF');
+  doc.rect(45, y, 4, 23).fill(C_SECONDARY);
   
   doc.font('Helvetica-Bold')
-     .fontSize(11)
+     .fontSize(10.5)
      .fillColor(C_PRIMARY)
      .text(stepNumber ? `STEP ${stepNumber}: ${title.toUpperCase()}` : title.toUpperCase(), 56, y + 6);
   
-  doc.y = y + 30;
+  doc.y = y + 28;
 }
 
 function codeBlock(codeLines) {
   const lineCount = Array.isArray(codeLines) ? codeLines.length : codeLines.split('\n').length;
-  const blockHeight = lineCount * 13 + 14;
+  const blockHeight = lineCount * 12 + 12;
   
-  if (doc.y + blockHeight > pageHeight - 50) {
+  if (doc.y + blockHeight > pageHeight - 45) {
     doc.addPage();
   }
 
@@ -96,53 +95,51 @@ function codeBlock(codeLines) {
   
   const text = Array.isArray(codeLines) ? codeLines.join('\n') : codeLines;
   doc.font('Courier')
-     .fontSize(8.5)
+     .fontSize(8)
      .fillColor(C_TEXT_CODE)
-     .text(text, 55, y + 7, { width: contentWidth - 20, lineGap: 2 });
+     .text(text, 55, y + 6, { width: contentWidth - 20, lineGap: 1.5 });
 
-  doc.y = y + blockHeight + 8;
+  doc.y = y + blockHeight + 7;
 }
 
-function infoBox(text, title = 'INFO') {
-  const boxHeight = 44;
-  if (doc.y + boxHeight > pageHeight - 50) {
+function infoBox(text, title = 'INFO', height = 40) {
+  if (doc.y + height > pageHeight - 45) {
     doc.addPage();
   }
   const y = doc.y;
-  doc.roundedRect(45, y, contentWidth, boxHeight, 4).fill(C_BOX_BG);
-  doc.rect(45, y, 3, boxHeight).fill(C_SECONDARY);
+  doc.roundedRect(45, y, contentWidth, height, 4).fill(C_BOX_BG);
+  doc.rect(45, y, 3, height).fill(C_SECONDARY);
 
-  doc.font('Helvetica-Bold').fontSize(8.5).fillColor(C_SECONDARY).text(title, 55, y + 6);
-  doc.font('Helvetica').fontSize(8).fillColor(C_BODY).text(text, 55, y + 18, { width: contentWidth - 20, lineGap: 1.5 });
-  doc.y = y + boxHeight + 8;
+  doc.font('Helvetica-Bold').fontSize(8).fillColor(C_SECONDARY).text(title, 55, y + 5);
+  doc.font('Helvetica').fontSize(7.8).fillColor(C_BODY).text(text, 55, y + 16, { width: contentWidth - 20, lineGap: 1.5 });
+  doc.y = y + height + 7;
 }
 
-function alertBox(text, title = 'CRITICAL SECURITY NOTE') {
-  const boxHeight = 52;
-  if (doc.y + boxHeight > pageHeight - 50) {
+function alertBox(text, title = 'CRITICAL SECURITY NOTE', height = 46) {
+  if (doc.y + height > pageHeight - 45) {
     doc.addPage();
   }
   const y = doc.y;
-  doc.roundedRect(45, y, contentWidth, boxHeight, 4).fill(C_WARN_BG);
-  doc.rect(45, y, 4, boxHeight).fill(C_WARN_BORDER);
+  doc.roundedRect(45, y, contentWidth, height, 4).fill(C_WARN_BG);
+  doc.rect(45, y, 4, height).fill(C_WARN_BORDER);
 
-  doc.font('Helvetica-Bold').fontSize(8.5).fillColor(C_WARN_TEXT).text(title, 55, y + 6);
-  doc.font('Helvetica').fontSize(8).fillColor(C_WARN_TEXT).text(text, 55, y + 18, { width: contentWidth - 20, lineGap: 1.5 });
-  doc.y = y + boxHeight + 8;
+  doc.font('Helvetica-Bold').fontSize(8).fillColor(C_WARN_TEXT).text(title, 55, y + 5);
+  doc.font('Helvetica').fontSize(7.8).fillColor(C_WARN_TEXT).text(text, 55, y + 16, { width: contentWidth - 20, lineGap: 1.5 });
+  doc.y = y + height + 7;
 }
 
 function paragraph(text, boldPrefix = '') {
-  if (doc.y > pageHeight - 55) {
+  if (doc.y > pageHeight - 50) {
     doc.addPage();
   }
-  doc.font('Helvetica').fontSize(9).fillColor(C_BODY);
+  doc.font('Helvetica').fontSize(8.5).fillColor(C_BODY);
   if (boldPrefix) {
     doc.font('Helvetica-Bold').fillColor(C_DARK).text(boldPrefix + ' ', { continued: true });
-    doc.font('Helvetica').fillColor(C_BODY).text(text, { lineGap: 2 });
+    doc.font('Helvetica').fillColor(C_BODY).text(text, { lineGap: 1.5 });
   } else {
-    doc.text(text, { lineGap: 2 });
+    doc.text(text, { lineGap: 1.5 });
   }
-  doc.y += 4;
+  doc.y += 3;
 }
 
 // ================= PAGE 1 =================
@@ -153,17 +150,19 @@ paragraph('This guide provides complete instructions to set up, configure, and e
 
 infoBox(
   'SIFS uses a cloud-hosted PostgreSQL database on Supabase. Your friend DOES NOT need to install PostgreSQL, configure pgAdmin, or run local database seeds. The backend connects directly to the Supabase cloud cluster over the internet.',
-  'ARCHITECTURE ADVANTAGE'
+  'ARCHITECTURE ADVANTAGE',
+  38
 );
 
 sectionTitle('Prerequisites Installation', '1');
 paragraph('Ensure your friend’s computer has the following two tools installed before proceeding:');
-paragraph('Download Node.js 18.x or 20.x LTS from https://nodejs.org. Run the installer with default settings. Node.js includes npm.', '• 1. Node.js (LTS Version):');
+paragraph('Download Node.js 18.x or 20.x LTS from https://nodejs.org. Run installer with default settings.', '• 1. Node.js (LTS Version):');
 paragraph('Download from https://git-scm.com. Standard installer settings are completely fine.', '• 2. Git for Windows:');
 
 infoBox(
   'NO! Default installation settings are 100% sufficient. Setting up git config (user.name and user.email) is ONLY required if your friend wants to commit or push code. For cloning, building, running, and testing, ZERO git configuration is required.',
-  'FAQ: DOES YOUR FRIEND NEED TO CONFIGURE GIT AFTER DOWNLOADING?'
+  'FAQ: DOES YOUR FRIEND NEED TO CONFIGURE GIT AFTER DOWNLOADING?',
+  40
 );
 
 sectionTitle('Clone the Project Repository', '2');
@@ -175,31 +174,35 @@ codeBlock([
 ]);
 
 sectionTitle('Backend Environment Setup (.env)', '3');
-paragraph('Navigate into the backend directory and create a configuration file named .env:', 'A. Create backend/.env:');
+paragraph('You can create the backend/.env file directly from PowerShell using this single command:', 'Method A (Fastest - One PowerShell Command):');
 
 codeBlock([
-  'cd backend',
-  '# On Windows PowerShell, create the file using notepad:',
-  'notepad .env'
-]);
-
-paragraph('Paste the following environment variables into the backend/.env file and save it:', 'B. Environment Variables:');
-
-codeBlock([
+  '(Run directly in PowerShell from the smart-id-system project root folder):',
+  'Set-Content -Path "backend\\.env" -Value @"',
   'PORT=5000',
   'DATABASE_URL=postgresql://postgres.qwqnrvpubmnarseleegr:[YOUR_PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres',
   'JWT_SECRET=smart_id_super_secret_key_2026',
-  'NODE_ENV=development'
+  'JWT_EXPIRES_IN=7d',
+  '"@'
+]);
+
+paragraph('Alternatively, navigate into backend/ and edit or create the file manually with Notepad:', 'Method B (Manual Notepad Creation):');
+
+codeBlock([
+  'cd backend',
+  'notepad .env'
 ]);
 
 alertBox(
-  'The repository code and this guide replace the real database password with [YOUR_PASSWORD] to protect your Supabase cluster from unauthorized access on public Git. You (the repository owner) must supply the real password privately to your friend when filling the .env file.',
-  'CRITICAL SECURITY: REPLACE [YOUR_PASSWORD]'
+  'The repository code and this guide replace the real database password with [YOUR_PASSWORD] to protect your Supabase cluster from unauthorized access on public Git. You (the repository owner) must supply the real password privately to your friend when creating the .env file.',
+  'CRITICAL SECURITY: REPLACE [YOUR_PASSWORD]',
+  46
 );
 
 infoBox(
-  'JWT_SECRET is a cryptographic signing key used by JSON Web Token (JWT) during administrator authentication. When an admin logs in, the backend signs the session token with this secret key. The default value (smart_id_super_secret_key_2026) is fully functional for local demonstration.',
-  'EXPLANATION: WHAT IS JWT_SECRET?'
+  'JWT_SECRET is the cryptographic key used to sign tokens during admin login. JWT_EXPIRES_IN=7d keeps admin sessions active for 7 days. The default secret key is safe and ready for demonstration.',
+  'EXPLANATION: WHAT ARE JWT_SECRET & JWT_EXPIRES_IN?',
+  38
 );
 
 // ================= PAGE 2 =================
@@ -287,12 +290,12 @@ paragraph('Only if you invite them as a GitHub Collaborator or if they fork the 
 paragraph('No! Your friend uses the cloud database connection via backend/.env without ever logging in to Supabase. Only you (the project owner) need the Supabase admin login.', '• Does my friend need a Supabase account?');
 
 // Final footer box
-doc.y += 10;
+doc.y += 8;
 const finalBoxY = doc.y;
-doc.roundedRect(45, finalBoxY, contentWidth, 34, 4).fill(C_SUCCESS_BG);
-doc.rect(45, finalBoxY, 3, 34).fill(C_SUCCESS_BORDER);
-doc.font('Helvetica-Bold').fontSize(8.5).fillColor(C_SUCCESS_TEXT).text('READY FOR DEFENSE', 55, finalBoxY + 5);
-doc.font('Helvetica').fontSize(8).fillColor(C_SUCCESS_TEXT).text('Your project is fully prepared for demonstration. All database persistence, authentication, and automated test coverage are self-contained and ready.', 55, finalBoxY + 17);
+doc.roundedRect(45, finalBoxY, contentWidth, 32, 4).fill(C_SUCCESS_BG);
+doc.rect(45, finalBoxY, 3, 32).fill(C_SUCCESS_BORDER);
+doc.font('Helvetica-Bold').fontSize(8).fillColor(C_SUCCESS_TEXT).text('READY FOR DEFENSE', 55, finalBoxY + 5);
+doc.font('Helvetica').fontSize(7.5).fillColor(C_SUCCESS_TEXT).text('Your project is fully prepared for demonstration. All database persistence, authentication, and automated test coverage are self-contained and ready.', 55, finalBoxY + 16);
 
 // Add page numbers
 const range = doc.bufferedPageRange();
@@ -304,7 +307,7 @@ for (let i = 0; i < range.count; i++) {
      .text(
        `Smart ID Card Formulation System (SIFS)  |  Page ${i + 1} of ${range.count}`,
        45,
-       pageHeight - 30,
+       pageHeight - 28,
        { width: contentWidth, align: 'center' }
      );
 }
@@ -315,7 +318,7 @@ writeStreamRepo.on('finish', () => {
   // Also copy to brain artifact path
   try {
     fs.copyFileSync(repoDocsPath, brainPath);
-    console.log(`Successfully generated PDF at: ${repoDocsPath}`);
+    console.log(`Successfully generated PDF at: ${repoDocsPath} (Total pages: ${range.count})`);
     console.log(`Successfully mirrored to artifact path: ${brainPath}`);
   } catch (err) {
     console.error('Error copying to brain path:', err);
