@@ -49,15 +49,20 @@ describe('Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx)', (
     });
   });
 
-  const renderComponent = () =>
-    render(
+  const renderComponent = async () => {
+    const utils = render(
       <BrowserRouter>
         <AdmitStudent />
       </BrowserRouter>
     );
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('Select Department')).toBeInTheDocument();
+    });
+    return utils;
+  };
 
   test('TC_UI_ADM_01 [Rendering]: should render admission form and live ID card simulation', async () => {
-    renderComponent();
+    await renderComponent();
 
     // Verify Page Header
     expect(screen.getByRole('heading', { name: /Admit Student & Generate ID/i })).toBeInTheDocument();
@@ -72,7 +77,7 @@ describe('Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx)', (
   });
 
   test('TC_UI_ADM_02 [Interactive Live Typing]: typing full name updates the digital ID card preview in real-time', async () => {
-    renderComponent();
+    await renderComponent();
 
     const nameInput = screen.getByPlaceholderText(/e.g. Arafat Rahman/i);
 
@@ -87,11 +92,7 @@ describe('Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx)', (
   });
 
   test('TC_UI_ADM_03 [Format Preview Formula]: selecting department updates preview ID code', async () => {
-    renderComponent();
-
-    await waitFor(() => {
-      expect(screen.getByDisplayValue(/Select Department/i)).toBeInTheDocument();
-    });
+    await renderComponent();
 
     // Initial preview ID pattern exists
     expect(screen.getByText(/CSE26FL•••/i)).toBeInTheDocument();
@@ -110,11 +111,7 @@ describe('Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx)', (
       }
     });
 
-    renderComponent();
-
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('Select Department')).toBeInTheDocument();
-    });
+    await renderComponent();
 
     // 1. Fill Department
     const deptSelect = screen.getByDisplayValue('Select Department');
