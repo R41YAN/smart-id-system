@@ -166,6 +166,26 @@ Test Files:  3 passed, 3 total
 Tests:       11 passed, 11 total
 Snapshots:   0 total
 Time:        1.90 s
+Coverage:    71.83% across all UI components and pages
+```
+
+```
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------------------
+All files          |   69.79 |    65.89 |    67.6 |   71.83 |
+ components        |   71.87 |    57.57 |      68 |   74.19 |
+  Icons.jsx        |   63.15 |    63.15 |   63.15 |   63.15 | 13,65,85-94,149,171-180
+  Layout.jsx       |     100 |      100 |     100 |     100 |
+  Sidebar.jsx      |   83.33 |       50 |      80 |    90.9 | 109
+ context           |   58.33 |       50 |      60 |    61.9 |
+  AuthContext.jsx  |   58.33 |       50 |      60 |    61.9 | 18-21,25-28
+ pages             |   71.32 |    69.56 |   68.29 |   72.95 |
+  AdmitStudent.jsx |   85.96 |    87.03 |   78.94 |   84.31 | 50,57-60,188-368
+  Login.jsx        |   89.47 |     62.5 |     100 |   89.47 | 20-21
+  StudentList.jsx  |   51.66 |       40 |      50 |   55.76 | 44,48-53,58-80,84,129,142,212
+-------------------|---------|----------|---------|---------|-------------------------------
 ```
 
 ### Grand Total
@@ -192,4 +212,7 @@ cd "frontend"
 
 # Run all 11 UI component and simulation tests
 npm test
+
+# Run with full code coverage breakdown
+npm run test:coverage
 ```
