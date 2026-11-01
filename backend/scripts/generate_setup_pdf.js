@@ -62,7 +62,7 @@ function addMetaRow() {
   doc.font('Helvetica-Bold').fontSize(8.5).fillColor(C_DARK);
   doc.text('Target OS: Windows 10/11', 55, y + 6);
   doc.text('Database: Cloud Supabase PostgreSQL', 190, y + 6);
-  doc.text('Repo: YeasirArafatBhuiyan/smart-id-system', 360, y + 6);
+  doc.text('Repo: R41YAN/smart-id-system', 360, y + 6);
   doc.y = y + 28;
 }
 
@@ -170,7 +170,7 @@ sectionTitle('Clone the Project Repository', '2');
 paragraph('Open Command Prompt (cmd) or PowerShell on your friend’s computer, navigate to the desired working folder (e.g., Desktop or Projects), and clone the repository:');
 
 codeBlock([
-  'git clone https://github.com/YeasirArafatBhuiyan/smart-id-system.git',
+  'git clone https://github.com/R41YAN/smart-id-system.git',
   'cd smart-id-system'
 ]);
 
