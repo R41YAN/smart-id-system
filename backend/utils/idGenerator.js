@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Smart ID Generation Engine
  *
  * Open-Credit Format:  [DeptName][YY][SemCode][3-digit serial]
@@ -22,9 +22,18 @@ const SEMESTER_MAP = { 1: 'SP', 2: 'SM', 3: 'FL' };
  * @returns {string}
  */
 function generateStudentId({ universityType, deptName, year, semesterIndex, batchNumber, serial }) {
-  const dept      = deptName.toUpperCase();
+  if (!deptName || typeof deptName !== 'string' || !deptName.trim()) {
+    throw new Error('Invalid or missing department name');
+  }
+
+  const numSerial = Number(serial);
+  if (isNaN(numSerial) || numSerial <= 0) {
+    throw new Error('Invalid serial number: must be a positive integer');
+  }
+
+  const dept      = deptName.trim().toUpperCase();
   const yy        = String(year).slice(-2);
-  const serialStr = String(serial).padStart(3, '0');
+  const serialStr = String(numSerial).padStart(3, '0');
 
   if (universityType === 'open_credit') {
     const semCode = SEMESTER_MAP[semesterIndex];
@@ -33,6 +42,9 @@ function generateStudentId({ universityType, deptName, year, semesterIndex, batc
   }
 
   if (universityType === 'close_credit') {
+    if (batchNumber === undefined || batchNumber === null || String(batchNumber).trim() === '') {
+      throw new Error('Batch number is required for close_credit');
+    }
     return `${dept}${batchNumber}${yy}${serialStr}`;
   }
 

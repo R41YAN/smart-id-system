@@ -7,7 +7,10 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "seed": "node db/seed.js",
-    "db:setup": "node db/seed.js"
+    "db:setup": "node db/seed.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "test:coverage": "jest --runInBand --detectOpenHandles --forceExit --coverage",
+    "test:watch": "jest --watch"
   },
   "author": "Md. Raiyan & Md. Fizul Islam Yamin",
   "license": "ISC",
@@ -20,5 +23,9 @@
     "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.14",
     "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "supertest": "^7.3.1"
   }
 }
