@@ -916,8 +916,8 @@ const docChildren = [
   createTable(
     ['Member', 'Test Cases Implemented', 'Defects Found', 'Defects Fixed'],
     [
-      ['Md. Raiyan (0432320005101101)', '21 Test Cases (Frontend UI Components, Form Reactivity & Auth Integration)', '3', '3'],
-      ['Md. Fizul Islam Yamin (0432320005101114)', '24 Test Cases (Core ID Engine Unit, Boundary Analysis & Multi-Tenant Integration)', '4', '4']
+      ['Md. Fizul Islam Yamin (0432320005101114)', '21 Test Cases (Frontend UI Components, Form Reactivity & Auth Integration)', '3', '3'],
+      ['Md. Raiyan (0432320005101101)', '24 Test Cases (Core ID Engine Unit, Boundary Analysis & Multi-Tenant Integration)', '4', '4']
     ],
     [32, 44, 12, 12]
   ),
