@@ -153,20 +153,49 @@ During the **Refine (Step 2)** and **Deepen (Step 3)** phases using Qodo (Codium
 
 ### Backend Suites (Jest + Supertest)
 ```
+PS D:\ক PDF 1\7th Semester\Software Project Lab\Project\smart-id-system\backend> npm test
+
+> smart-id-system-backend@1.0.0 test
+> jest --runInBand --detectOpenHandles --forceExit
+
+ PASS  tests/integration/studentAdmission.test.js
+  ● Console
+    console.log
+      ✅ PostgreSQL connected
+
+ PASS  tests/integration/auth.test.js
+  ● Console
+    console.log
+      ✅ PostgreSQL connected
+
+ PASS  tests/unit/idGenerator.test.js
+ PASS  tests/unit/edgeCases.test.js
+
 Test Suites: 4 passed, 4 total
 Tests:       34 passed, 34 total
 Snapshots:   0 total
-Time:        4.048 s
-Coverage:    100% on Core ID Engine & 100% on API Routes
+Time:        6.084 s, estimated 7 s
+Ran all test suites.
 ```
 
 ### Frontend Suites (Vitest + React Testing Library)
 ```
-Test Files:  3 passed, 3 total
-Tests:       11 passed, 11 total
-Snapshots:   0 total
-Time:        1.90 s
-Coverage:    71.83% across all UI components and pages
+PS D:\ক PDF 1\7th Semester\Software Project Lab\Project\smart-id-system\frontend> npm test
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.5 D:/ক PDF 1/7th Semester/Software Project Lab/Project/smart-id-system/frontend
+
+ ✓ src/pages/__tests__/Login.test.jsx (4 tests) 167ms
+ ✓ src/pages/__tests__/StudentList.test.jsx (3 tests) 328ms
+ ✓ src/pages/__tests__/AdmitStudent.test.jsx (4 tests) 359ms
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+   Start at  22:23:03
+   Duration  3.80s (environment 68%, setup 16%, tests 8%, import 5%, transform 2%)
 ```
 
 ```
