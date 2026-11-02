@@ -153,7 +153,8 @@ During the **Refine (Step 2)** and **Deepen (Step 3)** phases using Qodo (Codium
 
 ### Backend Suites (Jest + Supertest)
 ```
-PS D:\ক PDF 1\7th Semester\Software Project Lab\Project\smart-id-system\backend> npm test
+PS C:\Users\PC> cd "d:\Software Project Lab\Project\smart-id-system\backend"
+PS D:\Software Project Lab\Project\smart-id-system\backend> npm test
 
 > smart-id-system-backend@1.0.0 test
 > jest --runInBand --detectOpenHandles --forceExit
@@ -176,17 +177,19 @@ Tests:       34 passed, 34 total
 Snapshots:   0 total
 Time:        6.084 s, estimated 7 s
 Ran all test suites.
+PS D:\Software Project Lab\Project\smart-id-system\backend>
 ```
 
 ### Frontend Suites (Vitest + React Testing Library)
 ```
-PS D:\ক PDF 1\7th Semester\Software Project Lab\Project\smart-id-system\frontend> npm test
+PS C:\Users\PC> cd "d:\Software Project Lab\Project\smart-id-system\frontend"
+PS D:\Software Project Lab\Project\smart-id-system\frontend> npm test
 
 > frontend@0.0.0 test
 > vitest run
 
 
- RUN  v5.0.5 D:/ক PDF 1/7th Semester/Software Project Lab/Project/smart-id-system/frontend
+ RUN  v5.0.5 D:/Software Project Lab/Project/smart-id-system/frontend
 
  ✓ src/pages/__tests__/Login.test.jsx (4 tests) 167ms
  ✓ src/pages/__tests__/StudentList.test.jsx (3 tests) 328ms
@@ -196,6 +199,8 @@ PS D:\ক PDF 1\7th Semester\Software Project Lab\Project\smart-id-system\fronte
       Tests  11 passed (11)
    Start at  22:23:03
    Duration  3.80s (environment 68%, setup 16%, tests 8%, import 5%, transform 2%)
+
+PS D:\Software Project Lab\Project\smart-id-system\frontend>
 ```
 
 ```
