@@ -45,7 +45,7 @@ function addHeaderBanner() {
   doc.fillColor('#FFFFFF')
      .font('Helvetica-Bold')
      .fontSize(15)
-     .text('SMART ID CARD FORMULATION SYSTEM (SIFS)', 55, startY + 10, { width: contentWidth - 20, align: 'center' });
+     .text('SMART ID FORMATTING SYSTEM (SIFS)', 55, startY + 10, { width: contentWidth - 20, align: 'center' });
 
   doc.font('Helvetica')
      .fontSize(9.5)
@@ -146,7 +146,7 @@ function paragraph(text, boldPrefix = '') {
 addHeaderBanner();
 addMetaRow();
 
-paragraph('This guide provides complete instructions to set up, configure, and execute the Smart ID Card Formulation System (SIFS) on another machine (e.g., your friend\'s PC) to present the working project and automated testing suite to your teacher or evaluation panel.');
+paragraph('This guide provides complete instructions to set up, configure, and execute the Smart ID Formatting System (SIFS) on another machine (e.g., your friend\'s PC) to present the working project and automated testing suite to your teacher or evaluation panel.');
 
 infoBox(
   'SIFS uses a cloud-hosted PostgreSQL database on Supabase. Your friend DOES NOT need to install PostgreSQL, configure pgAdmin, or run local database seeds. The backend connects directly to the Supabase cloud cluster over the internet.',
@@ -245,7 +245,7 @@ paragraph('Follow this exact workflow to demonstrate the full capabilities of th
 
 paragraph('Navigate to http://localhost:5173/login. Enter your administrator email and password to access the administrative dashboard.', '1. Administrative Authentication:');
 
-paragraph('Demonstrate the student registration form. Input Department (CSE), Academic Year (2026), Batch (05), and Roll (001). Show how the unique Smart ID (2026CSE05001) is formulated deterministically following university business logic.', '2. Student Admission & ID Formulation:');
+paragraph('Demonstrate the student registration form. Input Department (CSE), Academic Year (2026), Batch (05), and Roll (001). Show how the unique Smart ID (2026CSE05001) is formatted deterministically following university business logic.', '2. Student Admission & ID Formatting:');
 
 paragraph('Show the generated digital ID card containing the student profile picture, formatted barcode/QR code, academic credentials, and official stamp. Demonstrate one-click PDF/card export.', '3. Digital ID Card Generation:');
 
@@ -305,7 +305,7 @@ for (let i = 0; i < range.count; i++) {
      .fontSize(8)
      .fillColor(C_MUTED)
      .text(
-       `Smart ID Card Formulation System (SIFS)  |  Page ${i + 1} of ${range.count}`,
+       `Smart ID Formatting System (SIFS)  |  Page ${i + 1} of ${range.count}`,
        45,
        pageHeight - 28,
        { width: contentWidth, align: 'center' }

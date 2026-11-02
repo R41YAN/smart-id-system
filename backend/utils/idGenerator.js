@@ -1,12 +1,13 @@
-﻿/**
+/**
  * Smart ID Generation Engine
  *
  * Open-Credit Format:  [DeptName][YY][SemCode][3-digit serial]
  *   Example: CSE26FL012   (CSE dept, 2026, Fall intake, 12th student)
  *   Codes: SP=Spring, SM=Summer, FL=Fall
  *
- * Close-Credit Format: [DeptName][BatchNo][YY][3-digit serial]
+ * Close-Credit Format: [DeptName][2-Digit BatchNo][YY][3-digit serial]
  *   Example: CSE5426012   (CSE dept, 54th batch, 2026, 12th student)
+ *   Example: BBA0126001   (BBA dept, 1st batch, 2026, 1st student)
  */
 
 const SEMESTER_MAP = { 1: 'SP', 2: 'SM', 3: 'FL' };
@@ -45,7 +46,8 @@ function generateStudentId({ universityType, deptName, year, semesterIndex, batc
     if (batchNumber === undefined || batchNumber === null || String(batchNumber).trim() === '') {
       throw new Error('Batch number is required for close_credit');
     }
-    return `${dept}${batchNumber}${yy}${serialStr}`;
+    const batchStr = String(batchNumber).padStart(2, '0');
+    return `${dept}${batchStr}${yy}${serialStr}`;
   }
 
   throw new Error(`Unknown university type: ${universityType}`);

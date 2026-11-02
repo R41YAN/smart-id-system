@@ -1,4 +1,4 @@
-﻿import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   DashboardIcon,
@@ -47,11 +47,8 @@ export default function Sidebar() {
           <div className="overflow-hidden">
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold tracking-wider text-base text-white">SIFS</span>
-              <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-300 border border-amber-400/30">
-                PRO
-              </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium truncate">Smart ID Formatting</p>
+            <p className="text-[11px] text-slate-400 font-medium truncate">Smart ID Formatting System</p>
           </div>
         </div>
 

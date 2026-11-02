@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
@@ -11,6 +11,16 @@ import {
 } from '../components/Icons';
 
 const SEM_LABELS = { SP: 'Spring', SM: 'Summer', FL: 'Fall' };
+
+const getOrdinal = (n) => {
+  const num = parseInt(n, 10);
+  if (isNaN(num)) return `${n}th`;
+  const j = num % 10, k = num % 100;
+  if (j === 1 && k !== 11) return `${num}st`;
+  if (j === 2 && k !== 12) return `${num}nd`;
+  if (j === 3 && k !== 13) return `${num}rd`;
+  return `${num}th`;
+};
 
 export default function AdmitStudent() {
   const { user } = useAuth();
@@ -67,7 +77,8 @@ export default function AdmitStudent() {
   const deptCode = currentDept?.name || 'CSE';
   const yearStr = String(currentBatch?.year || new Date().getFullYear()).slice(-2);
   const semCode = currentBatch?.semester_code || 'FL';
-  const batchNum = currentBatch?.batch_number || '54';
+  const batchNumRaw = currentBatch?.batch_number ?? 54;
+  const batchNum = String(batchNumRaw).padStart(2, '0');
 
   const previewID = isOpen
     ? `${deptCode}${yearStr}${semCode}•••`
@@ -155,7 +166,7 @@ export default function AdmitStudent() {
                     <option value="">Select {isOpen ? 'Intake' : 'Batch'}</option>
                     {filteredBatches.map(b => (
                       <option key={b.id} value={b.id}>
-                        {b.semester_code ? `${SEM_LABELS[b.semester_code]} ${b.year}` : `${b.batch_number}th Batch (${b.year})`}
+                        {b.semester_code ? `${SEM_LABELS[b.semester_code]} ${b.year}` : `${getOrdinal(b.batch_number)} Batch (${b.year})`}
                       </option>
                     ))}
                   </select>
@@ -313,8 +324,8 @@ export default function AdmitStudent() {
                           </p>
                           <p className="font-mono text-xs font-bold text-slate-800 truncate">
                             {currentBatch
-                              ? (isOpen ? `${SEM_LABELS[currentBatch.semester_code] || ''} '${yearStr}` : `${batchNum}th`)
-                              : (isOpen ? `Fall '${yearStr}` : `${batchNum}th`)}
+                              ? (isOpen ? `${SEM_LABELS[currentBatch.semester_code] || ''} '${yearStr}` : getOrdinal(batchNumRaw))
+                              : (isOpen ? `Fall '${yearStr}` : getOrdinal(batchNumRaw))}
                           </p>
                         </div>
                       </div>

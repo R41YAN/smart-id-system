@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
 import {
@@ -9,6 +9,16 @@ import {
 } from '../components/Icons';
 
 const SEM_LABELS = { SP: 'Spring', SM: 'Summer', FL: 'Fall' };
+
+const getOrdinal = (n) => {
+  const num = parseInt(n, 10);
+  if (isNaN(num)) return `${n}th`;
+  const j = num % 10, k = num % 100;
+  if (j === 1 && k !== 11) return `${num}st`;
+  if (j === 2 && k !== 12) return `${num}nd`;
+  if (j === 3 && k !== 13) return `${num}rd`;
+  return `${num}th`;
+};
 
 export default function StudentList() {
   const [students, setStudents] = useState([]);
@@ -62,7 +72,7 @@ export default function StudentList() {
       `"${s.student_id}"`,
       `"${(s.name || '').replace(/"/g, '""')}"`,
       `"${s.department_name}"`,
-      `"${s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${s.batch_number}th Batch ${s.year}`}"`,
+      `"${s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch ${s.year}`}"`,
       `"${s.email || ''}"`,
       `"${s.phone || ''}"`,
       `"${new Date(s.admitted_at).toLocaleDateString()}"`
@@ -197,7 +207,7 @@ export default function StudentList() {
                         </span>
                       </td>
                       <td className="px-5 py-4 text-xs text-slate-600 font-medium">
-                        {s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${s.batch_number}th Batch (${s.year})`}
+                        {s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch (${s.year})`}
                       </td>
                       <td className="px-5 py-4 text-xs text-slate-500">{s.email || '—'}</td>
                       <td className="px-5 py-4 text-xs text-slate-500 font-medium">

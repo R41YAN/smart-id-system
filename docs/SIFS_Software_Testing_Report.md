@@ -2,7 +2,7 @@
 **Test plan, test cases and results (based on ISO/IEC/IEEE 29119-3)**
 
 **Course:** Software Project Design and Development (CSE 416)  
-**Project Title:** Smart ID Card Formulation System (SIFS)  
+**Project Title:** Smart ID Formatting System (SIFS)  
 **Team ID:** Batch: CSE-54, Section: 7B1  
 **Authors:** Md. Raiyan (ID: 0432320005101101) & Md. Fizul Islam Yamin (ID: 0432320005101114)  
 **Course Instructor:** Dr. Mahfida Amjad Dipa  
@@ -105,7 +105,7 @@ The following master test execution matrix documents all 45 automated test cases
 | **TC_UNIT_BVA05** | Overflow Serial (1000) | `idGenerator.js` loaded | 1. Test serial 1000 | Four-digit representation preserved | Returns `CSE26SP1000` | **PASS** |
 | **TC_UNIT_BVA06** | Century Year Boundary (2000) | `idGenerator.js` loaded | 1. Pass `year: 2000` | Two-digit slice produces `00` | Returns `LAW00SP005` | **PASS** |
 | **TC_UNIT_BVA07** | Future Year Boundary (2099) | `idGenerator.js` loaded | 1. Pass `year: 2099` | Two-digit slice produces `99` | Returns `ENG1599002` | **PASS** |
-| **TC_UNIT_BVA08** | Single Digit Batch (Batch 1) | `idGenerator.js` loaded | 1. Pass `batchNumber: 1` | Correct cohort code without false pad | Returns `CSE126001` | **PASS** |
+| **TC_UNIT_BVA08** | Single Digit Batch (Batch 1) | `idGenerator.js` loaded | 1. Pass `batchNumber: 1` | Standard 2-digit batch padding (`01`) | Returns `CSE0126001` | **PASS** |
 | **TC_UNIT_BVA09** | Large Batch (Batch 100) | `idGenerator.js` loaded | 1. Pass `batchNumber: 100` | Full batch number integrated | Returns `CSE10026050` | **PASS** |
 | **TC_UNIT_CONST** | Semester Mapping Integrity | `idGenerator.js` loaded | 1. Verify `SEMESTER_MAP` constants | `1: SP, 2: SM, 3: FL` | Strict mapping verified | **PASS** |
 

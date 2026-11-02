@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============================================================================
  * UNIT TEST SUITE: Smart ID Generation Engine (idGenerator.js)
  * ============================================================================
@@ -213,13 +213,13 @@ describe('Unit Tests: Core ID Generation Engine', () => {
     });
 
     describe('Batch Number Boundaries (Close Credit)', () => {
-      test('BVA_08 [Single Digit Batch = 1]: should format correctly without zero-padding batch', () => {
+      test('BVA_08 [Single Digit Batch = 1]: should format correctly with 2-digit zero-padding', () => {
         // Arrange
         const input = { universityType: 'close_credit', deptName: 'CSE', year: 2026, batchNumber: 1, serial: 1 };
         // Act
         const result = generateStudentId(input);
         // Assert
-        expect(result).toBe('CSE126001');
+        expect(result).toBe('CSE0126001');
       });
 
       test('BVA_09 [Triple Digit Batch = 100]: should format seamlessly with large cohort numbers', () => {
