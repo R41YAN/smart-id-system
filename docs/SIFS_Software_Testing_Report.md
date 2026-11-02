@@ -1,10 +1,14 @@
-# Software Testing and Quality Assurance Lab Report
+# Software Test Report
+**Test plan, test cases and results (based on ISO/IEC/IEEE 29119-3)**
 
-**Project Title:** Smart ID Formatting System (SIFS)  
-**Mapped Course Outcome:** CO3 — Software Testing and Quality Assurance  
+**Course:** Software Project Design and Development (CSE 416)  
+**Project Title:** Smart ID Card Formulation System (SIFS)  
+**Team ID:** Batch: CSE-54, Section: 7B1  
+**Authors:** Md. Raiyan (ID: 0432320005101101) & Md. Fizul Islam Yamin (ID: 0432320005101114)  
+**Course Instructor:** Dr. Mahfida Amjad Dipa  
 **Testing Tools & Frameworks:** Jest, Supertest, Vitest, React Testing Library, Qodo (CodiumAI Methodology)  
-**Authors:** Md. Raiyan & Md. Fizul Islam Yamin  
 **Repository:** [https://github.com/R41YAN/smart-id-system](https://github.com/R41YAN/smart-id-system)  
+**Date of Submission:** 02 November 2026  
 
 ---
 
