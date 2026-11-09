@@ -98,7 +98,8 @@ export default function ManageUniversities() {
           await api.put(`/universities/${editingUniId}`, { logo_url: resized });
           fetchUniversities();
         } catch (err) {
-          alert('Failed to update logo.');
+          console.error('Update logo error:', err);
+          alert(err.response?.data?.message || err.message || 'Failed to update logo.');
         } finally {
           setEditingUniId(null);
         }
