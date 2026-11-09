@@ -312,8 +312,8 @@ const docChildren = [
   createMetaTable([
     ['Project Title', 'Smart ID Formatting System (SIFS): University Multi-Tenant Admission & Digital ID Platform'],
     ['Team Batch & Section', 'Batch: CSE-54, Section: 7B1'],
-    ['Member 1 (Author/Reviewer)', '0432320005101101 - Md. Raiyan - Frontend, UI/UX & Documentation Lead'],
-    ['Member 2 (Author/Test Lead)', '0432320005101114 - Md. Fizul Islam Yamin - Backend Architecture, ID Engine & Test Lead'],
+    ['Member 1 (Backend Lead)', '0432320005101101 - Md. Raiyan - Backend Architecture, ID Engine, Security & Test Lead'],
+    ['Member 2 (Frontend Lead)', '0432320005101114 - Md. Fizul Islam Yamin - Frontend, UI/UX, Component Architecture & Documentation'],
     ['Course Instructor', 'Dr. Mahfida Amjad Dipa, Dept. of CSE, University of Information Technology and Sciences (UITS)'],
     ['Repository', 'https://github.com/R41YAN/smart-id-system'],
     ['Date of Submission', '10 November 2026 (Updated with Features v1.2)']
@@ -774,8 +774,8 @@ const docChildren = [
   createTable(
     ['Member', 'Test Cases Implemented', 'Defects Found', 'Defects Fixed'],
     [
-      ['Md. Fizul Islam Yamin (0432320005101114)', '28 Test Cases (Frontend UI Components, Form Reactivity, Barcode, Photo & Auth Integration)', '4', '4'],
-      ['Md. Raiyan (0432320005101101)', '30 Test Cases (Core ID Engine Unit, Boundary Analysis, Dual Departments & Multi-Tenant Branding)', '4', '4']
+      ['Md. Raiyan (0432320005101101)', '30 Test Cases (Backend Architecture, Core ID Engine Unit, Boundary Analysis, Dual Depts & Multi-Tenant Security)', '4', '4'],
+      ['Md. Fizul Islam Yamin (0432320005101114)', '28 Test Cases (Frontend UI Components, Form Reactivity, Code 128 Barcodes, Option B Modal & Photo Upload)', '4', '4']
     ],
     [32, 44, 12, 12]
   ),
@@ -787,10 +787,10 @@ const docChildren = [
   createTable(
     ['Role', 'Name', 'Signature', 'Date'],
     [
-      ['Prepared by', 'Md. Raiyan, Md. Fizul Islam Yamin', '[Signed Electronically]', '10 November 2026'],
-      ['Reviewed by', 'Md. Raiyan', '[Signed Electronically]', '10 November 2026']
+      ['Backend Architecture & Test Lead', 'Md. Raiyan (0432320005101101)', '[Signed Electronically]', '10 November 2026'],
+      ['Frontend, UI/UX & Documentation Lead', 'Md. Fizul Islam Yamin (0432320005101114)', '[Signed Electronically]', '10 November 2026']
     ],
-    [20, 40, 20, 20]
+    [35, 30, 20, 15]
   )
 ];
 

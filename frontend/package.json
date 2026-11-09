@@ -2,6 +2,7 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
+  "author": "Md. Fizul Islam Yamin (Frontend, UI/UX & Documentation) & Md. Raiyan (Backend Architecture & Test Lead)",
   "type": "module",
   "scripts": {
     "dev": "vite",

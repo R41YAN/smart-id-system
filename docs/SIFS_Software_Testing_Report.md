@@ -4,7 +4,9 @@
 **Course:** Software Project Design and Development (CSE 416)  
 **Project Title:** Smart ID Formatting System (SIFS)  
 **Team ID:** Batch: CSE-54, Section: 7B1  
-**Authors:** Md. Raiyan (ID: 0432320005101101) & Md. Fizul Islam Yamin (ID: 0432320005101114)  
+**Authors & Team Roles:**  
+- **Md. Raiyan** (ID: 0432320005101101) — Backend Architecture, ID Engine, Security & Test Lead  
+- **Md. Fizul Islam Yamin** (ID: 0432320005101114) — Frontend, UI/UX, Component Architecture & Documentation  
 **Course Instructor:** Dr. Mahfida Amjad Dipa  
 **Testing Tools & Frameworks:** Jest, Supertest, Vitest, React Testing Library, Qodo (CodiumAI Methodology)  
 **Repository:** [https://github.com/R41YAN/smart-id-system](https://github.com/R41YAN/smart-id-system)  
@@ -339,3 +341,13 @@ npm run test:coverage
 # From frontend directory:
 npm run build
 ```
+
+---
+
+## 7. Team Roles & Individual Contribution Matrix
+
+| Member Name | Student ID | Domain & Core Responsibilities | Automated Tests & Deliverables |
+| :--- | :---: | :--- | :---: |
+| **Md. Raiyan** | 0432320005101101 | **Backend Architecture, ID Engine, Security & Test Lead**<br>• Core ID Formulation Engine (`idGenerator.js`)<br>• Concurrency-Safe ACID Row-Level Locking (`SELECT ... FOR UPDATE`)<br>• Super Admin & Multi-Tenant University Scoping<br>• Dual Department Fields (`code` & `full_name`) API & Roster<br>• JWT Stateless Authentication & SQL Injection Defense (`auth.test.js`) | **30 Tests**<br>(Backend Suites) |
+| **Md. Fizul Islam Yamin** | 0432320005101114 | **Frontend, UI/UX, Component Architecture & Documentation**<br>• React 19 UI & Interactive Live ID Card Simulation (`AdmitStudent.jsx`)<br>• Phone-Scannable Code 128 SVG Barcode Component (`Barcode.jsx`)<br>• Option B "View / Print ID Card" Modal & Quick Photo Upload (`StudentList.jsx`)<br>• Student Photo Auto-Crop, Aspect Ratio & Canvas Auto-Resize<br>• ISO/IEC/IEEE 29119-3 Software Testing Report Documentation Lead | **28 Tests**<br>(Frontend Suites) |
+

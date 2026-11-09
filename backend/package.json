@@ -12,7 +12,7 @@
     "test:coverage": "jest --runInBand --detectOpenHandles --forceExit --coverage",
     "test:watch": "jest --watch"
   },
-  "author": "Md. Raiyan & Md. Fizul Islam Yamin",
+  "author": "Md. Raiyan (Backend Architecture & Test Lead) & Md. Fizul Islam Yamin (Frontend, UI/UX & Documentation)",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

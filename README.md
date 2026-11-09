@@ -4,8 +4,8 @@
 > **Institution:** University of Information Technology and Sciences (UITS)  
 > **Batch & Section:** CSE-54, Section: 7B1  
 > **Team Members:**  
-> - **Md. Raiyan** (ID: 0432320005101101) — *Frontend, UI/UX, Component Architecture & Documentation*  
-> - **Md. Fizul Islam Yamin** (ID: 0432320005101114) — *Backend Architecture, ID Engine, Security & Test Lead*  
+> - **Md. Raiyan** (ID: 0432320005101101) — *Backend Architecture, ID Engine, Security & Test Lead*  
+> - **Md. Fizul Islam Yamin** (ID: 0432320005101114) — *Frontend, UI/UX, Component Architecture & Documentation*  
 > **Course Instructor:** Dr. Mahfida Amjad Dipa
 
 [![Tests](https://img.shields.io/badge/Automated%20Tests-58%20Passed%20(100%25)-success?style=flat-square&logo=jest)](docs/SIFS_Software_Testing_Report.md)
