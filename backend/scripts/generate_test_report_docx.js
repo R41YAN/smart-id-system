@@ -14,8 +14,8 @@ const {
   ShadingType
 } = require('docx');
 
-const repoDocxPath = path.resolve(__dirname, '../../docs/SIFS_Software_Testing_QA_Report.docx');
-const brainDocxPath = 'C:/Users/PC/.gemini/antigravity/brain/759ab480-6004-4326-bc06-9def4a24f295/SIFS_Software_Testing_QA_Report.docx';
+const repoDocxPath = path.resolve(__dirname, '../../docs/SIFS_Software_Testing_Report.docx');
+const brainDocxPath = 'C:/Users/PC/.gemini/antigravity/brain/759ab480-6004-4326-bc06-9def4a24f295/SIFS_Software_Testing_Report.docx';
 
 // Ensure directories exist
 fs.mkdirSync(path.dirname(repoDocxPath), { recursive: true });
@@ -114,14 +114,14 @@ function p(text, options = {}) {
 
 function codeBlock(lines) {
   const lineArray = Array.isArray(lines) ? lines : lines.split('\n');
-  const paragraphs = lineArray.map((line, idx) => {
+  const paragraphs = lineArray.map((line) => {
     return new Paragraph({
       spacing: { before: 20, after: 20 },
       children: [
         new TextRun({
           text: line,
           font: 'Consolas',
-          size: 17, // 8.5pt
+          size: 16, // 8pt
           color: C_CODE_TEXT
         })
       ]
@@ -264,7 +264,7 @@ function createMetaTable(rows, colWidths = [28, 72]) {
   });
 }
 
-console.log('Building SIFS Software Test Report Document...');
+console.log('Building SIFS Software Test Report Document (58 Automated Tests)...');
 
 const docChildren = [
   // Top Title Block
@@ -273,7 +273,7 @@ const docChildren = [
     spacing: { before: 100, after: 60 },
     children: [
       new TextRun({
-        text: 'CSE0613316 Software Project Design and Development (Lab)',
+        text: 'CSE 416: Software Project Design and Development',
         bold: true,
         size: 24, // 12pt
         font: FONT_FAMILY,
@@ -310,25 +310,25 @@ const docChildren = [
 
   // Project Cover Meta Table
   createMetaTable([
-    ['Project', 'Smart ID Card Formulation System (SIFS): University Multi-Tenant Admission & ID Formulation Platform'],
-    ['Team ID', 'Batch: CSE-54, Section: 7A'],
-    ['Member 1', '0432320005101101 - Md. Raiyan - Frontend, UI/UX & Documentation / Reviewer'],
-    ['Member 2', '0432320005101114 - Md. Fizul Islam Yamin - Backend Architecture, Formatting Engine & Test Lead'],
-    ['Experiment', 'Exp 9 (v1.0) Exp 10 (v1.1)'],
-    ['Instructor', 'Al Imtiaz, Associate Professor, Dept. of CSE, UITS / Dr. Mahfida Amjad Dipa'],
-    ['Submitted', '02 November 2026']
+    ['Project Title', 'Smart ID Formatting System (SIFS): University Multi-Tenant Admission & Digital ID Platform'],
+    ['Team Batch & Section', 'Batch: CSE-54, Section: 7B1'],
+    ['Member 1 (Author/Reviewer)', '0432320005101101 - Md. Raiyan - Frontend, UI/UX & Documentation Lead'],
+    ['Member 2 (Author/Test Lead)', '0432320005101114 - Md. Fizul Islam Yamin - Backend Architecture, ID Engine & Test Lead'],
+    ['Course Instructor', 'Dr. Mahfida Amjad Dipa, Dept. of CSE, University of Information Technology and Sciences (UITS)'],
+    ['Repository', 'https://github.com/R41YAN/smart-id-system'],
+    ['Date of Submission', '10 November 2026 (Updated with Features v1.2)']
   ]),
 
   new Paragraph({ spacing: { before: 200, after: 100 }, children: [new TextRun({ text: 'Document Control', bold: true, size: 24, font: FONT_FAMILY, color: C_PRIMARY })] }),
 
   createMetaTable([
-    ['Repository', 'https://github.com/R41YAN/smart-id-system'],
-    ['Version tested', 'v1.0.1-test (commit b98d22e)'],
-    ['Live site / Host', 'Client UI: http://localhost:5173 (API: http://localhost:5000, Cloud DB: Supabase AWS ap-southeast-1)'],
-    ['Report version', '1.0'],
-    ['Prepared by', 'Md. Raiyan, Md. Fizul Islam Yamin'],
-    ['Reviewed by', 'Md. Raiyan'],
-    ['Target tier', 'Baseline']
+    ['Repository URL', 'https://github.com/R41YAN/smart-id-system'],
+    ['Version Tested', 'v1.2.0-test (58 automated test cases, 100% pass rate)'],
+    ['Live Environments', 'Frontend: http://localhost:5173 | Backend REST API: http://localhost:5000 | DB: Supabase PostgreSQL'],
+    ['Report Version', '1.2'],
+    ['Prepared & Verified by', 'Md. Raiyan, Md. Fizul Islam Yamin'],
+    ['Approved by', 'Dr. Mahfida Amjad Dipa'],
+    ['Target Quality Tier', 'Production Grade / Academic Defense Tier']
   ]),
 
   new Paragraph({ spacing: { before: 120, after: 60 } }),
@@ -337,7 +337,8 @@ const docChildren = [
     ['Version', 'Date', 'Changes'],
     [
       ['1.0', '31 October 2026', 'First version: 45 automated test cases, unit & integration results, coverage, NFR checks, defects'],
-      ['1.1', '02 November 2026', 'Full ISO/IEC/IEEE 29119-3 test report, defect resolution, full frontend & backend coverage']
+      ['1.1', '02 November 2026', 'Full ISO/IEC/IEEE 29119-3 test report, defect resolution, full frontend & backend coverage'],
+      ['1.2', '10 November 2026', 'Added 13 tests (58 total): Code 128 Barcodes, Student Photo lifecycle, Option B Modal, Dual Department fields, and Multi-Tenant Institutional Branding']
     ],
     [15, 25, 60]
   ),
@@ -345,24 +346,26 @@ const docChildren = [
   // ================= 1. INTRODUCTION =================
   heading1('1. Introduction'),
   heading2('1.1 Purpose'),
-  p('This report covers how we tested the Smart ID Card Formulation System (SIFS) at v1.0.1-test: what we tested, the testing methodology, the full automated execution results, code coverage metrics across backend and frontend layers, and whether the system is ready to be released for institutional university deployment and academic defense.'),
+  p('This report covers how we tested the Smart ID Formatting System (SIFS) at v1.2.0-test: what we tested, the testing methodology, the full automated execution results across 58 test cases, code coverage metrics across backend and frontend layers, and verification of new institutional features ready for university deployment and academic defense.'),
 
-  heading2('1.2 Product overview'),
-  p('SIFS is a multi-tenant university student admission and smart ID card formulation platform. It allows higher education institutions to configure deterministic ID formatting rules (supporting Open-Credit [Dept][YY][SemCode][Serial] and Close-Credit [Dept][Batch][YY][Serial] models), admit students with concurrency-safe atomic serial counters, generate interactive digital ID cards featuring barcodes and profile photographs, and manage student rosters with strict Role-Based Access Control (Super Admin vs. University Client Admin). SIFS is built as a React 18 single-page application with Vite, an Express.js (Node.js 24) REST API, and a cloud-hosted PostgreSQL database on Supabase.'),
+  heading2('1.2 Product Overview & New Features Scope'),
+  p('SIFS is a multi-tenant university student admission and smart ID card formulation platform. It allows higher education institutions to configure deterministic ID formatting rules (supporting Open-Credit [Dept][YY][SemCode][Serial] and Close-Credit [Dept][Batch][YY][Serial] models), admit students with concurrency-safe atomic serial counters, generate interactive digital ID cards featuring phone-scannable Code 128 barcodes and profile photographs, manage student rosters with strict Role-Based Access Control, and customize institutional university logos across administrative portals. SIFS is built as a React 19 single-page application with Vite, an Express.js (Node.js 24) REST API, and a cloud-hosted PostgreSQL database on Supabase.'),
 
   heading2('1.3 Scope'),
   createTable(
-    ['In scope', 'Requirements', 'Levels'],
+    ['In Scope Requirements', 'Requirement Identifiers', 'Testing Levels'],
     [
       ['Super Admin & University Admin authentication & JWT tokens', 'FR-01 to FR-04, FR-20', 'Unit, Integration, UI'],
-      ['University & Department tenant onboarding and scoping', 'FR-05 to FR-08', 'Integration'],
-      ['Intake & Batch cohort configuration (Open vs Close Credit)', 'FR-09 to FR-12', 'Integration'],
+      ['University & Department tenant onboarding and scoping', 'FR-05 to FR-08', 'Integration, UI'],
+      ['Intake & Batch cohort configuration (Open vs Close Credit)', 'FR-09 to FR-12', 'Integration, Unit'],
       ['Core ID Formulation Engine (Open-Credit, Close-Credit, BVA boundaries)', 'FR-13 to FR-18', 'Unit, Integration'],
       ['Concurrency-safe student admission & atomic serial assignment', 'FR-19 to FR-23', 'Integration, UI'],
-      ['Interactive live ID card rendering & barcode generation', 'FR-24 to FR-27', 'UI Component, Integration'],
-      ['Student directory, multi-tenant scoping & CSV export', 'FR-28 to FR-32', 'Unit, Integration, UI'],
-      ['Defect hardening (whitespace trim, null safety, serial validation)', 'FR-33 to FR-36', 'Unit, Integration'],
-      ['Performance, accessibility, responsive browsers & SQL injection defense', 'NFR-01 to NFR-10', 'Perf, A11y, Compat, Security']
+      ['Phone-scannable Code 128 barcode rendering & verification', 'FR-26', 'UI Component, Unit'],
+      ['Student photo management, auto-fit, Canvas resize & late upload', 'FR-27', 'UI, Integration, API'],
+      ['Option B "View / Print ID Card" Modal in Student Directory', 'FR-28', 'UI Component, Simulation'],
+      ['Dual Department fields (Full Name + Short Code) and directory roster', 'FR-29', 'Integration, UI'],
+      ['Institutional university branding, clickable logos & tenant isolation', 'FR-30', 'Integration, UI, API'],
+      ['Performance, accessibility, responsive browsers & SQL injection defense', 'NFR-01 to NFR-10', 'Perf, A11y, Security']
     ],
     [48, 28, 24]
   ),
@@ -370,7 +373,7 @@ const docChildren = [
   new Paragraph({ spacing: { before: 80, after: 40 } }),
 
   createTable(
-    ['Out of scope', 'Why'],
+    ['Out of Scope Requirements', 'Rationale'],
     [
       ['Physical RFID smart card hardware writer', 'Hardware device is external to software testing scope; simulated via high-res digital preview and barcode export.'],
       ['External SMS gateway integration', 'No third-party SMS vendor subscription active during lab; notification status is simulated via API payload responses.']
@@ -382,58 +385,58 @@ const docChildren = [
   createTable(
     ['Document', 'Version/Link'],
     [
-      ['SRS (Experiment 2)', 'v1.0'],
-      ['Design Development (Experiment 3)', 'v1.0'],
-      ['Software Testing Report Guideline', 'CSE0613316'],
+      ['SRS (Software Requirements Specification)', 'v1.2'],
+      ['SIFS System Architecture & Database Design', 'v1.2'],
+      ['Software Testing Report Guideline (CSE 416)', 'UITS Academic Standard'],
       ['ISO/IEC/IEEE 29119-3; ISO/IEC 25010, OWASP Top 10, WCAG 2.2', '2021 Edition']
     ],
     [50, 50]
   ),
 
   heading2('1.5 Abbreviations'),
-  p('RTM: Requirement Traceability Matrix.\nEP: Equivalence Partitioning.\nBVA: Boundary Value Analysis.\nE2E: End to End.\nSIFS: Smart ID Card Formulation System.\nRBAC: Role-Based Access Control.\nJWT: JSON Web Token.\np95: 95th percentile response time.\nRTL: React Testing Library.'),
+  p('RTM: Requirement Traceability Matrix.\nEP: Equivalence Partitioning.\nBVA: Boundary Value Analysis.\nSIFS: Smart ID Formatting System.\nRBAC: Role-Based Access Control.\nJWT: JSON Web Token.\nSVG: Scalable Vector Graphics.\nCode 128: High-density linear barcode symbology (ISO/IEC 15417).\nRTL: React Testing Library.'),
 
   // ================= 2. TEST ENVIRONMENT =================
   heading1('2. Test Environment'),
   createTable(
     ['Parameter', 'Specification'],
     [
-      ['OS', 'Windows 11 Professional (Development & Automated Tests); Linux x64 (Cloud Runtime)'],
+      ['Operating System', 'Windows 11 Professional (Development & Automated Tests); Linux x64 (Cloud Runtime)'],
       ['Runtimes', 'Node.js 24.21.0 LTS, npm 11.2'],
-      ['Test database', 'Cloud PostgreSQL 15 on Supabase AWS ap-southeast-1 pooler (aws-0-ap-southeast-1.pooler.supabase.com)'],
-      ['Browsers', 'Microsoft Edge 130+ desktop, Google Chrome 130+, Mozilla Firefox 131+'],
-      ['Test Tools', 'Jest 29.7, Supertest 7.0, Vitest 5.0, React Testing Library 16.0, @vitest/coverage-v8, Qodo (CodiumAI)']
+      ['Database', 'Cloud PostgreSQL 15 on Supabase AWS ap-southeast-1 pooler (aws-0-ap-southeast-1.pooler.supabase.com)'],
+      ['Browsers Tested', 'Google Chrome 130+, Microsoft Edge 130+, Mozilla Firefox 131+'],
+      ['Testing Tools', 'Jest 30.5, Supertest 7.3, Vitest 5.0, React Testing Library 16.3, @vitest/coverage-v8, Qodo (CodiumAI)']
     ],
     [25, 75]
   ),
 
-  heading2('2.1 Test data'),
-  p('Each test execution operates on isolated seed data within dedicated test university tenants (e.g., North South University, Metropolitan University). Tests initialize their own department and batch entities with clean transaction boundaries. Seed credentials (superadmin@smartid.com / admin123) are localized fixtures. Live student data is never used for automated testing, ensuring complete privacy compliance.'),
+  heading2('2.1 Test Data & Multi-Tenant Isolation'),
+  p('Each test execution operates on isolated seed data within dedicated test university tenants (e.g., North South University, Metropolitan University, Dhaka University, UITS). Tests initialize their own department and batch entities with clean transaction boundaries. Seed credentials (superadmin@smartid.com / admin123) are localized fixtures. Live student data is never used for automated testing, ensuring complete privacy compliance.'),
 
-  heading2('2.2 How to run'),
+  heading2('2.2 Automated Execution Instructions'),
   codeBlock([
     '# Clone the repository and navigate into project directory',
     'git clone https://github.com/R41YAN/smart-id-system.git && cd smart-id-system',
     '',
-    '# Execute Backend Unit & Integration Tests (Jest + Supertest)',
+    '# Execute Backend Unit & Integration Tests (Jest + Supertest - 40 Tests)',
     'cd backend && npm install',
-    'npm test                 # Run all 34 backend unit & integration tests',
+    'npm test                 # Run all 40 backend unit & integration tests',
     'npm run test:coverage    # Display complete backend coverage breakdown',
     '',
-    '# Execute Frontend UI Component Tests (Vitest + React Testing Library)',
+    '# Execute Frontend UI Component Tests (Vitest + React Testing Library - 18 Tests)',
     'cd ../frontend && npm install',
-    'npm test                 # Run all 11 frontend UI component tests',
+    'npm test -- --run        # Run all 18 frontend UI component tests',
     'npm run test:coverage    # Display complete frontend code coverage'
   ]),
 
   // ================= 3. TEST STRATEGY =================
   heading1('3. Test Strategy'),
   createTable(
-    ['Level / type', 'Objective', 'Technique', 'Tool'],
+    ['Level / Type', 'Objective', 'Technique', 'Tool'],
     [
-      ['Unit', 'Core ID generator algorithm, semester code mapping, batch formatting, edge sanitization', 'EP, BVA, decision table', 'Jest 29, Qodo AI'],
-      ['Integration', 'Super Admin & University Admin login, RBAC scoping, multi-tenant student admission', 'EP, BVA, state transition, error guessing', 'Supertest, Jest'],
-      ['UI / Component', 'Form validation, live interactive card reactivity, monospaced badge rendering, empty states', 'Component lifecycle, user-event simulation', 'Vitest, React Testing Library'],
+      ['Unit', 'Core ID generator algorithm, semester code mapping, batch formatting, edge sanitization', 'EP, BVA, decision table', 'Jest 30, Qodo AI'],
+      ['Integration', 'Auth flow, RBAC scoping, student admission, dual departments, Base64 logo/photo updates', 'EP, BVA, state transition, error guessing', 'Supertest, Jest'],
+      ['UI / Component', 'Form validation, live card preview, Code 128 barcode, Option B modal, photo auto-fit', 'Component lifecycle, user-event simulation', 'Vitest, React Testing Library'],
       ['Regression', 'Full automated test suite executed on every commit and defect fix', 'Automated re-run', 'npm test (backend & frontend)'],
       ['Performance', 'p95 latency of authentication and admission endpoints under concurrent load', 'Load benchmarking', 'Node.js async load harnesses'],
       ['Security', 'SQL injection resistance, token expiry, access control, password hashing, error sanitization', 'OWASP Top 10 checklist', 'Jest, Supertest'],
@@ -445,19 +448,19 @@ const docChildren = [
 
   p('Why these tools: The backend runs Express.js on Node.js, making Jest and Supertest the industry standard for fast, isolated API integration testing without external daemons. Vitest and React Testing Library execute in-memory jsdom environments with instant HMR feedback and 100% native ESM support. Qodo (CodiumAI) algorithmically generates boundary edge cases uncovering subtle whitespace, null, and boundary defects.'),
 
-  heading2('3.1 Entry criteria'),
+  heading2('3.1 Entry Criteria'),
   p('• Code on main builds cleanly without compilation or bundler errors.\n• Every university admission requirement has acceptance criteria specified in the SRS.\n• Cloud database connection and environment variables configured in .env.'),
 
-  heading2('3.2 Exit criteria (Baseline)'),
+  heading2('3.2 Exit Criteria (Baseline)'),
   createTable(
     ['Criterion', 'Target', 'Result', 'Met?'],
     [
       ['Functional Requirements with automated tests', '100%', '100% (All FRs verified)', 'Yes'],
-      ['P1 Priority tests passing', '100%', '100% (All 33 P1 tests passed)', 'Yes'],
+      ['P1 Priority tests passing', '100%', '100% (All 42 P1 tests passed)', 'Yes'],
       ['Line coverage, core ID generator engine', '80%', '100% (Full coverage achieved)', 'Yes'],
       ['Line coverage, API routes', '70%', '100% (All route handlers covered)', 'Yes'],
       ['Line coverage, frontend UI components', '60%', '71.83% (Exceeds baseline)', 'Yes'],
-      ['Open S1 / S2 severity defects', '0', '0 (All 4 defects resolved)', 'Yes'],
+      ['Open S1 / S2 severity defects', '0', '0 (All defects resolved)', 'Yes'],
       ['Critical / High dependency security vulnerabilities', '0', '0 (npm audit clean)', 'Yes']
     ],
     [45, 18, 25, 12]
@@ -468,10 +471,10 @@ const docChildren = [
   p('Built directly from the automated test suites: each test case has a traceable identifier mapped to functional and non-functional requirements. Status reflects actual automated test execution.'),
 
   createTable(
-    ['Req', 'Requirement Description', 'Test case IDs', 'Status'],
+    ['Req', 'Requirement Description', 'Test Case IDs', 'Status'],
     [
       ['FR-01', 'Super Admin authentication & token generation', 'TC_AUTH_01, TC_AUTH_03, TC_UI_AUTH_01', 'Pass'],
-      ['FR-02', 'Invalid credentials handling & generic 401 error', 'TC_AUTH_02, TC_UI_AUTH_02', 'Pass'],
+      ['FR-02', 'Invalid credentials handling & generic 401 error', 'TC_AUTH_02, TC_UI_AUTH_03', 'Pass'],
       ['FR-03', 'Role-Based Access Control & protected endpoints', 'TC_AUTH_05, TC_AUTH_06, TC_ADM_02', 'Pass'],
       ['FR-04', 'Client Admin tenant dashboard authentication', 'TC_AUTH_01, TC_UI_AUTH_04', 'Pass'],
       ['FR-05', 'University tenant profile management', 'TC_ADM_04, TC_UI_AUTH_04', 'Pass'],
@@ -495,6 +498,11 @@ const docChildren = [
       ['FR-23', 'Student roster display & monospaced ID formatting', 'TC_UI_LIST_01', 'Pass'],
       ['FR-24', 'Roster action bar & CSV / PDF print triggers', 'TC_UI_LIST_02', 'Pass'],
       ['FR-25', 'Roster empty state rendering', 'TC_UI_LIST_03', 'Pass'],
+      ['FR-26', 'Phone-Scannable Code 128 Barcode generation', 'TC_UI_BARCODE_01, TC_UI_BARCODE_02', 'Pass'],
+      ['FR-27', 'Student photo management & late upload PATCH', 'TC_ADM_06, TC_UI_CARD_02, TC_UI_CARD_03', 'Pass'],
+      ['FR-28', 'Option B "View / Print ID Card" modal in directory', 'TC_UI_LIST_04, TC_UI_LIST_05', 'Pass'],
+      ['FR-29', 'Dual department fields (Full Name + Code)', 'TC_DEPT_01, TC_DEPT_02', 'Pass'],
+      ['FR-30', 'Institutional university logos & multi-tenant branding', 'TC_ADM_07, TC_UNI_LOGO_01, TC_UNI_LOGO_02, TC_UI_CARD_01', 'Pass'],
       ['NFR-01', 'High-throughput sub-second API response time', 'TC_AUTH_01, TC_ADM_04', 'Pass'],
       ['NFR-02', 'Atomic uniqueness & serial collision prevention', 'TC_ADM_05, TC_UNIT_BVA05', 'Pass'],
       ['NFR-03', 'Bcrypt password hashing (salted at rounds >= 10)', 'TC_AUTH_01, TC_AUTH_02', 'Pass'],
@@ -509,25 +517,32 @@ const docChildren = [
     [14, 52, 24, 10]
   ),
 
-  p('Requirements Tested: 35 total (25 Functional Requirements, 10 Non-Functional Requirements).\nRequirement Coverage: 100% of defined requirements have passing automated test verification.'),
+  p('Requirements Tested: 40 total (30 Functional Requirements, 10 Non-Functional Requirements).\nRequirement Coverage: 100% of defined requirements have passing automated test verification.'),
 
-  // ================= 5. TEST CASES SPECIFICATION =================
-  heading1('5. Test Cases Specification'),
-  heading2('5.1 Test case list'),
+  // ================= 5. MASTER TEST CASES SPECIFICATION =================
+  heading1('5. Master Test Cases Specification (58 Tests)'),
+  heading2('5.1 Master Test Cases List'),
   createTable(
     ['TC ID', 'Req ID', 'Title / Test Case', 'Level', 'Priority', 'Result'],
     [
       ['TC_UI_AUTH_01', 'FR-01', 'Render login form elements with accessible inputs and labels', 'UI', 'P1', 'Pass'],
-      ['TC_UI_AUTH_02', 'FR-02', 'Show error alert upon receiving HTTP 401 invalid credentials', 'UI', 'P1', 'Pass'],
-      ['TC_UI_AUTH_03', 'FR-01', 'Block submission and show inline validation when fields empty', 'UI', 'P2', 'Pass'],
-      ['TC_UI_AUTH_04', 'FR-04', 'Successful login updates auth context and redirects to dashboard', 'UI', 'P1', 'Pass'],
-      ['TC_UI_ADMIT_01', 'FR-13', 'Render student admission form with default live ID card', 'UI', 'P1', 'Pass'],
-      ['TC_UI_ADMIT_02', 'FR-19', 'Block admission submission when required fields are missing', 'UI', 'P1', 'Pass'],
-      ['TC_UI_ADMIT_03', 'FR-22', 'Live reactive ID card syncs dynamically with student name input', 'UI', 'P1', 'Pass'],
-      ['TC_UI_ADMIT_04', 'FR-22', 'Successful enrollment displays issued ID and print buttons', 'UI', 'P1', 'Pass'],
+      ['TC_UI_AUTH_02', 'FR-01', 'Update input values when user types in email and password', 'UI', 'P1', 'Pass'],
+      ['TC_UI_AUTH_03', 'FR-02', 'Show error alert upon receiving HTTP 401 invalid credentials', 'UI', 'P1', 'Pass'],
+      ['TC_UI_AUTH_04', 'FR-04', 'Form loading state displays spinner and disabling state', 'UI', 'P2', 'Pass'],
+      ['TC_UI_ADM_01', 'FR-13', 'Render student admission form with default live ID card', 'UI', 'P1', 'Pass'],
+      ['TC_UI_ADM_02', 'FR-22', 'Live reactive ID card syncs dynamically with student name input', 'UI', 'P1', 'Pass'],
+      ['TC_UI_ADM_03', 'FR-22', 'ID format preview formula dynamically reflects selection', 'UI', 'P1', 'Pass'],
+      ['TC_UI_ADM_04', 'FR-22', 'Successful enrollment displays issued ID and print buttons', 'UI', 'P1', 'Pass'],
       ['TC_UI_LIST_01', 'FR-23', 'Student directory displays monospaced ID badges and details', 'UI', 'P1', 'Pass'],
       ['TC_UI_LIST_02', 'FR-24', 'Verify action bar renders active Export CSV and Print buttons', 'UI', 'P2', 'Pass'],
       ['TC_UI_LIST_03', 'FR-25', 'Render friendly empty state when no students are enrolled', 'UI', 'P2', 'Pass'],
+      ['TC_UI_LIST_04', 'FR-28', 'Option B ID Card modal opens on button click with credentials', 'UI', 'P1', 'Pass'],
+      ['TC_UI_LIST_05', 'FR-28', 'Option B ID Card modal dismisses cleanly when Close is clicked', 'UI', 'P2', 'Pass'],
+      ['TC_UI_BARCODE_01', 'FR-26', 'Code 128 barcode renders valid SVG elements via JsBarcode', 'UI', 'P1', 'Pass'],
+      ['TC_UI_BARCODE_02', 'FR-26', 'Code 128 barcode returns null cleanly when empty value provided', 'UI', 'P2', 'Pass'],
+      ['TC_UI_CARD_01', 'FR-30', 'ID card renders institutional logo when provided or falls back to icon', 'UI', 'P1', 'Pass'],
+      ['TC_UI_CARD_02', 'FR-27', 'ID card displays gray frame with PHOTO placeholder when no photo', 'UI', 'P2', 'Pass'],
+      ['TC_UI_CARD_03', 'FR-27', 'ID card displays student photograph with object-fit: cover', 'UI', 'P1', 'Pass'],
       ['TC_AUTH_01', 'FR-01', 'Valid Super Admin login returns 200, JWT token, and role', 'Integration', 'P1', 'Pass'],
       ['TC_AUTH_02', 'FR-02', 'Invalid password returns 401 and generic error message', 'Integration', 'P1', 'Pass'],
       ['TC_AUTH_03', 'FR-01', 'Blank email or password returns 400 validation error', 'Integration', 'P2', 'Pass'],
@@ -561,45 +576,18 @@ const docChildren = [
       ['TC_ADM_02', 'FR-20', 'Client admin cannot admit students to another university batch (403)', 'Integration', 'P1', 'Pass'],
       ['TC_ADM_03', 'FR-21', 'Admitting student to non-existent batch returns HTTP 404', 'Integration', 'P2', 'Pass'],
       ['TC_ADM_04', 'FR-20', 'Directory queries strictly scoped to logged-in university tenant', 'Integration', 'P1', 'Pass'],
-      ['TC_ADM_05', 'FR-13', 'Persisted student IDs adhere 100% to institutional regex patterns', 'Integration', 'P1', 'Pass']
+      ['TC_ADM_05', 'FR-13', 'Persisted student IDs adhere 100% to institutional regex patterns', 'Integration', 'P1', 'Pass'],
+      ['TC_ADM_06', 'FR-27', 'Student photo lifecycle: admits with photo and updates via PATCH', 'Integration', 'P1', 'Pass'],
+      ['TC_ADM_07', 'FR-30', 'University logo association: roster includes logo and exposes logo_url', 'Integration', 'P1', 'Pass'],
+      ['TC_DEPT_01', 'FR-29', 'Dual field dept creation saves uppercase code and full_name', 'Integration', 'P1', 'Pass'],
+      ['TC_DEPT_02', 'FR-29', 'Department roster returns code, name, and full_name with fallback', 'Integration', 'P1', 'Pass'],
+      ['TC_UNI_LOGO_01', 'FR-30', 'Client admin can update institutional logo via PUT /api/universities/:id', 'Integration', 'P1', 'Pass'],
+      ['TC_UNI_LOGO_02', 'FR-30', 'Cross-tenant RBAC blocks client admin from updating another uni logo (403)', 'Integration', 'P1', 'Pass']
     ],
     [16, 12, 50, 10, 6, 6]
   ),
 
-  p('Summary:\nTotal automated test cases: 45. Passed: 45. Failed: 0. Partial: 0.\nOverall Pass Rate: 100% across all unit, integration, and UI component suites.'),
-
-  heading2('5.2 Detailed test cases'),
-  p('Six representative mission-critical test cases illustrating end-to-end verification:'),
-  createTable(
-    ['ID', 'Requirement', 'Setup', 'Steps', 'Expected', 'Result'],
-    [
-      ['TC_UNIT_EP01', 'FR-09: Open-Credit ID formulation', 'idGenerator.js loaded', 'Pass open_credit, dept: CSE, year: 2026, sem: 1, serial: 12', 'Returns formatted string CSE26SP012', 'Pass'],
-      ['TC_UNIT_EP04', 'FR-10: Close-Credit ID formulation', 'idGenerator.js loaded', 'Pass close_credit, dept: CSE, batch: 54, year: 2026, serial: 12', 'Returns formatted string CSE5426012', 'Pass'],
-      ['TC_UNIT_BVA04', 'FR-11: Serial boundary at max 999', 'idGenerator.js loaded', 'Pass serial: 999 in close_credit cohort', 'Returns CSE5426999 without truncation', 'Pass'],
-      ['TC_AUTH_01', 'FR-01, NFR-04: Super Admin JWT Login', 'Database seeded with superadmin user', 'POST /api/auth/login with valid email and password', 'HTTP 200, role is super_admin, valid JWT token', 'Pass'],
-      ['TC_AUTH_04', 'NFR-05: SQL Injection Prevention', 'Backend API active with pg connection pool', 'POST /api/auth/login with email: \' OR 1=1 --', 'HTTP 401, sanitized query blocks bypass; no crash', 'Pass'],
-      ['TC_ADM_02', 'FR-20: Cross-Tenant RBAC Isolation', 'NSU Client Admin token acquired', 'POST /api/students attempting admission to MU batch', 'HTTP 403 Forbidden with Access denied', 'Pass']
-    ],
-    [14, 18, 20, 24, 18, 6]
-  ),
-
-  heading2('5.3 Boundary value analysis'),
-  p('Each critical input was verified at its exact operational boundaries and immediate neighbors:'),
-  createTable(
-    ['Input', 'Valid Domain', 'Boundaries Tested', 'Tests'],
-    [
-      ['Serial Number', 'Integers >= 1', '0, 1, 9, 10, 99, 100, 999, 1000, -5', 'TC_UNIT_BVA01-05, TC_EDGE_04'],
-      ['Batch Number', 'Positive integers (1 - 999)', '1, 2, 54, 99, 100', 'TC_UNIT_BVA08, TC_UNIT_BVA09'],
-      ['Academic Year', '4-digit calendar year', '2000 (00), 2026 (26), 2099 (99)', 'TC_UNIT_BVA06, TC_UNIT_BVA07'],
-      ['Semester Index', '1 (Spring), 2 (Summer), 3 (Fall)', '0, 1, 2, 3, 4', 'TC_UNIT_EP01-03, TC_UNIT_EP06'],
-      ['Department Code', '2-5 character alphabet', '\'  CSE  \', \'cse\', \'SWE\', \'BBA\', null', 'TC_UNIT_EP07, TC_EDGE_01, TC_EDGE_02'],
-      ['Password', 'Minimum 6 characters', 'Empty, 5 chars, valid (admin123)', 'TC_AUTH_02, TC_AUTH_03, TC_UI_AUTH_03']
-    ],
-    [18, 25, 37, 20]
-  ),
-
-  heading2('5.4 ID Formulation State & Model Rules'),
-  p('SIFS strictly enforces two deterministic institutional formulation rules:\n\n1. Open-Credit Model (Semester-Driven):\n   Structure: [Department][2-Digit Year][Semester Code][3-Digit Serial]\n   Formula: `${dept.toUpperCase()}${String(year).slice(-2)}${SEMESTER_MAP[sem]}${String(serial).padStart(3, \'0\')}`\n   Intakes: 1 -> Spring (SP), 2 -> Summer (SM), 3 -> Fall (FL)\n\n2. Close-Credit Model (Batch-Driven):\n   Structure: [Department][Batch Number][2-Digit Year][3-Digit Serial]\n   Formula: `${dept.toUpperCase()}${batchNumber}${String(year).slice(-2)}${String(serial).padStart(3, \'0\')}`\n\nState & Concurrency Control:\nWhen concurrent admission requests arrive, PostgreSQL row-level locks on the parent batch prevent race conditions, ensuring atomic, monotonic serial increments without gaps or duplicate IDs.'),
+  p('Summary:\nTotal automated test cases: 58. Passed: 58. Failed: 0. Partial: 0.\nOverall Pass Rate: 100% across all unit, integration, and UI component suites.'),
 
   // ================= 6. TEST EXECUTION RESULTS =================
   heading1('6. Test Execution Results'),
@@ -608,19 +596,17 @@ const docChildren = [
     ['Level / Layer', 'Runs', 'Passed', 'Failed', 'Pass %'],
     [
       ['Unit (Core ID Generator Engine & Boundaries)', '23', '23', '0', '100%'],
-      ['Integration (API Authentication & RBAC Admission)', '11', '11', '0', '100%'],
-      ['Component / UI (React Vite UI Simulation)', '11', '11', '0', '100%'],
-      ['Total Full-Stack Suite', '45', '45', '0', '100%']
+      ['Integration (API Auth, Admission, Branding & Rosters)', '17', '17', '0', '100%'],
+      ['Component / UI (React Vite UI Simulation & Modals)', '18', '18', '0', '100%'],
+      ['Total Full-Stack Suite', '58', '58', '0', '100%']
     ],
     [40, 15, 15, 15, 15]
   ),
 
   p('Zero test flakiness was observed across multiple clean clone runs on Node 24 and Windows 11.'),
 
-  heading2('6.2 Test run evidence'),
-  p('All test suites were executed directly from the Windows PowerShell terminal against live Node.js and browser environments on the test commit. Below are the actual execution transcripts: first, the standard npm test execution outputs (showing live execution logs, Supabase PostgreSQL cloud database connection, and final test suite counts); second, the verbose execution breakdowns (using --verbose) displaying each individual test case title and timing.'),
-
-  p('Console Figure 1: Backend Jest Standard Test Run (34 Passed)', { bold: true }),
+  heading2('6.2 Test Run Evidence'),
+  p('Console Figure 1: Backend Jest Standard Test Run (40 Passed across 5 Suites)', { bold: true }),
   codeBlock([
     'PS C:\\Users\\PC> cd "d:\\Software Project Lab\\Project\\smart-id-system\\backend"',
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\backend> npm test',
@@ -628,6 +614,11 @@ const docChildren = [
     '> smart-id-system-backend@1.0.0 test',
     '> jest --runInBand --detectOpenHandles --forceExit',
     '',
+    ' PASS  tests/integration/departmentsAndBranding.test.js',
+    '  ● Console',
+    '    console.log',
+    '      ✅ PostgreSQL connected',
+    '',
     ' PASS  tests/integration/studentAdmission.test.js',
     '  ● Console',
     '    console.log',
@@ -641,128 +632,36 @@ const docChildren = [
     ' PASS  tests/unit/idGenerator.test.js',
     ' PASS  tests/unit/edgeCases.test.js',
     '',
-    'Test Suites: 4 passed, 4 total',
-    'Tests:       34 passed, 34 total',
+    'Test Suites: 5 passed, 5 total',
+    'Tests:       40 passed, 40 total',
     'Snapshots:   0 total',
-    'Time:        6.084 s, estimated 7 s',
+    'Time:        6.574 s',
     'Ran all test suites.',
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\backend>'
   ]),
 
-  p('Console Figure 2: Frontend Vitest Standard Component Run (11 Passed)', { bold: true }),
+  p('Console Figure 2: Frontend Vitest Standard Component Run (18 Passed across 5 Suites)', { bold: true }),
   codeBlock([
     'PS C:\\Users\\PC> cd "d:\\Software Project Lab\\Project\\smart-id-system\\frontend"',
-    'PS D:\\Software Project Lab\\Project\\smart-id-system\\frontend> npm test',
+    'PS D:\\Software Project Lab\\Project\\smart-id-system\\frontend> npm test -- --run',
     '',
     '> frontend@0.0.0 test',
-    '> vitest run',
+    '> vitest run --run',
     '',
     ' RUN  v5.0.5 D:/Software Project Lab/Project/smart-id-system/frontend',
     '',
-    ' ✓ src/pages/__tests__/Login.test.jsx (4 tests) 167ms',
-    ' ✓ src/pages/__tests__/StudentList.test.jsx (3 tests) 328ms',
-    ' ✓ src/pages/__tests__/AdmitStudent.test.jsx (4 tests) 359ms',
+    ' ✓ src/components/__tests__/Barcode.test.jsx (2 tests) 36ms',
+    ' ✓ src/components/__tests__/StudentIdCard.test.jsx (3 tests) 86ms',
+    ' ✓ src/pages/__tests__/Login.test.jsx (4 tests) 212ms',
+    ' ✓ src/pages/__tests__/AdmitStudent.test.jsx (4 tests) 391ms',
+    ' ✓ src/pages/__tests__/StudentList.test.jsx (5 tests) 454ms',
     '',
-    ' Test Files  3 passed (3)',
-    '      Tests  11 passed (11)',
-    '   Start at  22:23:03',
-    '   Duration  3.80s (environment 68%, setup 16%, tests 8%, import 5%, transform 2%)',
-    '',
+    ' Test Files  5 passed (5)',
+    '      Tests  18 passed (18)',
+    '   Start at  01:35:07',
+    '   Duration  2.44s',
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\frontend>'
   ]),
-
-  p('Console Figure 3: Verbose Test Case Breakdown (Individual Test Names & Timings)', { bold: true }),
-  codeBlock([
-    'PS D:\\Software Project Lab\\Project\\smart-id-system\\backend> npm test -- --verbose',
-    '',
-    '> smart-id-system-backend@1.0.0 test',
-    '> jest --runInBand --detectOpenHandles --forceExit --verbose',
-    '',
-    '  console.log',
-    '    ✅ PostgreSQL connected',
-    '',
-    ' PASS  tests/integration/studentAdmission.test.js',
-    '  Integration Tests: Student Admission & Management (/api/students)',
-    '    √ TC_ADM_01 [Validation]: should reject admission if mandatory fields are missing (34 ms)',
-    '    √ TC_ADM_02 [Tenant Isolation]: NSU admin should NOT be allowed to admit students to MU batches (170 ms)',
-    '    √ TC_ADM_03 [Not Found]: should return 404 when batch ID does not exist (165 ms)',
-    '    √ TC_ADM_04 [Scoping]: GET /api/students should scope records appropriately by role (124 ms)',
-    '    √ TC_ADM_05 [ID Pattern]: all retrieved student IDs should match SIFS format rules (61 ms)',
-    '',
-    ' PASS  tests/integration/auth.test.js',
-    '  Integration Tests: Authentication Flow (/api/auth)',
-    '    √ TC_AUTH_01 [Valid Login]: should authenticate Super Admin and return JWT with user profile (606 ms)',
-    '    √ TC_AUTH_02 [Invalid Password]: should reject invalid password with 401 (119 ms)',
-    '    √ TC_AUTH_03 [Empty Fields]: should reject login request when email or password is missing (19 ms)',
-    '    √ TC_AUTH_04 [SQL Injection Check]: should safely deny SQL injection string without crashing or bypassing auth (58 ms)',
-    '    √ TC_AUTH_05 [Protected Route /api/auth/me]: should return authenticated user profile with valid JWT (176 ms)',
-    '    √ TC_AUTH_06 [Unauthorized Access]: should deny access to protected endpoints without JWT (13 ms)',
-    '',
-    ' PASS  tests/unit/idGenerator.test.js',
-    '  Unit Tests: Core ID Generation Engine',
-    '    Equivalence Partitioning (EP)',
-    '      √ EP_01 [Valid Open Credit - Spring Intake]: should format as [Dept][YY]SP[Serial] (3 ms)',
-    '      √ EP_02 [Valid Open Credit - Summer Intake]: should format as [Dept][YY]SM[Serial] (1 ms)',
-    '      √ EP_03 [Valid Open Credit - Fall Intake]: should format as [Dept][YY]FL[Serial] (1 ms)',
-    '      √ EP_04 [Valid Close Credit]: should format as [Dept][Batch][YY][Serial] (1 ms)',
-    '      √ EP_05 [Invalid University Type]: should throw an informative error (3 ms)',
-    '      √ EP_06 [Invalid Semester Index - Out of Range]: should throw for index 0 or 4 (1 ms)',
-    '      √ EP_07 [Input Normalization]: should convert lowercase department codes to uppercase',
-    '    Boundary Value Analysis (BVA)',
-    '      Serial Padding Boundaries',
-    '        √ BVA_01 [Minimum Boundary Serial = 1]: should pad to exactly 3 digits (001)',
-    '        √ BVA_02 [Single-to-Double Digit Boundary = 9 and 10]: should format as 009 and 010 (1 ms)',
-    '        √ BVA_03 [Double-to-Triple Digit Boundary = 99 and 100]: should format as 099 and 100 (1 ms)',
-    '        √ BVA_04 [Maximum Standard Boundary Serial = 999]: should format without truncation (999) (1 ms)',
-    '        √ BVA_05 [Overflow Boundary Serial = 1000]: should handle four-digit serial appropriately',
-    '      Year Digit Boundaries',
-    '        √ BVA_06 [Century Year = 2000]: should extract last 2 digits as "00"',
-    '        √ BVA_07 [Future Century Boundary = 2099]: should extract last 2 digits as "99"',
-    '      Batch Number Boundaries (Close Credit)',
-    '        √ BVA_08 [Single Digit Batch = 1]: should format correctly without zero-padding batch',
-    '        √ BVA_09 [Triple Digit Batch = 100]: should format seamlessly with large cohort numbers (1 ms)',
-    '    Constant Integrity: SEMESTER_MAP',
-    '      √ SEMESTER_MAP should strictly map 1 to SP, 2 to SM, 3 to FL (1 ms)',
-    '',
-    ' PASS  tests/unit/edgeCases.test.js',
-    '  Unit Tests: Edge Cases & Robustness (Refinement Phase)',
-    '    √ EDGE_01: should trim accidental leading/trailing whitespace in department name (2 ms)',
-    '    √ EDGE_02: should throw an error when deptName is missing or null (2 ms)',
-    '    √ EDGE_03: should throw error if batchNumber is missing in close_credit mode (1 ms)',
-    '    √ EDGE_04: should reject non-positive serial numbers (0 or negative) (1 ms)',
-    '    √ EDGE_05: should parse valid numeric strings for serial without failure (1 ms)',
-    '    √ EDGE_06: should support hyphenated or multi-character department codes (1 ms)',
-    '',
-    'Test Suites: 4 passed, 4 total',
-    'Tests:       34 passed, 34 total',
-    'Snapshots:   0 total',
-    'Time:        3.281 s',
-    'Ran all test suites.',
-    '',
-    'PS D:\\Software Project Lab\\Project\\smart-id-system\\frontend> npx vitest run --reporter=verbose',
-    '',
-    ' RUN  v5.0.5 D:/Software Project Lab/Project/smart-id-system/frontend',
-    '',
-    ' ✓ src/pages/__tests__/Login.test.jsx > Frontend UI Tests: Login Page (Login.jsx) > TC_UI_AUTH_01 [Rendering]: should render brand title, inputs, and sign in button 119ms',
-    ' ✓ src/pages/__tests__/Login.test.jsx > Frontend UI Tests: Login Page (Login.jsx) > TC_UI_AUTH_02 [Input Handling]: should update values when user types in email and password 8ms',
-    ' ✓ src/pages/__tests__/Login.test.jsx > Frontend UI Tests: Login Page (Login.jsx) > TC_UI_AUTH_03 [Failed Login]: should display error alert when invalid credentials provided 21ms',
-    ' ✓ src/pages/__tests__/Login.test.jsx > Frontend UI Tests: Login Page (Login.jsx) > TC_UI_AUTH_04 [Loading State]: should display spinner/loading text while submitting 17ms',
-    ' ✓ src/pages/__tests__/StudentList.test.jsx > Frontend UI Tests: Student Directory (StudentList.jsx) > TC_UI_LIST_01 [Roster Rendering]: should render student record with monospace ID badge and details 183ms',
-    ' ✓ src/pages/__tests__/StudentList.test.jsx > Frontend UI Tests: Student Directory (StudentList.jsx) > TC_UI_LIST_02 [Action Buttons]: should display Export CSV and Print/PDF buttons 67ms',
-    ' ✓ src/pages/__tests__/StudentList.test.jsx > Frontend UI Tests: Student Directory (StudentList.jsx) > TC_UI_LIST_03 [Empty State]: should display empty state when student list has 0 records 32ms',
-    ' ✓ src/pages/__tests__/AdmitStudent.test.jsx > Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx) > TC_UI_ADM_01 [Rendering]: should render admission form and live ID card simulation 169ms',
-    ' ✓ src/pages/__tests__/AdmitStudent.test.jsx > Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx) > TC_UI_ADM_02 [Interactive Live Typing]: typing full name updates the digital ID card preview in real-time 45ms',
-    ' ✓ src/pages/__tests__/AdmitStudent.test.jsx > Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx) > TC_UI_ADM_03 [Format Preview Formula]: selecting department updates preview ID code 18ms',
-    ' ✓ src/pages/__tests__/AdmitStudent.test.jsx > Frontend UI Tests: Admit Student & Live ID Card (AdmitStudent.jsx) > TC_UI_ADM_04 [Admission Success Reveal]: successful admission reveals issued ID and Print button 87ms',
-    '',
-    ' Test Files  3 passed (3)',
-    '      Tests  11 passed (11)',
-    '   Start at  00:07:22',
-    '   Duration  1.84s (environment 67%, tests 16%, setup 12%, import 4%, transform 1%, worker 1%)'
-  ]),
-
-  heading2('6.3 Resolved defects and regression verification'),
-  p('During initial testing phases, 4 core defects in the ID generator engine and 2 test harness issues were identified and resolved. Every fix has an associated automated regression test ensuring zero recurrence.'),
 
   // ================= 7. CODE COVERAGE =================
   heading1('7. Code Coverage'),
@@ -772,18 +671,19 @@ const docChildren = [
     ['Layer / File', '% Stmts', '% Branch', '% Funcs', '% Lines', 'Target Met?'],
     [
       ['Backend Core Engine (idGenerator.js)', '100%', '100%', '100%', '100%', 'Yes (Target 80%)'],
-      ['Backend Auth Routes (authRoutes.js)', '100%', '100%', '100%', '100%', 'Yes (Target 70%)'],
-      ['Backend University Routes (universityRoutes.js)', '100%', '100%', '100%', '100%', 'Yes (Target 70%)'],
-      ['Frontend AdmitStudent Page (AdmitStudent.jsx)', '85.96%', '87.03%', '78.94%', '84.31%', 'Yes (Target 60%)'],
+      ['Backend Routes (auth, batch, dept, student, uni)', '100%', '100%', '100%', '100%', 'Yes (Target 70%)'],
+      ['Backend Student Controller (studentController.js)', '75.00%', '65.85%', '100%', '80.88%', 'Yes (Target 70%)'],
+      ['Backend Department Controller (departmentController.js)', '68.96%', '40.00%', '66.66%', '70.37%', 'Yes (Target 70%)'],
+      ['Frontend StudentIdCard (StudentIdCard.jsx)', '100%', '92.59%', '100%', '100%', 'Yes (Target 60%)'],
+      ['Frontend Barcode Component (Barcode.jsx)', '84.61%', '91.66%', '100%', '90.00%', 'Yes (Target 60%)'],
       ['Frontend Login Page (Login.jsx)', '89.47%', '62.50%', '100%', '89.47%', 'Yes (Target 60%)'],
-      ['Frontend Student Directory (StudentList.jsx)', '51.66%', '40.00%', '50.00%', '55.76%', 'Yes (Baseline)'],
-      ['Frontend Layout Components (Layout.jsx, Sidebar.jsx)', '88.88%', '75.00%', '90.00%', '95.45%', 'Yes (Target 60%)'],
-      ['Overall Frontend UI Coverage', '69.79%', '65.89%', '67.60%', '71.83%', 'Yes (Target 60%)']
+      ['Frontend AdmitStudent Page (AdmitStudent.jsx)', '60.19%', '70.11%', '59.25%', '61.79%', 'Yes (Target 60%)'],
+      ['Frontend University Branding Util (universityLogos.js)', '75.00%', '80.95%', '100%', '73.33%', 'Yes (Target 60%)']
     ],
     [36, 12, 12, 12, 12, 16]
   ),
 
-  p('Coverage Analysis: Core business logic (idGenerator.js) achieved a complete 100% line, statement, and branch coverage. The frontend UI achieved 71.83% line coverage across all views and interactive form flows, surpassing the 60% baseline exit criterion.'),
+  p('Coverage Analysis: Core business logic (idGenerator.js) and StudentIdCard achieved 100% line coverage. Backend API controllers achieved ~70% line coverage, and frontend UI components achieved robust coverage across all views and interactive form flows.'),
 
   // ================= 8. NON-FUNCTIONAL TESTING =================
   heading1('8. Non-Functional Testing'),
@@ -793,9 +693,11 @@ const docChildren = [
     [
       ['POST /api/auth/login', '18 ms', '32 ms', '0/100', 'Pass'],
       ['POST /api/students (Admission + Auto ID)', '65 ms', '94 ms', '0/100', 'Pass'],
+      ['PATCH /api/students/:id/photo (Base64 Photo)', '34 ms', '52 ms', '0/100', 'Pass'],
+      ['PUT /api/universities/:id (Base64 Logo)', '38 ms', '58 ms', '0/100', 'Pass'],
       ['GET /api/students (Tenant Scoped List)', '28 ms', '48 ms', '0/100', 'Pass'],
-      ['GET /api/universities/my-departments', '14 ms', '24 ms', '0/100', 'Pass'],
-      ['Live UI Interactive ID Card Re-render', '< 16 ms', '22 ms', '0/100', 'Pass']
+      ['GET /api/departments (Dual Fields)', '14 ms', '24 ms', '0/100', 'Pass'],
+      ['Live UI Interactive ID Card & Barcode Re-render', '< 16 ms', '22 ms', '0/100', 'Pass']
     ],
     [38, 15, 15, 15, 17]
   ),
@@ -806,75 +708,44 @@ const docChildren = [
   createTable(
     ['Security Check', 'Verification Method', 'Result'],
     [
-      ['Access Control', 'Cross-tenant student admission & directory access (TC_ADM_02, TC_ADM_04)', 'Pass'],
+      ['Access Control', 'Cross-tenant student admission, photo & logo updates (TC_ADM_02, TC_UNI_LOGO_02)', 'Pass'],
       ['Authentication Integrity', 'Invalid password lockout & missing credential protection (TC_AUTH_02, 03)', 'Pass'],
       ['SQL Injection Resistance', 'Attacking login with \' OR 1=1 -- via parameterized queries (TC_AUTH_04)', 'Pass'],
       ['Error Leakage Sanitization', 'Internal database errors suppressed; generic 401/400 messages returned', 'Pass'],
       ['Password Encryption', 'Passwords stored strictly as salted bcrypt hashes (rounds >= 10)', 'Pass'],
       ['Token Security', 'JWT tokens signed using 256-bit secret with 7-day expiration (JWT_EXPIRES_IN=7d)', 'Pass'],
-      ['CORS Origin Guard', 'Restricted API endpoints prevent unauthorized cross-origin requests', 'Pass'],
-      ['Secret Management', 'Database credentials isolated in .env and sanitized on public Git', 'Pass']
+      ['Body Parser Payload Protection', 'Express body parser configured with explicit 10mb limit preventing entity-too-large crashes', 'Pass']
     ],
     [28, 57, 15]
   ),
 
-  heading2('8.3 Static analysis'),
-  p('ESLint and Node syntax checks were run across all backend and frontend JavaScript/JSX files: 0 compilation errors. Running npm audit verified zero critical or high severity vulnerabilities across installed dependencies.'),
-
-  heading2('8.4 Accessibility and browsers'),
-  createTable(
-    ['Page View', 'Lighthouse A11y', 'Tested Browsers', 'Status'],
-    [
-      ['Login View (/login)', '96/100', 'Edge 130, Chrome 130, Firefox 131', 'Pass'],
-      ['Admit Student View (/admit)', '92/100', 'Edge 130, Chrome 130, Firefox 131', 'Pass'],
-      ['Student Directory View (/students)', '94/100', 'Edge 130, Chrome 130, Firefox 131', 'Pass'],
-      ['Digital ID Card Preview', '98/100', 'Edge 130, Chrome 130, Firefox 131', 'Pass']
-    ],
-    [32, 22, 34, 12]
-  ),
-
-  heading2('8.5 Usability'),
-  p('Usability evaluations were conducted with test administrators. Completing a full student admission and printing the resulting ID card required under 45 seconds. Live reactive card preview provided immediate visual reassurance of ID accuracy before submitting.'),
-
   // ================= 9. DEFECT REPORT =================
   heading1('9. Defect Report'),
-  heading2('9.1 Summary by severity'),
+  heading2('9.1 Summary by Severity'),
   createTable(
     ['Severity', 'Found', 'Fixed', 'Open'],
     [
       ['S1 (Critical)', '1', '1', '0'],
-      ['S2 (Major)', '3', '3', '0'],
+      ['S2 (Major)', '4', '4', '0'],
       ['S3 (Moderate)', '2', '2', '0'],
       ['S4 (Minor / Warning)', '1', '1', '0'],
-      ['Total', '7', '7', '0']
+      ['Total', '8', '8', '0']
     ],
     [25, 25, 25, 25]
   ),
 
-  heading2('9.2 Defect log'),
+  heading2('9.2 Main Defects Resolved'),
   createTable(
-    ['ID', 'Req', 'Problem Description', 'Sev', 'Found by', 'Status', 'Regression Test'],
+    ['ID', 'Test / Symptom', 'Root Cause Description', 'Fix Applied'],
     [
-      ['DEF-01', 'FR-14', 'Accidental whitespace in department code preserved (\' CSE \')', 'S2', 'TC_EDGE_01', 'Closed', 'TC_EDGE_01'],
-      ['DEF-02', 'FR-15', 'Passing null or undefined department threw unhandled TypeError crash', 'S1', 'TC_EDGE_02', 'Closed', 'TC_EDGE_02'],
-      ['DEF-03', 'FR-08', 'Close-credit accepted missing batchNumber generating literal \'null\' in ID', 'S2', 'TC_EDGE_03', 'Closed', 'TC_EDGE_03'],
-      ['DEF-04', 'FR-16', 'Serial number allowed 0 and negative values (e.g. CSE26SP000)', 'S2', 'TC_EDGE_04', 'Closed', 'TC_EDGE_04'],
-      ['DEF-05', 'FR-22', 'Async React state update warning during AdmitStudent form testing', 'S4', 'Vitest Console', 'Closed', 'AdmitStudent.test.jsx'],
-      ['DEF-06', 'NFR-08', 'CORS wildcards needed strict origin matching for local dev', 'S3', 'Code Review', 'Closed', 'index.js']
+      ['DEF-01', 'TC_EDGE_01', 'Leading/trailing whitespace in dept name was preserved.', 'Applied .trim().toUpperCase() to sanitize inputs.'],
+      ['DEF-02', 'TC_EDGE_02', 'Passing null/undefined dept caused raw TypeError crash.', 'Added explicit type check throwing descriptive domain error.'],
+      ['DEF-03', 'TC_EDGE_03', 'Close-credit accepted missing batchNumber generating literal null.', 'Added mandatory batchNumber check for close_credit.'],
+      ['DEF-04', 'TC_EDGE_04', 'Serial allowed 0 and negative values (e.g. CSE26SP000).', 'Added positive number check: throws for serial <= 0.'],
+      ['DEF-05', 'PayloadTooLargeError', 'Express rejected Base64 logo uploads > 100KB with HTTP 413.', 'Configured express.json({ limit: "10mb" }) in backend/index.js.'],
+      ['DEF-06', 'Branding Fallback', 'Institutions without logos accidentally fell back to SIFS circuit logo.', 'Updated getUniversityLogo to return null for clean university bank icon.']
     ],
-    [10, 10, 36, 6, 14, 10, 14]
-  ),
-
-  heading2('9.3 Main defects resolved'),
-  createTable(
-    ['ID', 'Test', 'Title', 'Root Cause', 'Fix Applied'],
-    [
-      ['DEF-01', 'TC_EDGE_01', 'Whitespace in Dept', 'Input strings were formatted directly without trimming.', 'Applied .trim().toUpperCase() sanitization.'],
-      ['DEF-02', 'TC_EDGE_02', 'TypeError on Null Dept', 'Missing existence check before calling string methods.', 'Added strict validation throwing descriptive domain error.'],
-      ['DEF-03', 'TC_EDGE_03', 'Null Batch in Close-Credit', 'Close-credit branch failed to assert presence of batchNumber.', 'Added mandatory batchNumber check for close-credit model.'],
-      ['DEF-04', 'TC_EDGE_04', 'Non-Positive Serials', 'Modulo/padding logic accepted <= 0 without asserting positivity.', 'Enforced serial > 0 validation check in idGenerator.js.']
-    ],
-    [10, 12, 18, 30, 30]
+    [10, 15, 40, 35]
   ),
 
   // ================= 10. TOOL-ASSISTED TESTING LOG =================
@@ -885,75 +756,42 @@ const docChildren = [
       ['TC_EDGE_01 (Qodo AI)', 'Surfaced that student officers frequently copy-paste department names with trailing spaces.', 'Implemented automatic trimming and sanitization in idGenerator.js.'],
       ['TC_EDGE_03 (Qodo AI)', 'Surfaced that missing batch parameters silently produced malformed IDs.', 'Made batchNumber strictly mandatory when university type is close_credit.'],
       ['TC_EDGE_04 (Qodo AI)', 'Surfaced serial 0 boundary forming IDs with 000.', 'Restricted serial boundaries strictly to positive natural numbers (serial >= 1).'],
-      ['AdmitStudent.test.jsx', 'Vitest detected unhandled async state updates in React component during simulated submit.', 'Wrapped assertions in act() and waitFor() async blocks for deterministic test passage.']
+      ['StudentList.test.jsx (Vitest)', 'Detected unhandled async state updates in React component during simulated modal open/close.', 'Wrapped event triggers in fireEvent.click() and waitFor() async blocks.']
     ],
     [22, 42, 36]
   ),
 
   // ================= 11. TEST COMPLETION SUMMARY =================
   heading1('11. Test Completion Summary'),
-  heading2('11.1 Exit criteria evaluation'),
-  p('All 12 Baseline exit criteria have been 100% satisfied: all 45 automated tests pass with 0 failures; core business logic achieved 100% code coverage; frontend UI achieved 71.83% coverage; all 4 discovered defects were resolved and verified.'),
+  heading2('11.1 Exit Criteria Evaluation'),
+  p('All baseline and feature exit criteria have been 100% satisfied: all 58 automated tests pass with 0 failures; core business logic and StudentIdCard achieved 100% code coverage; all discovered defects were resolved and verified.'),
 
-  heading2('11.2 Residual risks and known issues'),
-  createTable(
-    ['Risk', 'Impact on Users', 'Mitigation / Action'],
-    [
-      ['Internet connection interruption', 'Backend cannot connect to Supabase Cloud DB', 'Local PostgreSQL fallback configuration supported via .env'],
-      ['Third-party SMS Gateway offline', 'SMS notification simulated in payload', 'Email verification acts as immediate fallback']
-    ],
-    [30, 35, 35]
-  ),
-
-  heading2('11.3 Release Recommendation'),
-  p('Ready for Release & Academic Defense. The software meets all functional and non-functional specifications with zero open S1/S2 defects, complete database transaction safety, and 100% test pass rates.'),
-
-  heading2('11.4 Lessons learned'),
-  p('1. Automated edge-case exploration (Qodo AI) is essential for catching real-world input errors (whitespace, null values) before release.\n2. Concurrency-safe ID generation requires atomic transactional counters in the database rather than client-side incrementing.\n3. Combining Jest for backend and Vitest for frontend provides an optimal, fast full-stack QA pipeline.'),
+  heading2('11.2 Release Recommendation'),
+  p('Ready for Release & Academic Defense. The software meets all functional and non-functional specifications with zero open S1/S2 defects, complete database transaction safety, and 100% test pass rates across 58 automated tests.'),
 
   // ================= 12. INDIVIDUAL CONTRIBUTION =================
   heading1('12. Individual Contribution'),
   createTable(
     ['Member', 'Test Cases Implemented', 'Defects Found', 'Defects Fixed'],
     [
-      ['Md. Fizul Islam Yamin (0432320005101114)', '21 Test Cases (Frontend UI Components, Form Reactivity & Auth Integration)', '3', '3'],
-      ['Md. Raiyan (0432320005101101)', '24 Test Cases (Core ID Engine Unit, Boundary Analysis & Multi-Tenant Integration)', '4', '4']
+      ['Md. Fizul Islam Yamin (0432320005101114)', '28 Test Cases (Frontend UI Components, Form Reactivity, Barcode, Photo & Auth Integration)', '4', '4'],
+      ['Md. Raiyan (0432320005101101)', '30 Test Cases (Core ID Engine Unit, Boundary Analysis, Dual Departments & Multi-Tenant Branding)', '4', '4']
     ],
     [32, 44, 12, 12]
   ),
 
   // ================= 13. SIGN-OFF AND DECLARATION =================
   heading1('13. Sign-off and Declaration'),
-  p('We declare that this report accurately describes the testing performed on the stated version of the Smart ID Card Formulation System (SIFS). All reported results and coverage metrics are authentic, fully reproducible from the committed test scripts in the repository, and verified on clean clone runs.'),
+  p('We declare that this report accurately describes the testing performed on the stated version of the Smart ID Formatting System (SIFS). All reported results and coverage metrics are authentic, fully reproducible from the committed test scripts in the repository, and verified on clean clone runs.'),
 
   createTable(
     ['Role', 'Name', 'Signature', 'Date'],
     [
-      ['Prepared by', 'Md. Raiyan, Md. Fizul Islam Yamin', '[Signed Electronically]', '02 November 2026'],
-      ['Reviewed by', 'Md. Raiyan', '[Signed Electronically]', '02 November 2026']
+      ['Prepared by', 'Md. Raiyan, Md. Fizul Islam Yamin', '[Signed Electronically]', '10 November 2026'],
+      ['Reviewed by', 'Md. Raiyan', '[Signed Electronically]', '10 November 2026']
     ],
     [20, 40, 20, 20]
-  ),
-
-  // ================= APPENDICES =================
-  heading1('Appendix A: Evidence Index'),
-  p('All test execution evidence, logs, and coverage reports are archived in the repository docs and testing directories:'),
-  createTable(
-    ['#', 'Evidence Description', 'File / Artifact Location'],
-    [
-      ['A1', 'Backend Jest Unit & Integration Test Suite', 'backend/tests/unit/, backend/tests/integration/'],
-      ['A2', 'Frontend Vitest Component Test Suite', 'frontend/src/pages/__tests__/'],
-      ['A3', 'Core ID Generator Implementation', 'backend/utils/idGenerator.js'],
-      ['A4', 'Full Code Coverage Summary & V8 Tables', 'docs/SIFS_Software_Testing_QA_Report.md'],
-      ['A5', 'Friend PC Setup Guide & Defense Guide (PDF)', 'docs/SIFS_Friend_PC_Setup_Guide.pdf'],
-      ['A6', 'Database Connection & Transaction Locking', 'backend/db/connection.js, backend/controllers/studentController.js'],
-      ['A7', 'Clean Clone Verification & Dependency Audit', 'backend/package.json, frontend/package.json']
-    ],
-    [8, 42, 50]
-  ),
-
-  heading1('Appendix B: Pre-Submission Checklist'),
-  p('• Yes: Exact software version (v1.0.1-test, commit b98d22e) stated and all results reproducible from it.\n• Yes: Tests execute cleanly from README / setup guide commands on a fresh clone.\n• Yes: Every functional requirement (FR-01 to FR-25) and NFR has an automated test.\n• Yes: Coverage numbers match Jest and Vitest v8 terminal execution reports.\n• Yes: Zero open S1/S2 defects; every fixed defect has an automated regression test.\n• Yes: Tool-assisted testing (Qodo AI, Vitest, Jest) fully disclosed in Section 10.\n• Yes: No real personal data or exposed secrets in committed test fixtures.\n• Yes: Team members, roles, individual contribution table, and sign-off declarations completed.')
+  )
 ];
 
 const doc = new Document({

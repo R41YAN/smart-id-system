@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import StudentList from '../StudentList';
@@ -107,7 +107,7 @@ describe('Frontend UI Tests: Student Directory (StudentList.jsx)', () => {
 
     // Click "ID Card" action button
     const idCardBtn = screen.getByRole('button', { name: /ID Card/i });
-    idCardBtn.click();
+    fireEvent.click(idCardBtn);
 
     // Verify modal elements
     await waitFor(() => {
@@ -124,14 +124,14 @@ describe('Frontend UI Tests: Student Directory (StudentList.jsx)', () => {
       expect(screen.getByText('CSE26FL001')).toBeInTheDocument();
     });
 
-    screen.getByRole('button', { name: /ID Card/i }).click();
+    fireEvent.click(screen.getByRole('button', { name: /ID Card/i }));
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /Student Identity Card/i })).toBeInTheDocument();
     });
 
     // Click Close button (title="Close modal")
-    screen.getByTitle('Close modal').click();
+    fireEvent.click(screen.getByTitle('Close modal'));
 
     await waitFor(() => {
       expect(screen.queryByRole('heading', { name: /Student Identity Card/i })).not.toBeInTheDocument();
