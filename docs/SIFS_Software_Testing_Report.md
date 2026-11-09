@@ -311,7 +311,8 @@ $$\text{Total Test Cases Executed: } 58 \quad\Big|\quad \text{Passed: } 58 \quad
 
 ### 1. Run Backend Tests
 ```bash
-cd "backend"
+# From project root:
+cd backend
 
 # Run all 40 backend unit & integration tests
 npm test
@@ -322,7 +323,9 @@ npm run test:coverage
 
 ### 2. Run Frontend Tests
 ```bash
-cd "frontend"
+# From backend directory, switch to frontend:
+cd ../frontend
+# (Or from project root: cd frontend)
 
 # Run all 18 UI component and simulation tests
 npm test -- --run
@@ -333,6 +336,6 @@ npm run test:coverage
 
 ### 3. Build & Typecheck Frontend
 ```bash
-cd "frontend"
+# From frontend directory:
 npm run build
 ```
