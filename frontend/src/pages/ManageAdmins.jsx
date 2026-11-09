@@ -6,7 +6,8 @@ import {
   AdminsIcon,
   PlusIcon,
   CheckCircleIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  UniversityIcon
 } from '../components/Icons';
 
 export default function ManageAdmins() {
@@ -217,13 +218,17 @@ export default function ManageAdmins() {
                         className="w-full h-full object-cover rounded-lg"
                         title="SIFS Platform Super Admin"
                       />
-                    ) : (
+                    ) : getUniversityLogo(u.university_name, u.university_logo) ? (
                       <img
                         src={getUniversityLogo(u.university_name, u.university_logo)}
                         alt={u.university_name || 'Admin'}
                         className="w-full h-full object-contain"
                         title={u.university_name || 'Client Admin'}
                       />
+                    ) : (
+                      <div className="w-full h-full bg-blue-50 text-blue-600 flex items-center justify-center rounded-lg">
+                        <UniversityIcon className="w-5 h-5" />
+                      </div>
                     )}
                   </div>
                   <div>

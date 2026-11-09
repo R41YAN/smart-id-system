@@ -10,7 +10,8 @@ import {
   LockIcon,
   UnlockIcon,
   AdmitIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  UniversityIcon
 } from '../components/Icons';
 
 function StatCard({ icon: Icon, label, value, subtext, colorClass, iconBg }) {
@@ -36,6 +37,64 @@ export default function ClientAdminDashboard() {
   const [students, setStudents] = useState([]);
   const [university, setUniversity] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoMsg, setLogoMsg] = useState('');
+
+  const handleLogoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !university) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file (PNG, JPG, SVG, WebP).');
+      return;
+    }
+    setLogoUploading(true);
+    setLogoMsg('');
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 300;
+        let width = img.width;
+        let height = img.height;
+        if (width > height && width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const resized = canvas.toDataURL('image/png');
+
+        try {
+          const res = await api.put(`/universities/${university.id}`, { logo_url: resized });
+          const newLogo = res.data.logo_url;
+          setUniversity((prev) => ({ ...prev, logo_url: newLogo }));
+          // Update user in localStorage so sidebar reflects it
+          const localUser = localStorage.getItem('user');
+          if (localUser) {
+            const parsed = JSON.parse(localUser);
+            parsed.university_logo = newLogo;
+            localStorage.setItem('user', JSON.stringify(parsed));
+          }
+          setLogoMsg('Logo updated!');
+          setTimeout(() => setLogoMsg(''), 3000);
+        } catch (err) {
+          console.error('Failed to update logo:', err);
+          alert('Failed to update university logo.');
+        } finally {
+          setLogoUploading(false);
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     Promise.all([api.get('/departments'), api.get('/students')])
@@ -63,14 +122,40 @@ export default function ClientAdminDashboard() {
             </h1>
             {university && (
               <div className="flex flex-wrap items-center gap-2.5 mt-2">
-                <div className="w-6 h-6 rounded-lg bg-white border border-slate-200/90 p-0.5 flex items-center justify-center shrink-0 shadow-2xs">
-                  <img
-                    src={getUniversityLogo(university.name, university.logo_url)}
-                    alt={university.name}
-                    className="w-full h-full object-contain"
-                  />
+                {/* Clickable University Logo with 📷 hover */}
+                <div
+                  onClick={() => document.getElementById('dashboard-uni-logo-input')?.click()}
+                  className="w-8 h-8 rounded-xl bg-white border border-slate-200/90 hover:border-blue-400 hover:ring-2 hover:ring-blue-100 p-1 flex items-center justify-center shrink-0 shadow-2xs cursor-pointer relative group transition-all"
+                  title="Click to change university logo"
+                >
+                  {getUniversityLogo(university.name, university.logo_url) ? (
+                    <img
+                      src={getUniversityLogo(university.name, university.logo_url)}
+                      alt={university.name}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <UniversityIcon className="w-4 h-4 text-blue-600" />
+                  )}
+                  <div className="absolute inset-0 bg-slate-900/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-bold">
+                    📷
+                  </div>
                 </div>
+
+                <input
+                  type="file"
+                  id="dashboard-uni-logo-input"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoUpload}
+                />
+
                 <span className="text-sm font-bold text-slate-800">{university.name}</span>
+                {logoMsg && (
+                  <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 animate-in fade-in">
+                    {logoMsg}
+                  </span>
+                )}
                 <span className="text-slate-300">•</span>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                   isOpen

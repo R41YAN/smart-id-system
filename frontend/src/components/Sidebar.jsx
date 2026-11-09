@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 import { getUniversityLogo } from '../utils/universityLogos';
 import {
   DashboardIcon,
@@ -33,6 +34,52 @@ export default function Sidebar() {
 
   const links = user?.role === 'super_admin' ? superLinks : clientLinks;
 
+  const handleSidebarLogoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.university_id) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file (PNG, JPG, SVG, WebP).');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 300;
+        let width = img.width;
+        let height = img.height;
+        if (width > height && width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const resized = canvas.toDataURL('image/png');
+
+        try {
+          await api.put(`/universities/${user.university_id}`, { logo_url: resized });
+          const localUser = localStorage.getItem('user');
+          if (localUser) {
+            const parsed = JSON.parse(localUser);
+            parsed.university_logo = resized;
+            localStorage.setItem('user', JSON.stringify(parsed));
+          }
+          window.location.reload();
+        } catch {
+          alert('Failed to update university logo.');
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <aside className="w-64 min-h-screen bg-[#0B132B] text-slate-100 flex flex-col shrink-0 border-r border-slate-800/80 shadow-xl print:hidden select-none">
       {/* Brand Header */}
@@ -56,13 +103,33 @@ export default function Sidebar() {
         {/* Institutional Tenant Badge for Client Admin (Visible on all tabs) */}
         {user?.role === 'client_admin' && (
           <div className="mt-3.5 p-2.5 rounded-xl bg-gradient-to-r from-slate-900/90 to-blue-950/40 border border-blue-500/25 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-white/10 p-1 border border-white/20 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
-              <img
-                src={getUniversityLogo(user?.university_name, user?.university_logo)}
-                alt={user?.university_name || 'University'}
-                className="w-full h-full object-contain"
-              />
+            <div
+              onClick={() => document.getElementById('sidebar-uni-logo-input')?.click()}
+              className="w-9 h-9 rounded-lg bg-white/10 p-1 border border-white/20 flex items-center justify-center shrink-0 overflow-hidden shadow-inner cursor-pointer hover:border-blue-400 relative group"
+              title="Click to update university logo"
+            >
+              {getUniversityLogo(user?.university_name, user?.university_logo) ? (
+                <img
+                  src={getUniversityLogo(user?.university_name, user?.university_logo)}
+                  alt={user?.university_name || 'University'}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <UniversityIcon className="w-5 h-5 text-blue-300" />
+              )}
+              <div className="absolute inset-0 bg-slate-950/70 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[9px] font-bold">
+                📷
+              </div>
             </div>
+
+            <input
+              type="file"
+              id="sidebar-uni-logo-input"
+              accept="image/*"
+              className="hidden"
+              onChange={handleSidebarLogoUpload}
+            />
+
             <div className="overflow-hidden min-w-0">
               <p className="text-xs font-bold text-white truncate" title={user?.university_name}>
                 {user?.university_name || 'University Portal'}

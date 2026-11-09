@@ -140,13 +140,19 @@ export default function SuperAdminDashboard() {
                     <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
                       <td className="px-6 py-4 font-semibold text-slate-800">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
-                            <img
-                              src={getUniversityLogo(u.name, u.logo_url)}
-                              alt={u.name}
-                              className="w-full h-full object-contain"
-                            />
-                          </div>
+                          {getUniversityLogo(u.name, u.logo_url) ? (
+                            <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+                              <img
+                                src={getUniversityLogo(u.name, u.logo_url)}
+                                alt={u.name}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shrink-0 shadow-2xs">
+                              <UniversityIcon className="w-4 h-4" />
+                            </div>
+                          )}
                           <span className="font-bold text-slate-900">{u.name}</span>
                         </div>
                       </td>

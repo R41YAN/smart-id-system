@@ -1,19 +1,12 @@
 // University Logos registry & utility helper
-export const DEFAULT_UNIVERSITY_LOGOS = [
-  { name: 'University of Information Technology and Sciences', short: 'UITS', logo: '/logos/uits.svg' },
-  { name: 'Dhaka University', short: 'DU', logo: '/logos/du.svg' },
-  { name: 'BRAC University', short: 'BRAC', logo: '/logos/brac.svg' },
-  { name: 'Metropolitan University', short: 'MU', logo: '/logos/mu.svg' },
-  { name: 'North South University', short: 'NSU', logo: '/logos/nsu.svg' },
-];
 
 export function getUniversityLogo(universityName, customLogoUrl) {
-  if (customLogoUrl && customLogoUrl.trim() !== '') {
-    // If it was stored as .png, normalize to .svg if matching our built-ins
+  if (customLogoUrl && typeof customLogoUrl === 'string' && customLogoUrl.trim() !== '') {
+    // If it was stored as .png for built-ins, normalize to .svg
     return customLogoUrl.replace(/\.png$/, '.svg');
   }
 
-  if (!universityName) return '/logo.jpg';
+  if (!universityName) return null;
 
   const nameUpper = universityName.toUpperCase();
   if (nameUpper.includes('INFORMATION TECHNOLOGY') || nameUpper.includes('UITS')) {
@@ -32,5 +25,6 @@ export function getUniversityLogo(universityName, customLogoUrl) {
     return '/logos/nsu.svg';
   }
 
-  return '/logo.jpg';
+  // Returns null when no logo exists so UI renders the blue bank icon (NEVER the SIFS logo)
+  return null;
 }
