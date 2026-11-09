@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
 import {
@@ -97,19 +97,31 @@ export default function ManageUniversities() {
                 <select
                   value={form.type}
                   onChange={e => setForm({ ...form, type: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
                 >
-                  <option value="open_credit">Open Credit ([Dept][YY][Sem][Serial])</option>
-                  <option value="close_credit">Close Credit ([Dept][Batch][YY][Serial])</option>
+                  <option value="open_credit">Open Credit</option>
+                  <option value="close_credit">Close Credit</option>
                 </select>
               </div>
             </div>
 
-            <div className="flex justify-end pt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3">
+              <div className="flex items-center gap-2.5 px-3.5 py-2 bg-blue-50/70 border border-blue-200/70 rounded-xl text-xs">
+                <span className="px-2 py-0.5 bg-blue-600 text-white rounded-md font-mono font-bold text-[10px] tracking-wider uppercase">
+                  Format Rule
+                </span>
+                <span className="font-mono font-bold text-blue-800 text-xs sm:text-sm">
+                  {form.type === 'open_credit' ? '[Dept][YY][Sem][Serial]' : '[Dept][Batch][YY][Serial]'}
+                </span>
+                <span className="text-[11px] text-slate-500 font-medium hidden md:inline">
+                  {form.type === 'open_credit' ? '(e.g. CSE26FL001)' : '(e.g. CSE5426001)'}
+                </span>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer shrink-0"
               >
                 <PlusIcon className="w-4 h-4" />
                 <span>{loading ? 'Adding...' : 'Register University'}</span>
