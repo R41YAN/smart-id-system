@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import StudentIdCard from '../components/StudentIdCard';
 import {
   AdmitIcon,
   CheckCircleIcon,
@@ -28,7 +29,7 @@ export default function AdmitStudent() {
   const [batches, setBatches] = useState([]);
   const [filteredBatches, setFilteredBatches] = useState([]);
   const [university, setUniversity] = useState(null);
-  const [form, setForm] = useState({ department_id: '', batch_id: '', name: '', email: '', phone: '' });
+  const [form, setForm] = useState({ department_id: '', batch_id: '', name: '', email: '', phone: '', photo: null });
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,37 @@ export default function AdmitStudent() {
   const handleDept = (id) => {
     setForm({ ...form, department_id: id, batch_id: '' });
     setFilteredBatches(batches.filter(b => String(b.department_id) === String(id)));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 500;
+        if (width > height && width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressed = canvas.toDataURL('image/jpeg', 0.85);
+        setForm(prev => ({ ...prev, photo: compressed }));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   const isOpen = university?.type === 'open_credit';
@@ -66,7 +98,7 @@ export default function AdmitStudent() {
   const handleReset = () => {
     setResult(null);
     setError('');
-    setForm({ department_id: '', batch_id: '', name: '', email: '', phone: '' });
+    setForm({ department_id: '', batch_id: '', name: '', email: '', phone: '', photo: null });
     setFilteredBatches([]);
   };
 
@@ -222,6 +254,44 @@ export default function AdmitStudent() {
                 </div>
               </div>
 
+              {/* Photo Upload */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Student Photograph (Optional)
+                </label>
+                <div className="flex flex-wrap items-center gap-3">
+                  <input
+                    type="file"
+                    id="student-photo-input"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="student-photo-input"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 cursor-pointer transition-all shrink-0"
+                  >
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{form.photo ? 'Change Photo' : 'Upload Photo'}</span>
+                  </label>
+                  {form.photo && (
+                    <button
+                      type="button"
+                      onClick={() => setForm(prev => ({ ...prev, photo: null }))}
+                      className="text-xs text-rose-600 hover:underline cursor-pointer font-semibold"
+                    >
+                      Remove
+                    </button>
+                  )}
+                  <span className="text-[11px] text-slate-400">
+                    Any size auto-adjusts to ID card portrait
+                  </span>
+                </div>
+              </div>
+
               <div className="pt-2">
                 <button
                   type="submit"
@@ -266,117 +336,22 @@ export default function AdmitStudent() {
                 )}
               </div>
 
-              {/* Physical-style ID Card */}
-              <div className={`relative w-full rounded-2xl overflow-hidden shadow-xl border transition-all ${
-                result
-                  ? 'border-amber-400 ring-4 ring-amber-400/20 shadow-amber-500/10 bg-white'
-                  : 'border-slate-200 bg-white'
-              }`}>
-                {/* Lanyard Hole Clip */}
-                <div className="w-full h-4 bg-slate-100 flex items-center justify-center border-b border-slate-200">
-                  <div className="w-12 h-1.5 rounded-full bg-slate-300"></div>
-                </div>
-
-                {/* Card Header (Deep Navy) */}
-                <div className="bg-[#0B132B] px-5 py-4 text-white relative overflow-hidden">
-                  <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-amber-400/10 rounded-full blur-xl pointer-events-none" />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <img
-                        src="/logo.jpg"
-                        alt="SIFS"
-                        className="w-9 h-9 rounded-lg object-cover border border-amber-400/40 shrink-0"
-                      />
-                      <div>
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-amber-300">
-                          {university?.name || 'SIFS ACADEMY'}
-                        </p>
-                        <p className="text-xs font-extrabold text-white leading-tight">
-                          STUDENT IDENTITY CARD
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card Body */}
-                <div className="p-5">
-                  <div className="flex gap-4 items-start mb-4">
-                    {/* Avatar Placeholder */}
-                    <div className="w-20 h-24 rounded-xl bg-slate-100 border border-slate-200 flex flex-col items-center justify-center text-slate-400 shrink-0 relative overflow-hidden">
-                      <svg className="w-10 h-10 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                      </svg>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-1">PHOTO</span>
-                    </div>
-
-                    {/* Student Info */}
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Name</p>
-                      <p className="text-sm font-extrabold text-slate-900 truncate leading-snug">
-                        {form.name || 'Student Full Name'}
-                      </p>
-
-                      <div className="mt-2.5 grid grid-cols-2 gap-2 text-left">
-                        <div>
-                          <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Dept</p>
-                          <p className="font-mono text-xs font-bold text-slate-800">
-                            {deptCode}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">
-                            {isOpen ? 'Intake' : 'Batch'}
-                          </p>
-                          <p className="font-mono text-xs font-bold text-slate-800 truncate">
-                            {currentBatch
-                              ? (isOpen ? `${SEM_LABELS[currentBatch.semester_code] || ''} '${yearStr}` : getOrdinal(batchNumRaw))
-                              : (isOpen ? `Fall '${yearStr}` : getOrdinal(batchNumRaw))}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ID Number Box */}
-                  <div className={`p-3 rounded-xl border text-center transition-colors ${
-                    result
-                      ? 'bg-amber-50/80 border-amber-300 text-amber-900'
-                      : 'bg-slate-50 border-slate-200 text-slate-800'
-                  }`}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      Generated Student ID
-                    </p>
-                    <p className="font-mono text-xl font-black tracking-wider mt-0.5 text-blue-700">
-                      {displayID}
-                    </p>
-                  </div>
-
-                  {/* Simulated Barcode */}
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <div className="flex gap-0.5 items-center h-6 opacity-60">
-                      <span className="w-0.5 h-6 bg-slate-900"></span>
-                      <span className="w-1 h-6 bg-slate-900"></span>
-                      <span className="w-0.5 h-6 bg-slate-900"></span>
-                      <span className="w-1.5 h-6 bg-slate-900"></span>
-                      <span className="w-0.5 h-6 bg-slate-900"></span>
-                      <span className="w-2 h-6 bg-slate-900"></span>
-                      <span className="w-0.5 h-6 bg-slate-900"></span>
-                      <span className="w-1 h-6 bg-slate-900"></span>
-                      <span className="w-0.5 h-6 bg-slate-900"></span>
-                      <span className="w-1.5 h-6 bg-slate-900"></span>
-                      <span className="w-0.5 h-6 bg-slate-900"></span>
-                      <span className="w-1 h-6 bg-slate-900"></span>
-                      <span className="w-2 h-6 bg-slate-900"></span>
-                      <span className="w-0.5 h-6 bg-slate-900"></span>
-                      <span className="w-1 h-6 bg-slate-900"></span>
-                    </div>
-                    <span className="text-[10px] font-mono text-slate-400 font-semibold">
-                      VERIFIED ID
-                    </span>
-                  </div>
-                </div>
-              </div>
+              {/* Physical-style ID Card with Real Barcode & Auto-Fitting Photo */}
+              <StudentIdCard
+                universityName={university?.name || 'SIFS ACADEMY'}
+                studentName={form.name || result?.name || 'Student Full Name'}
+                deptCode={deptCode}
+                batchOrIntakeLabel={isOpen ? 'Intake' : 'Batch'}
+                batchOrIntakeValue={
+                  currentBatch
+                    ? (isOpen ? `${SEM_LABELS[currentBatch.semester_code] || ''} '${yearStr}` : `${getOrdinal(batchNumRaw)} Batch (${currentBatch.year})`)
+                    : (isOpen ? `Fall '${yearStr}` : `${getOrdinal(batchNumRaw)} Batch`)
+                }
+                studentId={displayID}
+                photo={form.photo || result?.photo}
+                isLivePreview={!result}
+                onPhotoClick={() => document.getElementById('student-photo-input')?.click()}
+              />
 
               {/* Action Buttons when Admitted */}
               {result && (

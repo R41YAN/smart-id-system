@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS students (
   name          VARCHAR(100) NOT NULL,
   email         VARCHAR(150),
   phone         VARCHAR(20),
+  photo         TEXT,
   serial_number INT NOT NULL,
   admitted_by   INT REFERENCES users(id) ON DELETE SET NULL,
   admitted_at   TIMESTAMPTZ DEFAULT NOW()

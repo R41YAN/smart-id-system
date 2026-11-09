@@ -33,7 +33,7 @@ const getAll = async (req, res) => {
 
 // POST /api/students  — Concurrency-safe admission
 const admit = async (req, res) => {
-  const { batch_id, department_id, name, email, phone } = req.body;
+  const { batch_id, department_id, name, email, phone, photo } = req.body;
   if (!batch_id || !department_id || !name)
     return res.status(400).json({ message: 'batch_id, department_id, and name are required' });
 
@@ -89,9 +89,9 @@ const admit = async (req, res) => {
 
     // ── INSERT STUDENT ────────────────────────────────────────────────────
     const studentResult = await client.query(
-      `INSERT INTO students (batch_id, department_id, student_id, name, email, phone, serial_number, admitted_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-      [batch_id, department_id, studentId, name, email || null, phone || null, newSerial, req.user.id]
+      `INSERT INTO students (batch_id, department_id, student_id, name, email, phone, photo, serial_number, admitted_by)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      [batch_id, department_id, studentId, name, email || null, phone || null, photo || null, newSerial, req.user.id]
     );
 
     await client.query('COMMIT');

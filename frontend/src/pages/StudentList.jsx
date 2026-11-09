@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
+import StudentIdCard from '../components/StudentIdCard';
 import {
   DownloadIcon,
   PrinterIcon,
@@ -25,6 +26,7 @@ export default function StudentList() {
   const [departments, setDepartments] = useState([]);
   const [batches, setBatches] = useState([]);
   const [filter, setFilter] = useState({ department_id: '', batch_id: '' });
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const fetchStudents = async () => {
@@ -206,7 +208,22 @@ export default function StudentList() {
                           {s.student_id}
                         </span>
                       </td>
-                      <td className="px-5 py-4 font-bold text-slate-900">{s.name}</td>
+                      <td className="px-5 py-4 font-bold text-slate-900">
+                        <div className="flex items-center gap-3">
+                          {s.photo ? (
+                            <img
+                              src={s.photo}
+                              alt={s.name}
+                              className="w-8 h-8 rounded-full object-cover object-center ring-2 ring-blue-100 shrink-0 border border-slate-200"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200">
+                              {(s.name || '?')[0].toUpperCase()}
+                            </div>
+                          )}
+                          <span className="truncate">{s.name}</span>
+                        </div>
+                      </td>
                       <td className="px-5 py-4">
                         <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                           {s.department_name}
@@ -223,10 +240,23 @@ export default function StudentList() {
                           day: 'numeric'
                         })}
                       </td>
-                      <td className="px-5 py-4 print:hidden text-right">
+                      <td className="px-5 py-4 print:hidden text-right whitespace-nowrap">
+                        <button
+                          onClick={() => setSelectedStudent(s)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-all cursor-pointer mr-2 shadow-xs"
+                          title="View / Print Student ID Card"
+                        >
+                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="2" y="4" width="20" height="16" rx="3" strokeWidth="2" />
+                            <circle cx="8" cy="11" r="3" strokeWidth="2" />
+                            <path d="M14 9h4m-4 4h4m-4 4h2" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
+                          <span>ID Card</span>
+                        </button>
+
                         <button
                           onClick={() => handleDelete(s.id)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           title="Delete student record"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />
@@ -241,6 +271,65 @@ export default function StudentList() {
           )}
         </div>
       </div>
+
+      {/* Option B: View / Print Student ID Card Modal */}
+      {selectedStudent && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto print:p-0 print:bg-white">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 relative animate-in fade-in zoom-in-95 duration-150 print:border-none print:shadow-none print:p-0">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 print:hidden">
+              <div>
+                <h3 className="text-base font-black text-slate-900">Student Identity Card</h3>
+                <p className="text-xs text-slate-400">Verified official institutional credential</p>
+              </div>
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                title="Close modal"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* The Verified ID Card */}
+            <div className="my-2 flex justify-center">
+              <StudentIdCard
+                universityName={selectedStudent.university_name || 'SIFS ACADEMY'}
+                studentName={selectedStudent.name}
+                deptCode={selectedStudent.department_code || selectedStudent.department_name}
+                batchOrIntakeLabel={selectedStudent.semester_code ? 'Intake' : 'Batch'}
+                batchOrIntakeValue={
+                  selectedStudent.semester_code
+                    ? `${SEM_LABELS[selectedStudent.semester_code]} ${selectedStudent.year}`
+                    : `${getOrdinal(selectedStudent.batch_number)} Batch (${selectedStudent.year})`
+                }
+                studentId={selectedStudent.student_id}
+                photo={selectedStudent.photo}
+                isLivePreview={false}
+              />
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-slate-100 print:hidden">
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 shadow transition-all cursor-pointer"
+              >
+                <PrinterIcon className="w-4 h-4" />
+                <span>Print Card</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
