@@ -1,7 +1,8 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../api/axios';
+import { getUniversityLogo } from '../utils/universityLogos';
 import {
   UniversityIcon,
   DepartmentIcon,
@@ -137,7 +138,18 @@ export default function SuperAdminDashboard() {
                 <tbody className="divide-y divide-slate-100 font-normal">
                   {universities.map((u) => (
                     <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-6 py-4 font-semibold text-slate-800">{u.name}</td>
+                      <td className="px-6 py-4 font-semibold text-slate-800">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+                            <img
+                              src={getUniversityLogo(u.name, u.logo_url)}
+                              alt={u.name}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                          <span className="font-bold text-slate-900">{u.name}</span>
+                        </div>
+                      </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                           u.type === 'open_credit'

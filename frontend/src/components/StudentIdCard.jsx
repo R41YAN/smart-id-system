@@ -1,7 +1,9 @@
 import Barcode from './Barcode';
+import { getUniversityLogo } from '../utils/universityLogos';
 
 export default function StudentIdCard({
   universityName = 'SIFS ACADEMY',
+  universityLogo = null,
   studentName = 'Student Full Name',
   deptCode = 'CSE',
   batchOrIntakeLabel = 'Batch',
@@ -12,6 +14,8 @@ export default function StudentIdCard({
   onPhotoClick = null,
   cardRef = null
 }) {
+  const displayLogo = getUniversityLogo(universityName, universityLogo);
+
   return (
     <div
       ref={cardRef}
@@ -24,7 +28,7 @@ export default function StudentIdCard({
       <div className="bg-gradient-to-r from-slate-900 via-[#0B132B] to-slate-900 px-6 py-4 border-b border-amber-400/30">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-amber-400/10 border border-amber-400/30 p-1 flex items-center justify-center shrink-0">
-            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded" />
+            <img src={displayLogo} alt="Logo" className="w-full h-full object-contain rounded" />
           </div>
           <div className="overflow-hidden">
             <p className="text-[10px] uppercase font-bold tracking-widest text-amber-300 truncate">

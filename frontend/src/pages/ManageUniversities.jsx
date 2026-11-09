@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
+import { getUniversityLogo, DEFAULT_UNIVERSITY_LOGOS } from '../utils/universityLogos';
 import {
   UniversityIcon,
   PlusIcon,
@@ -11,7 +12,7 @@ import {
 
 export default function ManageUniversities() {
   const [universities, setUniversities] = useState([]);
-  const [form, setForm] = useState({ name: '', type: 'open_credit' });
+  const [form, setForm] = useState({ name: '', type: 'open_credit', logo_url: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +30,7 @@ export default function ManageUniversities() {
     setLoading(true);
     try {
       await api.post('/universities', form);
-      setForm({ name: '', type: 'open_credit' });
+      setForm({ name: '', type: 'open_credit', logo_url: '' });
       fetchUniversities();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to register university');
@@ -76,7 +77,7 @@ export default function ManageUniversities() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                   University Full Name
                 </label>
@@ -101,6 +102,22 @@ export default function ManageUniversities() {
                 >
                   <option value="open_credit">Open Credit</option>
                   <option value="close_credit">Close Credit</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Institutional Logo
+                </label>
+                <select
+                  value={form.logo_url}
+                  onChange={e => setForm({ ...form, logo_url: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
+                >
+                  <option value="">Auto-Detect by Name</option>
+                  {DEFAULT_UNIVERSITY_LOGOS.map(l => (
+                    <option key={l.short} value={l.logo}>{l.name} ({l.short})</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -149,8 +166,12 @@ export default function ManageUniversities() {
                   className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors"
                 >
                   <div className="flex items-start sm:items-center gap-3.5">
-                    <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 shrink-0">
-                      <UniversityIcon className="w-5 h-5" />
+                    <div className="w-12 h-12 rounded-xl bg-white border border-slate-200/90 p-1.5 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+                      <img
+                        src={getUniversityLogo(u.name, u.logo_url)}
+                        alt={u.name}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     <div>
                       <p className="font-bold text-slate-900 text-sm">{u.name}</p>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <circle cx="60" cy="60" r="58" fill="#FFFFFF" stroke="#003366" stroke-width="3"/>
+  <circle cx="60" cy="60" r="50" fill="#003366"/>
+  <!-- BRAC Iconic Arc / Star / Shield -->
+  <path d="M40 70 C40 50 80 50 80 70 Z" fill="#E65100"/>
+  <path d="M44 70 C44 54 76 54 76 70 Z" fill="#FFFFFF"/>
+  <circle cx="60" cy="50" r="6" fill="#F57C00"/>
+  <!-- Open Graduation Book Motif -->
+  <polygon points="60,34 76,42 60,50 44,42" fill="#FFB74D"/>
+  <polygon points="60,50 76,42 76,46 60,54 44,46 44,42" fill="#E65100"/>
+  <!-- Typography -->
+  <text x="60" y="24" fill="#FFFFFF" font-size="7.5" font-weight="900" font-family="Arial, sans-serif" text-anchor="middle" letter-spacing="1">BRAC UNIVERSITY</text>
+  <text x="60" y="90" fill="#FFFFFF" font-size="9" font-weight="900" font-family="Arial, sans-serif" text-anchor="middle" letter-spacing="2">BRACU</text>
+  <text x="60" y="103" fill="#FFB74D" font-size="6" font-weight="bold" font-family="Arial, sans-serif" text-anchor="middle" letter-spacing="1.5">INSPIRE EXCELLENCE</text>
+</svg>

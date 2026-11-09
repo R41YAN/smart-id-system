@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 import StudentIdCard from '../components/StudentIdCard';
 import {
   DownloadIcon,
@@ -22,12 +23,74 @@ const getOrdinal = (n) => {
 };
 
 export default function StudentList() {
+  const { user } = useAuth();
   const [students, setStudents] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [batches, setBatches] = useState([]);
   const [filter, setFilter] = useState({ department_id: '', batch_id: '' });
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoMsg, setPhotoMsg] = useState('');
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedStudent) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file (JPG, PNG, WebP).');
+      return;
+    }
+
+    setPhotoUploading(true);
+    setPhotoMsg('');
+    try {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const rawBase64 = ev.target.result;
+        const img = new Image();
+        img.onload = async () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 600;
+          let width = img.width;
+          let height = img.height;
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressed = canvas.toDataURL('image/jpeg', 0.85);
+
+          try {
+            const res = await api.patch(`/students/${selectedStudent.id}/photo`, { photo: compressed });
+            const updatedPhoto = res.data.student.photo;
+            setSelectedStudent((prev) => ({ ...prev, photo: updatedPhoto }));
+            setStudents((prev) =>
+              prev.map((s) => (s.id === selectedStudent.id ? { ...s, photo: updatedPhoto } : s))
+            );
+            setPhotoMsg('Photo updated successfully!');
+            setTimeout(() => setPhotoMsg(''), 3000);
+          } catch (err) {
+            console.error('API update photo error:', err);
+            alert('Failed to save updated photo to database.');
+          } finally {
+            setPhotoUploading(false);
+          }
+        };
+        img.src = rawBase64;
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('File read error:', err);
+      alert('Error reading image file.');
+      setPhotoUploading(false);
+    }
+  };
 
   const fetchStudents = async () => {
     setLoading(true);
@@ -217,8 +280,13 @@ export default function StudentList() {
                               className="w-8 h-8 rounded-full object-cover object-center ring-2 ring-blue-100 shrink-0 border border-slate-200"
                             />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200">
+                            <div
+                              onClick={() => setSelectedStudent(s)}
+                              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-500 hover:text-blue-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200 cursor-pointer transition-colors relative"
+                              title="No photo attached — click to view ID card and upload"
+                            >
                               {(s.name || '?')[0].toUpperCase()}
+                              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-amber-500 rounded-full border border-white flex items-center justify-center text-[7px] text-white font-mono" title="No photo">📷</span>
                             </div>
                           )}
                           <span className="truncate">{s.name}</span>
@@ -296,7 +364,8 @@ export default function StudentList() {
             {/* The Verified ID Card */}
             <div className="my-2 flex justify-center">
               <StudentIdCard
-                universityName={selectedStudent.university_name || 'SIFS ACADEMY'}
+                universityName={selectedStudent.university_name || user?.university_name || 'SIFS ACADEMY'}
+                universityLogo={selectedStudent.university_logo || user?.university_logo}
                 studentName={selectedStudent.name}
                 deptCode={selectedStudent.department_code || selectedStudent.department_name}
                 batchOrIntakeLabel={selectedStudent.semester_code ? 'Intake' : 'Batch'}
@@ -308,7 +377,32 @@ export default function StudentList() {
                 studentId={selectedStudent.student_id}
                 photo={selectedStudent.photo}
                 isLivePreview={false}
+                onPhotoClick={() => document.getElementById('modal-student-photo-input')?.click()}
               />
+            </div>
+
+            {/* Quick Photo Upload / Change Button */}
+            <div className="mt-3 flex flex-col items-center print:hidden">
+              <input
+                type="file"
+                id="modal-student-photo-input"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+              />
+              <button
+                type="button"
+                onClick={() => document.getElementById('modal-student-photo-input')?.click()}
+                disabled={photoUploading}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{photoUploading ? 'Uploading...' : selectedStudent.photo ? 'Change Student Photo' : 'Upload Student Photo'}</span>
+              </button>
+              {photoMsg && <p className="text-[11px] text-emerald-600 font-bold mt-1.5 animate-in fade-in">{photoMsg}</p>}
             </div>
 
             {/* Modal Footer Actions */}

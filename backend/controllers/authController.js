@@ -49,10 +49,21 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
+
+    // Fetch rich user profile including university branding
+    const profile = await pool.query(
+      `SELECT u.id, u.name, u.email, u.role, u.university_id, 
+              un.name AS university_name, un.logo_url AS university_logo, un.type AS university_type
+       FROM users u
+       LEFT JOIN universities un ON u.university_id = un.id
+       WHERE u.id = $1`,
+      [user.id]
+    );
+
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, university_id: user.university_id },
+      user: profile.rows[0] || { id: user.id, name: user.name, email: user.email, role: user.role, university_id: user.university_id },
     });
   } catch (err) {
     console.error('Login error:', err);
@@ -64,7 +75,11 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, name, email, role, university_id, created_at FROM users WHERE id = $1',
+      `SELECT u.id, u.name, u.email, u.role, u.university_id, u.created_at,
+              un.name AS university_name, un.logo_url AS university_logo, un.type AS university_type
+       FROM users u
+       LEFT JOIN universities un ON u.university_id = un.id
+       WHERE u.id = $1`,
       [req.user.id]
     );
     if (result.rows.length === 0) return res.status(404).json({ message: 'User not found' });
@@ -78,7 +93,8 @@ const getMe = async (req, res) => {
 const listUsers = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT u.id, u.name, u.email, u.role, u.university_id, un.name AS university_name, u.created_at
+      `SELECT u.id, u.name, u.email, u.role, u.university_id, 
+              un.name AS university_name, un.logo_url AS university_logo, un.type AS university_type, u.created_at
        FROM users u LEFT JOIN universities un ON u.university_id = un.id
        ORDER BY u.created_at DESC`
     );

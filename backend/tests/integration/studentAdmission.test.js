@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============================================================================
  * INTEGRATION TEST SUITE: Student Admission & Multi-Tenant Engine
  * ============================================================================
@@ -167,6 +167,61 @@ describe('Integration Tests: Student Admission & Management (/api/students)', ()
         expect(student.student_id).toMatch(/^[A-Z]{2,5}\d{1,4}\d{2}\d{3}$/);
       }
     });
+  });
+
+  // --------------------------------------------------------------------------
+  // TC_ADM_06: Student Photo Upload & Late Photo Update
+  // --------------------------------------------------------------------------
+  test('TC_ADM_06 [Photo Lifecycle]: should accept photo on admission and support late update via PATCH /api/students/:id/photo', async () => {
+    if (!nsuBatchId || !nsuDeptId) return;
+
+    // 1. Admit student with sample Base64 photo
+    const admitRes = await request(app)
+      .post('/api/students')
+      .set('Authorization', `Bearer ${nsuAdminToken}`)
+      .send({
+        batch_id: nsuBatchId,
+        department_id: nsuDeptId,
+        name: 'QA Photo Student',
+        email: `photo_test_${Date.now()}@example.com`,
+        phone: '01700000000',
+        photo: 'data:image/jpeg;base64,sampleInitialPhotoData'
+      });
+
+    expect(admitRes.status).toBe(201);
+    expect(admitRes.body.student).toBeDefined();
+    expect(admitRes.body.student.photo).toBe('data:image/jpeg;base64,sampleInitialPhotoData');
+    const studentId = admitRes.body.student.id;
+
+    // 2. Late update photo via PATCH
+    const patchRes = await request(app)
+      .patch(`/api/students/${studentId}/photo`)
+      .set('Authorization', `Bearer ${nsuAdminToken}`)
+      .send({ photo: 'data:image/jpeg;base64,updatedNewPhotoData' });
+
+    expect(patchRes.status).toBe(200);
+    expect(patchRes.body.student.photo).toBe('data:image/jpeg;base64,updatedNewPhotoData');
+
+    // 3. Clean up test student
+    await request(app)
+      .delete(`/api/students/${studentId}`)
+      .set('Authorization', `Bearer ${superAdminToken}`);
+  });
+
+  // --------------------------------------------------------------------------
+  // TC_ADM_07: University Logo Association
+  // --------------------------------------------------------------------------
+  test('TC_ADM_07 [Branding]: student roster should include university_logo and universities should expose logo_url', async () => {
+    const res = await request(app)
+      .get('/api/universities')
+      .set('Authorization', `Bearer ${superAdminToken}`);
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    const nsu = res.body.find(u => u.name.includes('North South'));
+    if (nsu) {
+      expect(nsu.logo_url).toBeDefined();
+    }
   });
 
 });

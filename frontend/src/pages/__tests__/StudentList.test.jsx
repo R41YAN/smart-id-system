@@ -1,4 +1,4 @@
-﻿import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import StudentList from '../StudentList';
@@ -95,6 +95,46 @@ describe('Frontend UI Tests: Student Directory (StudentList.jsx)', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/No students found/i)).toBeInTheDocument();
+    });
+  });
+
+  test('TC_UI_LIST_04 [Option B Modal]: should open ID Card modal on button click and display card credentials', async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('CSE26FL001')).toBeInTheDocument();
+    });
+
+    // Click "ID Card" action button
+    const idCardBtn = screen.getByRole('button', { name: /ID Card/i });
+    idCardBtn.click();
+
+    // Verify modal elements
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Student Identity Card/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Upload Student Photo/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Print Card/i })).toBeInTheDocument();
+    });
+  });
+
+  test('TC_UI_LIST_05 [Modal Dismiss]: should close modal when Close button is clicked', async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('CSE26FL001')).toBeInTheDocument();
+    });
+
+    screen.getByRole('button', { name: /ID Card/i }).click();
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Student Identity Card/i })).toBeInTheDocument();
+    });
+
+    // Click Close button (title="Close modal")
+    screen.getByTitle('Close modal').click();
+
+    await waitFor(() => {
+      expect(screen.queryByRole('heading', { name: /Student Identity Card/i })).not.toBeInTheDocument();
     });
   });
 });

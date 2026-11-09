@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <circle cx="60" cy="60" r="58" fill="#0A192F" stroke="#D4AF37" stroke-width="3"/>
+  <circle cx="60" cy="60" r="49" fill="#172A45" stroke="#FFFFFF" stroke-width="1"/>
+  <!-- NSU Shield -->
+  <path d="M42 40 L78 40 L78 64 Q78 82 60 90 Q42 82 42 64 Z" fill="#8B0000" stroke="#D4AF37" stroke-width="2"/>
+  <!-- Torch of Knowledge -->
+  <path d="M57 60 L63 60 L62 76 L58 76 Z" fill="#D4AF37"/>
+  <path d="M60 44 C64 48 67 52 60 58 C53 52 56 48 60 44 Z" fill="#FFC107"/>
+  <path d="M60 48 C62 50 63 52 60 55 C57 52 58 50 60 48 Z" fill="#FF5722"/>
+  <!-- Text -->
+  <text x="60" y="24" fill="#D4AF37" font-size="7" font-weight="900" font-family="Arial, sans-serif" text-anchor="middle" letter-spacing="1">NORTH SOUTH UNI</text>
+  <text x="60" y="103" fill="#D4AF37" font-size="6.5" font-weight="extrabold" font-family="Arial, sans-serif" text-anchor="middle" letter-spacing="1.5">FIRST PRIVATE • 1992</text>
+</svg>

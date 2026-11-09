@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS universities (
   id          SERIAL PRIMARY KEY,
   name        VARCHAR(200) NOT NULL,
   type        university_type NOT NULL,
+  logo_url    TEXT,
   is_locked   BOOLEAN DEFAULT FALSE,
   created_by  INT REFERENCES users(id) ON DELETE SET NULL,
   created_at  TIMESTAMPTZ DEFAULT NOW()

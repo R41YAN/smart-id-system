@@ -338,7 +338,8 @@ export default function AdmitStudent() {
 
               {/* Physical-style ID Card with Real Barcode & Auto-Fitting Photo */}
               <StudentIdCard
-                universityName={university?.name || 'SIFS ACADEMY'}
+                universityName={university?.name || user?.university_name || 'SIFS ACADEMY'}
+                universityLogo={university?.logo_url || user?.university_logo}
                 studentName={form.name || result?.name || 'Student Full Name'}
                 deptCode={deptCode}
                 batchOrIntakeLabel={isOpen ? 'Intake' : 'Batch'}

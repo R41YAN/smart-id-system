@@ -1,6 +1,7 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
+import { getUniversityLogo } from '../utils/universityLogos';
 import {
   AdminsIcon,
   PlusIcon,
@@ -208,10 +209,22 @@ export default function ManageAdmins() {
                 className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className={`p-2.5 rounded-xl shrink-0 ${
-                    u.role === 'super_admin' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
-                  }`}>
-                    {u.role === 'super_admin' ? <ShieldCheckIcon className="w-5 h-5" /> : <AdminsIcon className="w-5 h-5" />}
+                  <div className="w-11 h-11 rounded-xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+                    {u.role === 'super_admin' ? (
+                      <img
+                        src="/logo.jpg"
+                        alt="SIFS"
+                        className="w-full h-full object-cover rounded-lg"
+                        title="SIFS Platform Super Admin"
+                      />
+                    ) : (
+                      <img
+                        src={getUniversityLogo(u.university_name, u.university_logo)}
+                        alt={u.university_name || 'Admin'}
+                        className="w-full h-full object-contain"
+                        title={u.university_name || 'Client Admin'}
+                      />
+                    )}
                   </div>
                   <div>
                     <p className="font-bold text-slate-900 text-sm">{u.name}</p>

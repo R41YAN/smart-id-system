@@ -1,8 +1,9 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import { getUniversityLogo } from '../utils/universityLogos';
 import {
   DepartmentIcon,
   StudentsIcon,
@@ -62,7 +63,14 @@ export default function ClientAdminDashboard() {
             </h1>
             {university && (
               <div className="flex flex-wrap items-center gap-2.5 mt-2">
-                <span className="text-sm font-semibold text-slate-700">{university.name}</span>
+                <div className="w-6 h-6 rounded-lg bg-white border border-slate-200/90 p-0.5 flex items-center justify-center shrink-0 shadow-2xs">
+                  <img
+                    src={getUniversityLogo(university.name, university.logo_url)}
+                    alt={university.name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <span className="text-sm font-bold text-slate-800">{university.name}</span>
                 <span className="text-slate-300">•</span>
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                   isOpen

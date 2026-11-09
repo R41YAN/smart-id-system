@@ -6,7 +6,7 @@ const getAll = async (req, res) => {
   try {
     let query = `
       SELECT s.*, COALESCE(d.code, d.name) AS department_name, COALESCE(d.code, d.name) AS department_code, d.full_name AS department_full_name, b.year, b.batch_number,
-             b.semester_code, b.semester_index, u.name AS university_name, u.type AS university_type
+             b.semester_code, b.semester_index, u.name AS university_name, u.logo_url AS university_logo, u.type AS university_type
       FROM students s
       JOIN departments d ON s.department_id = d.id
       JOIN batches b ON s.batch_id = b.id
@@ -118,4 +118,31 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, admit, remove };
+const updatePhoto = async (req, res) => {
+  const { photo } = req.body;
+  const studentId = parseInt(req.params.id, 10);
+  try {
+    const check = await pool.query(
+      `SELECT s.id, d.university_id 
+       FROM students s
+       JOIN departments d ON s.department_id = d.id
+       WHERE s.id = $1`,
+      [studentId]
+    );
+    if (!check.rows.length) return res.status(404).json({ message: 'Student not found' });
+    if (req.user.role === 'client_admin' && check.rows[0].university_id !== req.user.university_id) {
+      return res.status(403).json({ message: 'Access denied: can only update students in your university' });
+    }
+
+    const result = await pool.query(
+      'UPDATE students SET photo = $1 WHERE id = $2 RETURNING *',
+      [photo || null, studentId]
+    );
+    res.json({ message: 'Student photo updated successfully', student: result.rows[0] });
+  } catch (err) {
+    console.error('Update photo error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+module.exports = { getAll, admit, remove, updatePhoto };

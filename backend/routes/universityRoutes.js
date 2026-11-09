@@ -6,7 +6,7 @@ const { verifyToken, requireSuperAdmin, requireAnyAdmin } = require('../middlewa
 router.get('/',    verifyToken, requireAnyAdmin,   ctrl.getAll);
 router.get('/:id', verifyToken, requireAnyAdmin,   ctrl.getOne);
 router.post('/',   verifyToken, requireSuperAdmin, ctrl.create);
-router.put('/:id', verifyToken, requireSuperAdmin, ctrl.update);
+router.put('/:id', verifyToken, requireAnyAdmin, ctrl.update);
 router.delete('/:id', verifyToken, requireSuperAdmin, ctrl.remove);
 
 module.exports = router;

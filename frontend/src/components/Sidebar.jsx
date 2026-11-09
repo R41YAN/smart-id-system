@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getUniversityLogo } from '../utils/universityLogos';
 import {
   DashboardIcon,
   UniversityIcon,
@@ -51,6 +52,30 @@ export default function Sidebar() {
             <p className="text-[11px] text-slate-400 font-medium truncate">Smart ID Formatting System</p>
           </div>
         </div>
+
+        {/* Institutional Tenant Badge for Client Admin (Visible on all tabs) */}
+        {user?.role === 'client_admin' && (
+          <div className="mt-3.5 p-2.5 rounded-xl bg-gradient-to-r from-slate-900/90 to-blue-950/40 border border-blue-500/25 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-white/10 p-1 border border-white/20 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+              <img
+                src={getUniversityLogo(user?.university_name, user?.university_logo)}
+                alt={user?.university_name || 'University'}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div className="overflow-hidden min-w-0">
+              <p className="text-xs font-bold text-white truncate" title={user?.university_name}>
+                {user?.university_name || 'University Portal'}
+              </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                <span className="text-[10px] text-blue-300 font-medium truncate">
+                  {user?.university_type === 'open_credit' ? 'Open Credit Model' : 'Close Credit Model'}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* User Card */}
         <div className="mt-4 p-2.5 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between">
