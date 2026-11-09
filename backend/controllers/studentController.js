@@ -5,7 +5,7 @@ const getAll = async (req, res) => {
   const { batch_id, department_id } = req.query;
   try {
     let query = `
-      SELECT s.*, d.name AS department_name, b.year, b.batch_number,
+      SELECT s.*, COALESCE(d.code, d.name) AS department_name, COALESCE(d.code, d.name) AS department_code, d.full_name AS department_full_name, b.year, b.batch_number,
              b.semester_code, b.semester_index, u.name AS university_name, u.type AS university_type
       FROM students s
       JOIN departments d ON s.department_id = d.id
@@ -44,7 +44,7 @@ const admit = async (req, res) => {
 
     // ── LOCK batch row (prevents race conditions) ──────────────────────────
     const batchResult = await client.query(
-      `SELECT b.*, d.name AS dept_name, u.type AS uni_type, u.id AS uni_id
+      `SELECT b.*, COALESCE(d.code, d.name) AS dept_name, u.type AS uni_type, u.id AS uni_id
        FROM batches b
        JOIN departments d ON b.department_id = d.id
        JOIN universities u ON d.university_id = u.id

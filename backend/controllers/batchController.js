@@ -4,7 +4,7 @@ const getAll = async (req, res) => {
   const { department_id } = req.query;
   try {
     let query = `
-      SELECT b.*, d.name AS department_name, d.university_id
+      SELECT b.*, COALESCE(d.code, d.name) AS department_name, COALESCE(d.code, d.name) AS department_code, d.full_name AS department_full_name, d.university_id
       FROM batches b JOIN departments d ON b.department_id = d.id
     `;
     const params = [];

@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS departments (
   id            SERIAL PRIMARY KEY,
   university_id INT NOT NULL REFERENCES universities(id) ON DELETE CASCADE,
   name          VARCHAR(50) NOT NULL,
+  code          VARCHAR(20),
+  full_name     VARCHAR(150),
   created_at    TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(university_id, name)
 );

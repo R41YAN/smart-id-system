@@ -6,9 +6,11 @@ const getAll = async (req, res) => {
       ? (req.query.university_id || null)
       : req.user.university_id;
 
-    const result = uniId
-      ? await pool.query('SELECT * FROM departments WHERE university_id=$1 ORDER BY name', [uniId])
-      : await pool.query('SELECT * FROM departments ORDER BY name');
+    const query = uniId
+      ? 'SELECT id, university_id, name, COALESCE(code, name) AS code, COALESCE(full_name, name) AS full_name, created_at FROM departments WHERE university_id=$1 ORDER BY COALESCE(code, name) ASC'
+      : 'SELECT id, university_id, name, COALESCE(code, name) AS code, COALESCE(full_name, name) AS full_name, created_at FROM departments ORDER BY COALESCE(code, name) ASC';
+
+    const result = uniId ? await pool.query(query, [uniId]) : await pool.query(query);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -16,14 +18,21 @@ const getAll = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const { name, university_id } = req.body;
-  if (!name) return res.status(400).json({ message: 'Department name is required' });
+  const { name, code, full_name, university_id } = req.body;
+  const deptCode = (code || name || '').trim().toUpperCase();
+  const deptFullName = (full_name || name || code || '').trim();
+
+  if (!deptCode) {
+    return res.status(400).json({ message: 'Department code is required' });
+  }
+
   const uniId = req.user.role === 'client_admin' ? req.user.university_id : university_id;
   if (!uniId) return res.status(400).json({ message: 'university_id is required' });
+
   try {
     const result = await pool.query(
-      'INSERT INTO departments (university_id, name) VALUES ($1,$2) RETURNING *',
-      [uniId, name.toUpperCase().trim()]
+      'INSERT INTO departments (university_id, name, code, full_name) VALUES ($1,$2,$3,$4) RETURNING *',
+      [uniId, deptCode, deptCode, deptFullName || deptCode]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

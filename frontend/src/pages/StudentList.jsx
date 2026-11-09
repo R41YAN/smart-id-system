@@ -140,9 +140,15 @@ export default function StudentList() {
               className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
             >
               <option value="">All Departments</option>
-              {departments.map(d => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
+              {departments.map(d => {
+                const code = d.code || d.name;
+                const label = d.full_name && d.full_name !== code
+                  ? `${d.full_name} (${code})`
+                  : code;
+                return (
+                  <option key={d.id} value={d.id}>{label}</option>
+                );
+              })}
             </select>
           </div>
 

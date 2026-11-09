@@ -144,9 +144,15 @@ export default function ManageBatches() {
                   className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                 >
                   <option value="">Select Department</option>
-                  {departments.map(d => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
-                  ))}
+                  {departments.map(d => {
+                    const code = d.code || d.name;
+                    const label = d.full_name && d.full_name !== code
+                      ? `${d.full_name} (${code})`
+                      : code;
+                    return (
+                      <option key={d.id} value={d.id}>{label}</option>
+                    );
+                  })}
                 </select>
               </div>
 
