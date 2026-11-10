@@ -403,6 +403,7 @@ export default function StudentList() {
                     ? `${SEM_LABELS[selectedStudent.semester_code]} ${selectedStudent.year}`
                     : `${getOrdinal(selectedStudent.batch_number)} Batch`
                 }
+                academicYear={selectedStudent.semester_code ? null : selectedStudent.year}
                 studentId={selectedStudent.student_id}
                 photo={selectedStudent.photo}
                 isLivePreview={false}

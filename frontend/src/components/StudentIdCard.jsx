@@ -7,7 +7,8 @@ export default function StudentIdCard({
   studentName = 'Student Full Name',
   deptCode = 'CSE',
   batchOrIntakeLabel = 'Batch',
-  batchOrIntakeValue = '1st Batch (2026)',
+  batchOrIntakeValue = '1st Batch',
+  academicYear = null,
   studentId = 'CSE5426001',
   photo = null,
   isLivePreview = false,
@@ -109,6 +110,11 @@ export default function StudentIdCard({
                   <p className="font-mono text-xs font-bold text-slate-800 truncate">
                     {batchOrIntakeValue}
                   </p>
+                  {academicYear && (
+                    <p className="font-mono text-[10px] font-semibold text-slate-500 leading-none mt-0.5">
+                      ({academicYear})
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

@@ -347,6 +347,7 @@ export default function AdmitStudent() {
                     ? (isOpen ? `${SEM_LABELS[currentBatch.semester_code] || ''} '${yearStr}` : `${getOrdinal(batchNumRaw)} Batch`)
                     : (isOpen ? `Fall '${yearStr}` : `${getOrdinal(batchNumRaw)} Batch`)
                 }
+                academicYear={isOpen ? null : (currentBatch?.year || new Date().getFullYear())}
                 studentId={displayID}
                 photo={form.photo || result?.photo}
                 isLivePreview={!result}
