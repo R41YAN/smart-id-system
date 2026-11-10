@@ -54,8 +54,16 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
    - Strict fallback to clean blue bank icon (never SIFS) when no custom logo is uploaded.
    - Top-left SIFS brand header preserved on all administrative portals.
    - Express body-parser increased to 10MB (`backend/index.js`) for Base64 logo & photo uploads.
-8. **Automated Master Test Suite (58 Tests, 100% Pass Rate)**:
-   - Full automated test suite across backend (40 tests, Jest + Supertest) and frontend (18 tests, Vitest + React Testing Library).
+8. **Option 3 Hybrid Modern UI/UX Architecture & 3D Smart Card Tilt**:
+   - **Cinematic Dark Login Screen**: Deep-space slate (`#070C18`), ambient radial glow orbs, and frosted glassmorphic card (`backdrop-blur-2xl bg-slate-900/80`).
+   - **High-Density Executive Dashboard**: Crisp `#F8FAFC` canvas across Super Admin and Client Admin portals with live format rule breakdown pills.
+   - **3D PVC Card Perspective Hover**: Interactive physical smart card physics (`.card-3d`, `.card-3d-wrap`, `perspective: 1200px`) with real-time keystroke rendering.
+   - **Stacked Batch & Academic Year Display**: Renders batch name on Line 1 (`1st Batch`, `54th Batch`) and admission year on Line 2 (`(2026)`) directly underneath for close-credit institutions, preventing card truncation while preserving cohort years in dropdowns.
+   - **Instant Directory Search**: Real-time client-side search filtering across Student IDs, student names, emails, and departments.
+9. **Automatic Serial Recalibration Engine**:
+   - When a student record is removed (`DELETE /api/students/:id`), the backend dynamically recalibrates `batches.current_serial` to $\max(\text{serial\_number})$ of that batch, eliminating ghost counters and preserving sequential serial integrity.
+10. **Automated Master Test Suite (58 Tests, 100% Pass Rate)**:
+    - Full automated test suite across backend (40 tests, Jest + Supertest) and frontend (18 tests, Vitest + React Testing Library).
 
 ---
 
@@ -175,6 +183,8 @@ smart-id-system/
 │   ├── SIFS_Software_Testing_Report.docx # Formatted Word testing report document
 │   └── SIFS_Friend_PC_Setup_Guide.pdf    # Complete lab setup & presentation guide
 │
+├── package.json                         # Root project scripts (install:all, test, dev)
+├── run.bat                              # One-click Windows full-stack launcher
 └── README.md
 ```
 
