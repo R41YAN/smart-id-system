@@ -13,19 +13,24 @@ import {
   PlusIcon
 } from '../components/Icons';
 
-function StatCard({ icon: Icon, label, value, subtext, colorClass, iconBg }) {
+function StatCard({ icon: Icon, label, value, subtext, colorClass, iconBg, badgeText }) {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md border border-slate-200/80 transition-all duration-200 group">
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</span>
-        <div className={`p-2.5 rounded-xl ${iconBg}`}>
+        <div className={`p-2.5 rounded-xl ${iconBg} group-hover:scale-105 transition-transform`}>
           <Icon className={`w-5 h-5 ${colorClass}`} />
         </div>
       </div>
       <div className="flex items-baseline gap-2">
-        <p className="text-3xl font-black text-slate-900">{value ?? '—'}</p>
+        <p className="text-3xl font-black text-slate-900 tracking-tight">{value ?? '—'}</p>
+        {badgeText && (
+          <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+            {badgeText}
+          </span>
+        )}
       </div>
-      {subtext && <p className="text-xs text-slate-400 mt-1 font-medium">{subtext}</p>}
+      {subtext && <p className="text-xs text-slate-400 mt-1.5 font-medium">{subtext}</p>}
     </div>
   );
 }
@@ -51,7 +56,7 @@ export default function SuperAdminDashboard() {
     <Layout>
       <div className="space-y-8">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Super Admin Console
@@ -64,11 +69,35 @@ export default function SuperAdminDashboard() {
           <div className="flex gap-2.5">
             <Link
               to="/super-admin/universities"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Add University</span>
             </Link>
+          </div>
+        </div>
+
+        {/* Multi-Tenant System Overview Pill */}
+        <div className="bg-gradient-to-r from-slate-900 via-[#0B132B] to-slate-900 text-white rounded-2xl p-5 shadow-sm border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shrink-0">
+              <UniversityIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">Multi-Tenant Engine Status</p>
+              <p className="text-sm font-bold text-white mt-0.5">
+                Active Tenant Isolation & Row-Level Protection
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-xs bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/60 text-slate-300 font-mono">
+              PostgreSQL ACID
+            </span>
+            <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              100% Operational
+            </span>
           </div>
         </div>
 
@@ -141,7 +170,7 @@ export default function SuperAdminDashboard() {
                       <td className="px-6 py-4 font-semibold text-slate-800">
                         <div className="flex items-center gap-3">
                           {getUniversityLogo(u.name, u.logo_url) ? (
-                            <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+                            <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
                               <img
                                 src={getUniversityLogo(u.name, u.logo_url)}
                                 alt={u.name}
@@ -149,7 +178,7 @@ export default function SuperAdminDashboard() {
                               />
                             </div>
                           ) : (
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shrink-0 shadow-2xs">
+                            <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shrink-0 shadow-2xs">
                               <UniversityIcon className="w-4 h-4" />
                             </div>
                           )}

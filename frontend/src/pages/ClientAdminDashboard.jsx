@@ -14,19 +14,24 @@ import {
   UniversityIcon
 } from '../components/Icons';
 
-function StatCard({ icon: Icon, label, value, subtext, colorClass, iconBg }) {
+function StatCard({ icon: Icon, label, value, subtext, colorClass, iconBg, badgeText }) {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md border border-slate-200/80 transition-all duration-200 group">
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{label}</span>
-        <div className={`p-2.5 rounded-xl ${iconBg}`}>
+        <div className={`p-2.5 rounded-xl ${iconBg} group-hover:scale-105 transition-transform`}>
           <Icon className={`w-5 h-5 ${colorClass}`} />
         </div>
       </div>
       <div className="flex items-baseline gap-2">
-        <p className="text-3xl font-black text-slate-900">{value ?? '—'}</p>
+        <p className="text-3xl font-black text-slate-900 tracking-tight">{value ?? '—'}</p>
+        {badgeText && (
+          <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+            {badgeText}
+          </span>
+        )}
       </div>
-      {subtext && <p className="text-xs text-slate-400 mt-1 font-medium">{subtext}</p>}
+      {subtext && <p className="text-xs text-slate-400 mt-1.5 font-medium">{subtext}</p>}
     </div>
   );
 }
@@ -115,17 +120,17 @@ export default function ClientAdminDashboard() {
     <Layout>
       <div className="space-y-8">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Admission Dashboard
             </h1>
             {university && (
-              <div className="flex flex-wrap items-center gap-2.5 mt-2">
+              <div className="flex flex-wrap items-center gap-2.5 mt-2.5">
                 {/* Clickable University Logo with 📷 hover */}
                 <div
                   onClick={() => document.getElementById('dashboard-uni-logo-input')?.click()}
-                  className="w-8 h-8 rounded-xl bg-white border border-slate-200/90 hover:border-blue-400 hover:ring-2 hover:ring-blue-100 p-1 flex items-center justify-center shrink-0 shadow-2xs cursor-pointer relative group transition-all"
+                  className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 hover:border-blue-500 hover:ring-2 hover:ring-blue-100 p-1 flex items-center justify-center shrink-0 shadow-xs cursor-pointer relative group transition-all"
                   title="Click to change university logo"
                 >
                   {getUniversityLogo(university.name, university.logo_url) ? (
@@ -152,7 +157,7 @@ export default function ClientAdminDashboard() {
 
                 <span className="text-sm font-bold text-slate-800">{university.name}</span>
                 {logoMsg && (
-                  <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 animate-in fade-in">
+                  <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                     {logoMsg}
                   </span>
                 )}
@@ -162,7 +167,7 @@ export default function ClientAdminDashboard() {
                     ? 'bg-blue-50 text-blue-700 border border-blue-200'
                     : 'bg-purple-50 text-purple-700 border border-purple-200'
                 }`}>
-                  {isOpen ? 'Open Credit System' : 'Close Credit System'}
+                  {isOpen ? 'Open Credit Model' : 'Close Credit Model'}
                 </span>
                 <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                   university.is_locked
@@ -177,7 +182,7 @@ export default function ClientAdminDashboard() {
                   ) : (
                     <>
                       <UnlockIcon className="w-3 h-3 text-emerald-600" />
-                      Active
+                      Active Engine
                     </>
                   )}
                 </span>
@@ -189,12 +194,39 @@ export default function ClientAdminDashboard() {
           <div className="flex gap-2.5">
             <Link
               to="/admin/admit"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-sm shadow-blue-500/20 active:scale-[0.98] transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer"
             >
               <AdmitIcon className="w-4 h-4" />
               <span>Admit Student</span>
             </Link>
           </div>
+        </div>
+
+        {/* Live ID Formatting Formula Pill */}
+        <div className="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-slate-50 border border-blue-200/70 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-700 shadow-xs">
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 bg-blue-600 text-white rounded-lg font-mono font-bold text-[11px] tracking-wider shrink-0 shadow-xs">
+              FORMAT RULE
+            </span>
+            <div className="flex items-center gap-1.5 flex-wrap font-mono font-bold text-xs text-blue-900">
+              <span className="bg-white/80 border border-blue-200 px-2 py-0.5 rounded shadow-2xs">[Dept Code]</span>
+              <span>+</span>
+              <span className="bg-white/80 border border-blue-200 px-2 py-0.5 rounded shadow-2xs">
+                {isOpen ? '[YY]' : '[Batch]'}
+              </span>
+              <span>+</span>
+              <span className="bg-white/80 border border-blue-200 px-2 py-0.5 rounded shadow-2xs">
+                {isOpen ? '[SemCode]' : '[YY]'}
+              </span>
+              <span>+</span>
+              <span className="bg-emerald-50 border border-emerald-300 text-emerald-800 px-2 py-0.5 rounded shadow-2xs">
+                [3-Digit Serial]
+              </span>
+            </div>
+          </div>
+          <span className="text-[11px] font-medium text-slate-500">
+            Example: <strong className="font-mono text-slate-800">{isOpen ? 'CSE26FL001' : 'CSE5426001'}</strong>
+          </span>
         </div>
 
         {/* Stats Grid */}
@@ -203,7 +235,7 @@ export default function ClientAdminDashboard() {
             icon={DepartmentIcon}
             label="Active Departments"
             value={departments.length}
-            subtext="Available for enrollment"
+            subtext="Available for student intake"
             colorClass="text-blue-600"
             iconBg="bg-blue-50"
           />
@@ -214,6 +246,7 @@ export default function ClientAdminDashboard() {
             subtext="Generated smart ID numbers"
             colorClass="text-emerald-600"
             iconBg="bg-emerald-50"
+            badgeText={students.length > 0 ? 'Verified' : null}
           />
           <StatCard
             icon={university?.is_locked ? LockIcon : UnlockIcon}
@@ -252,7 +285,7 @@ export default function ClientAdminDashboard() {
               <p className="text-xs text-slate-400 mt-1">Start by enrolling a student through the admission form.</p>
               <Link
                 to="/admin/admit"
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-sm"
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
               >
                 <AdmitIcon className="w-3.5 h-3.5" />
                 <span>Admit First Student</span>

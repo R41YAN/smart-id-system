@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -28,6 +28,7 @@ export default function StudentList() {
   const [departments, setDepartments] = useState([]);
   const [batches, setBatches] = useState([]);
   const [filter, setFilter] = useState({ department_id: '', batch_id: '' });
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
@@ -119,6 +120,18 @@ export default function StudentList() {
     ? batches.filter(b => String(b.department_id) === String(filter.department_id))
     : batches;
 
+  const displayedStudents = useMemo(() => {
+    if (!searchQuery.trim()) return students;
+    const q = searchQuery.toLowerCase().trim();
+    return students.filter(s =>
+      (s.student_id && s.student_id.toLowerCase().includes(q)) ||
+      (s.name && s.name.toLowerCase().includes(q)) ||
+      (s.email && s.email.toLowerCase().includes(q)) ||
+      (s.phone && s.phone.includes(q)) ||
+      (s.department_name && s.department_name.toLowerCase().includes(q))
+    );
+  }, [students, searchQuery]);
+
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this student record?')) return;
     try {
@@ -130,9 +143,9 @@ export default function StudentList() {
   };
 
   const exportCSV = () => {
-    if (students.length === 0) return;
+    if (displayedStudents.length === 0) return;
     const headers = ['#', 'Student ID', 'Full Name', 'Department', 'Intake / Batch', 'Email', 'Phone', 'Admission Date'];
-    const rows = students.map((s, i) => [
+    const rows = displayedStudents.map((s, i) => [
       i + 1,
       `"${s.student_id}"`,
       `"${(s.name || '').replace(/"/g, '""')}"`,
@@ -163,7 +176,7 @@ export default function StudentList() {
     <Layout>
       <div className="space-y-6">
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Student Directory
@@ -174,11 +187,11 @@ export default function StudentList() {
           </div>
 
           {/* Export / Print Actions */}
-          <div className="flex items-center gap-2 print:hidden">
+          <div className="flex items-center gap-2.5 print:hidden">
             <button
               onClick={exportCSV}
               disabled={students.length === 0}
-              className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
               title="Download CSV spreadsheet"
             >
               <DownloadIcon className="w-4 h-4" />
@@ -187,7 +200,7 @@ export default function StudentList() {
             <button
               onClick={handlePrint}
               disabled={students.length === 0}
-              className="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
               title="Print or Save as PDF"
             >
               <PrinterIcon className="w-4 h-4" />
@@ -196,9 +209,25 @@ export default function StudentList() {
           </div>
         </div>
 
-        {/* Filter Bar */}
+        {/* Filter & Search Bar */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 flex flex-wrap items-center gap-3 print:hidden">
-          <div className="w-48">
+          {/* Instant Search Bar */}
+          <div className="flex-1 min-w-[220px] relative">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search by student name or ID..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all"
+            />
+          </div>
+
+          <div className="w-44">
             <select
               value={filter.department_id}
               onChange={e => setFilter({ ...filter, department_id: e.target.value, batch_id: '' })}
@@ -217,7 +246,7 @@ export default function StudentList() {
             </select>
           </div>
 
-          <div className="w-56">
+          <div className="w-52">
             <select
               value={filter.batch_id}
               onChange={e => setFilter({ ...filter, batch_id: e.target.value })}
@@ -233,7 +262,7 @@ export default function StudentList() {
           </div>
 
           <div className="ml-auto text-xs font-bold text-slate-500">
-            {students.length} student{students.length === 1 ? '' : 's'} enrolled
+            {displayedStudents.length} of {students.length} student{students.length === 1 ? '' : 's'}
           </div>
         </div>
 
@@ -241,7 +270,7 @@ export default function StudentList() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden print:shadow-none print:border">
           {loading ? (
             <div className="p-12 text-center text-slate-400 text-sm">Loading student directory...</div>
-          ) : students.length === 0 ? (
+          ) : displayedStudents.length === 0 ? (
             <div className="p-12 text-center">
               <StudentsIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
               <p className="text-sm font-semibold text-slate-700">No students found</p>
@@ -263,11 +292,11 @@ export default function StudentList() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-normal">
-                  {students.map((s, i) => (
-                    <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
+                  {displayedStudents.map((s, i) => (
+                    <tr key={s.id} className="hover:bg-slate-50/70 transition-colors group">
                       <td className="px-5 py-4 text-xs font-mono text-slate-400">{i + 1}</td>
                       <td className="px-5 py-4">
-                        <span className="font-mono font-bold text-xs bg-blue-50 text-blue-700 border border-blue-200/80 px-2.5 py-1 rounded-lg">
+                        <span className="font-mono font-bold text-xs bg-blue-50 group-hover:bg-blue-100/80 text-blue-700 border border-blue-200/80 px-2.5 py-1 rounded-lg transition-colors">
                           {s.student_id}
                         </span>
                       </td>
@@ -311,7 +340,7 @@ export default function StudentList() {
                       <td className="px-5 py-4 print:hidden text-right whitespace-nowrap">
                         <button
                           onClick={() => setSelectedStudent(s)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-all cursor-pointer mr-2 shadow-xs"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-all cursor-pointer mr-2 shadow-2xs"
                           title="View / Print Student ID Card"
                         >
                           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -342,8 +371,8 @@ export default function StudentList() {
 
       {/* Option B: View / Print Student ID Card Modal */}
       {selectedStudent && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto print:p-0 print:bg-white">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 relative animate-in fade-in zoom-in-95 duration-150 print:border-none print:shadow-none print:p-0">
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto print:p-0 print:bg-white animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-100 relative animate-in zoom-in-95 duration-150 print:border-none print:shadow-none print:p-0">
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 print:hidden">
               <div>

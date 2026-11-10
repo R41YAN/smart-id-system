@@ -122,7 +122,7 @@ export default function AdmitStudent() {
     <Layout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
+        <div className="pb-2 border-b border-slate-200/60">
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Admit Student & Generate ID
           </h1>
@@ -132,19 +132,19 @@ export default function AdmitStudent() {
         </div>
 
         {/* Algorithm Info Banner */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-blue-900">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 bg-blue-600 text-white rounded-lg font-mono font-bold text-[10px]">
+        <div className="bg-gradient-to-r from-blue-50/90 via-indigo-50/60 to-slate-50 border border-blue-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-blue-950 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="px-2.5 py-1 bg-blue-600 text-white rounded-lg font-mono font-bold text-[10px] tracking-wider shrink-0 shadow-xs">
               ENGINE
             </span>
-            <span>
+            <span className="font-medium text-slate-700">
               Format Rule:{' '}
-              <strong className="font-mono text-blue-700 font-bold">
+              <strong className="font-mono text-blue-700 font-bold bg-white/80 px-2 py-0.5 rounded border border-blue-200/60">
                 {isOpen ? '[Dept][YY][SemCode][Serial] (e.g. CSE26FL001)' : '[Dept][Batch][YY][Serial] (e.g. CSE5426001)'}
               </strong>
             </span>
           </div>
-          <span className="inline-flex items-center gap-1 font-semibold text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full text-[11px]">
+          <span className="inline-flex items-center gap-1.5 font-bold text-emerald-700 bg-emerald-100/80 border border-emerald-300/60 px-3 py-1 rounded-full text-[11px] shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             SELECT FOR UPDATE Protected
           </span>
@@ -175,7 +175,7 @@ export default function AdmitStudent() {
                     required
                     value={form.department_id}
                     onChange={e => handleDept(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                   >
                     <option value="">Select Department</option>
                     {departments.map(d => {
@@ -199,7 +199,7 @@ export default function AdmitStudent() {
                     value={form.batch_id}
                     onChange={e => setForm({ ...form, batch_id: e.target.value })}
                     disabled={!form.department_id}
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all disabled:bg-slate-50 disabled:text-slate-400"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all disabled:bg-slate-100/60 disabled:text-slate-400 font-medium"
                   >
                     <option value="">Select {isOpen ? 'Intake' : 'Batch'}</option>
                     {filteredBatches.map(b => (
@@ -221,7 +221,7 @@ export default function AdmitStudent() {
                   placeholder="e.g. Arafat Rahman"
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                 />
               </div>
 
@@ -235,9 +235,8 @@ export default function AdmitStudent() {
                     placeholder="student@email.com"
                     value={form.email}
                     onChange={e => setForm({ ...form, email: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                  >
-                  </input>
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                  />
                 </div>
 
                 <div>
@@ -249,7 +248,7 @@ export default function AdmitStudent() {
                     placeholder="01XXXXXXXXX"
                     value={form.phone}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
                   />
                 </div>
               </div>
@@ -269,7 +268,7 @@ export default function AdmitStudent() {
                   />
                   <label
                     htmlFor="student-photo-input"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 cursor-pointer transition-all shrink-0"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 cursor-pointer transition-all shrink-0 shadow-2xs"
                   >
                     <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -287,7 +286,7 @@ export default function AdmitStudent() {
                     </button>
                   )}
                   <span className="text-[11px] text-slate-400">
-                    Any size auto-adjusts to ID card portrait
+                    Auto-fits into PVC portrait card frame
                   </span>
                 </div>
               </div>
@@ -296,7 +295,7 @@ export default function AdmitStudent() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-blue-600/25 active:scale-[0.99] transition-all text-sm disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-blue-600/25 active:scale-[0.99] transition-all text-sm disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {loading ? (
                     <>
@@ -317,8 +316,8 @@ export default function AdmitStudent() {
             </form>
           </div>
 
-          {/* Right Column: Live Interactive Digital ID Card (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col items-center">
+          {/* Right Column: Live Interactive Digital ID Card (5 cols, sticky) */}
+          <div className="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-6">
             <div className="w-full max-w-sm">
               <div className="flex items-center justify-between mb-3 px-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -330,7 +329,7 @@ export default function AdmitStudent() {
                     Issued
                   </span>
                 ) : (
-                  <span className="text-[11px] font-medium text-slate-400">
+                  <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60">
                     Live Preview
                   </span>
                 )}
@@ -356,17 +355,17 @@ export default function AdmitStudent() {
 
               {/* Action Buttons when Admitted */}
               {result && (
-                <div className="mt-4 space-y-2">
+                <div className="mt-4 space-y-2 animate-in fade-in duration-200">
                   <button
                     onClick={() => window.print()}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
                   >
                     <PrinterIcon className="w-4 h-4" />
                     <span>Print Student ID Card</span>
                   </button>
                   <button
                     onClick={handleReset}
-                    className="w-full flex items-center justify-center gap-2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all cursor-pointer"
                   >
                     <PlusIcon className="w-3.5 h-3.5" />
                     <span>Enroll Another Student</span>
