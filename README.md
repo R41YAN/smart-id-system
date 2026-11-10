@@ -182,37 +182,40 @@ smart-id-system/
 
 ## 🚀 Quick Setup & Execution Guide
 
-### 1. Prerequisites
-- **Node.js**: v18+ (tested on Node.js v24 LTS)
-- **PostgreSQL**: Cloud Supabase (pre-configured) or local PostgreSQL port `5432`
+SIFS is designed with **Zero-Configuration Instant Execution**. When pulled from Git onto any machine (such as a friend's PC or lab workstation), the backend automatically connects to the pre-configured Cloud Supabase PostgreSQL database—**no local PostgreSQL installation, no manual database seeding, and no manual `.env` file creation required!**
 
-### 2. Configure Backend Database
-1. Update `backend/.env` with your database credentials:
-   ```env
-   PORT=5000
-   DATABASE_URL=postgresql://postgres.xxx:xxx@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
-   JWT_SECRET=smart_id_super_secret_key_2026
-   JWT_EXPIRES_IN=7d
-   ```
-2. Run the seed script to populate institutions, departments, batches, and admin accounts:
-   ```bash
-   cd backend
-   npm run db:setup
-   ```
+### Option A: One-Click Launcher (Windows — Recommended)
+Simply double-click **`run.bat`** in the project root folder.
+* Verifies Node.js and automatically installs dependencies if missing.
+* Starts the Backend API on `http://localhost:5000` (connected to Cloud Supabase).
+* Starts the Frontend Vite server on `http://localhost:5173`.
+* Automatically launches your web browser to `http://localhost:5173`.
 
-### 3. Start the Backend API Server
+---
+
+### Option B: Terminal Commands
+
+#### 1. Install Dependencies
+```bash
+# Install all dependencies across backend and frontend in one step:
+npm run install:all
+
+# (Or individually: cd backend && npm install, then cd ../frontend && npm install)
+```
+
+#### 2. Start Backend API Server
 ```bash
 cd backend
 npm run dev
-# Server will run on http://localhost:5000
+# Server automatically connects to Cloud Supabase and runs on http://localhost:5000
 ```
 
-### 4. Start the Frontend Application
+#### 3. Start Frontend Client Application
 ```bash
 # In a new terminal window:
 cd frontend
 npm run dev
-# Frontend will run on http://localhost:5173
+# Frontend runs on http://localhost:5173
 ```
 
 ---

@@ -1,0 +1,23 @@
+{
+  "name": "smart-id-system",
+  "version": "1.2.0",
+  "description": "Smart ID Formatting System (SIFS) - Multi-Tenant University Admission & Digital ID Platform",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "test": "npm test --prefix backend && npm test --prefix frontend -- --run",
+    "test:backend": "npm test --prefix backend",
+    "test:frontend": "npm test --prefix frontend -- --run",
+    "build": "npm run build --prefix frontend"
+  },
+  "keywords": [
+    "smart-id",
+    "university",
+    "admission",
+    "barcode",
+    "multi-tenant"
+  ],
+  "author": "Md. Raiyan (Backend) & Md. Fizul Islam Yamin (Frontend)"
+}

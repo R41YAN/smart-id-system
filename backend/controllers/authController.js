@@ -3,6 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const JWT_SECRET = process.env.JWT_SECRET || 'smart_id_super_secret_key_2026';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
 // POST /api/auth/register  — Super Admin creates new user accounts
 const register = async (req, res) => {
   const { name, email, password, role, university_id } = req.body;
@@ -46,8 +49,8 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, university_id: user.university_id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
     // Fetch rich user profile including university branding
@@ -66,7 +69,16 @@ const login = async (req, res) => {
       user: profile.rows[0] || { id: user.id, name: user.name, email: user.email, role: user.role, university_id: user.university_id },
     });
   } catch (err) {
-    console.error('Login error:', err);
+    console.error('Login error:', err.message);
+    const isConnError = ['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'EAI_AGAIN', '28P01'].includes(err.code)
+      || (err.message && (err.message.includes('connect') || err.message.includes('timeout') || err.message.includes('SSL')));
+
+    if (isConnError) {
+      return res.status(503).json({
+        message: 'Database connection failed. Please ensure your computer is connected to the internet to reach the Cloud Supabase database.',
+        error: err.message
+      });
+    }
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

@@ -20,7 +20,13 @@ export default function Login() {
       login(res.data.token, res.data.user);
       navigate(res.data.user.role === 'super_admin' ? '/super-admin' : '/admin');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid credentials or login failed');
+      if (!err.response) {
+        setError('Cannot reach backend server. Please verify backend is running on port 5000 (cd backend && npm run dev).');
+      } else if (err.response.status === 503) {
+        setError(err.response.data?.message || 'Database connection error. Please ensure internet access to reach the Cloud Supabase database.');
+      } else {
+        setError(err.response?.data?.message || 'Invalid credentials or login failed');
+      }
     } finally {
       setLoading(false);
     }
