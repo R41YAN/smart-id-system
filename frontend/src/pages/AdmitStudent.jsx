@@ -256,7 +256,7 @@ export default function AdmitStudent() {
               {/* Photo Upload */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Student Photograph (Optional)
+                  Student Photograph
                 </label>
                 <div className="flex flex-wrap items-center gap-3">
                   <input
@@ -344,7 +344,7 @@ export default function AdmitStudent() {
                 batchOrIntakeLabel={isOpen ? 'Intake' : 'Batch'}
                 batchOrIntakeValue={
                   currentBatch
-                    ? (isOpen ? `${SEM_LABELS[currentBatch.semester_code] || ''} '${yearStr}` : `${getOrdinal(batchNumRaw)} Batch (${currentBatch.year})`)
+                    ? (isOpen ? `${SEM_LABELS[currentBatch.semester_code] || ''} '${yearStr}` : `${getOrdinal(batchNumRaw)} Batch`)
                     : (isOpen ? `Fall '${yearStr}` : `${getOrdinal(batchNumRaw)} Batch`)
                 }
                 studentId={displayID}

@@ -32,12 +32,6 @@ export default function Login() {
     }
   };
 
-  const fillCredentials = (demoEmail, demoPass) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setError('');
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#070C18] p-4 relative overflow-hidden selection:bg-blue-500 selection:text-white">
       {/* Background Subtle Tech Grid */}
@@ -131,44 +125,11 @@ export default function Login() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Credentials Bar */}
-          <div className="mt-6 pt-5 border-t border-slate-800/80">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5 text-center flex items-center justify-center gap-1">
-              <span>⚡</span> Quick Demo Auto-Fill:
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => fillCredentials('superadmin@smartid.com', 'admin123')}
-                className="px-2.5 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/60 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all text-center truncate cursor-pointer"
-                title="Super Admin: superadmin@smartid.com"
-              >
-                Super Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => fillCredentials('uits_admin@smartid.com', 'admin123')}
-                className="px-2.5 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/60 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all text-center truncate cursor-pointer"
-                title="UITS Admin: uits_admin@smartid.com"
-              >
-                UITS Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => fillCredentials('nsu_admin@smartid.com', 'admin123')}
-                className="px-2.5 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/60 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all text-center truncate cursor-pointer"
-                title="NSU Admin: nsu_admin@smartid.com"
-              >
-                NSU Admin
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Footer Copyright */}
         <p className="mt-6 text-center text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} Smart ID Formatting System (SIFS). UITS Project Lab.
+          &copy; {new Date().getFullYear()} Smart ID Formatting System (SIFS). All rights reserved.
         </p>
       </div>
     </div>

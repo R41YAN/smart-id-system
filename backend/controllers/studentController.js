@@ -111,7 +111,24 @@ const admit = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
+    const studentRes = await pool.query('SELECT batch_id FROM students WHERE id=$1', [req.params.id]);
+    if (!studentRes.rows.length) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    const batchId = studentRes.rows[0].batch_id;
+
     await pool.query('DELETE FROM students WHERE id=$1', [req.params.id]);
+
+    // Recalibrate batch current_serial to the highest remaining student serial in this batch
+    const maxSerialRes = await pool.query(
+      'SELECT COALESCE(MAX(serial_number), 0) AS max_serial FROM students WHERE batch_id=$1',
+      [batchId]
+    );
+    await pool.query(
+      'UPDATE batches SET current_serial=$1 WHERE id=$2',
+      [maxSerialRes.rows[0].max_serial, batchId]
+    );
+
     res.json({ message: 'Student deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

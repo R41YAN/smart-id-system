@@ -401,7 +401,7 @@ export default function StudentList() {
                 batchOrIntakeValue={
                   selectedStudent.semester_code
                     ? `${SEM_LABELS[selectedStudent.semester_code]} ${selectedStudent.year}`
-                    : `${getOrdinal(selectedStudent.batch_number)} Batch (${selectedStudent.year})`
+                    : `${getOrdinal(selectedStudent.batch_number)} Batch`
                 }
                 studentId={selectedStudent.student_id}
                 photo={selectedStudent.photo}

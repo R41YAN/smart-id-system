@@ -184,7 +184,7 @@ export default function ManageUniversities() {
               {/* Photo-Style Frame for LOGO */}
               <div className="shrink-0 flex flex-col items-center">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 self-start">
-                  Logo <span className="text-slate-400 font-normal lowercase">(optional)</span>
+                  Logo
                 </label>
                 <div
                   onClick={() => document.getElementById('new-uni-logo-input')?.click()}
