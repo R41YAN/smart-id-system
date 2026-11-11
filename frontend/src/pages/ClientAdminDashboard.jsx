@@ -120,17 +120,23 @@ export default function ClientAdminDashboard() {
     <Layout>
       <div className="space-y-8">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-6 border-b border-slate-200/80">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Admission Dashboard
             </h1>
-            {university && (
-              <div className="flex flex-wrap items-center gap-2.5 mt-2.5">
-                {/* Clickable University Logo with 📷 hover */}
+            <p className="text-sm text-slate-500 mt-1 font-medium">
+              Institutional student enrollment, ID generation engine & directory
+            </p>
+          </div>
+
+          {university && (
+            <div className="flex flex-col items-start lg:items-end gap-3 shrink-0">
+              {/* Top Row (2 Red Mark): Larger Prominent University Logo & Name */}
+              <div className="flex items-center gap-3">
                 <div
                   onClick={() => document.getElementById('dashboard-uni-logo-input')?.click()}
-                  className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 hover:border-blue-500 hover:ring-2 hover:ring-blue-100 p-1 flex items-center justify-center shrink-0 shadow-xs cursor-pointer relative group transition-all"
+                  className="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 hover:border-blue-500 hover:ring-4 hover:ring-blue-100 p-1.5 flex items-center justify-center shrink-0 shadow-sm cursor-pointer relative group transition-all"
                   title="Click to change university logo"
                 >
                   {getUniversityLogo(university.name, university.logo_url) ? (
@@ -140,9 +146,9 @@ export default function ClientAdminDashboard() {
                       className="w-full h-full object-contain"
                     />
                   ) : (
-                    <UniversityIcon className="w-4 h-4 text-blue-600" />
+                    <UniversityIcon className="w-6 h-6 text-blue-600" />
                   )}
-                  <div className="absolute inset-0 bg-slate-900/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-bold">
+                  <div className="absolute inset-0 bg-slate-900/60 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold">
                     📷
                   </div>
                 </div>
@@ -155,25 +161,37 @@ export default function ClientAdminDashboard() {
                   onChange={handleLogoUpload}
                 />
 
-                <span className="text-sm font-bold text-slate-800">{university.name}</span>
-                {logoMsg && (
-                  <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                    {logoMsg}
-                  </span>
-                )}
-                <span className="text-slate-300">•</span>
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                  isOpen
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                    : 'bg-purple-50 text-purple-700 border border-purple-200'
-                }`}>
+                <div className="text-left lg:text-right">
+                  <h2 className="text-lg font-black text-slate-900 tracking-tight">
+                    {university.name}
+                  </h2>
+                  {logoMsg && (
+                    <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                      {logoMsg}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Row (2 Green Mark): Status Badges & Quick Action Button */}
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span
+                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                    isOpen
+                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                      : 'bg-purple-50 text-purple-700 border border-purple-200'
+                  }`}
+                >
                   {isOpen ? 'Open Credit Model' : 'Close Credit Model'}
                 </span>
-                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                  university.is_locked
-                    ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                }`}>
+
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                    university.is_locked
+                      ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                      : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  }`}
+                >
                   {university.is_locked ? (
                     <>
                       <LockIcon className="w-3 h-3 text-rose-600" />
@@ -186,20 +204,17 @@ export default function ClientAdminDashboard() {
                     </>
                   )}
                 </span>
-              </div>
-            )}
-          </div>
 
-          {/* Quick Action Button */}
-          <div className="flex gap-2.5">
-            <Link
-              to="/admin/admit"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <AdmitIcon className="w-4 h-4" />
-              <span>Admit Student</span>
-            </Link>
-          </div>
+                <Link
+                  to="/admin/admit"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer ml-1"
+                >
+                  <AdmitIcon className="w-4 h-4" />
+                  <span>Admit Student</span>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Live ID Formatting Formula Pill */}
