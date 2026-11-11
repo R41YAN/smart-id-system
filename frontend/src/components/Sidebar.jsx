@@ -119,30 +119,50 @@ export default function Sidebar() {
               </button>
             </div>
 
-            {/* User Identity Details as Requested */}
-            <div className="pt-2 border-t border-slate-800/60">
-              {/* Role Badge */}
-              <div className="mb-1.5">
-                <span
-                  className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                    user?.role === 'super_admin'
-                      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                      : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
-                  }`}
-                >
-                  {user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin'}
-                </span>
+            {/* User Identity Details + University Logo in the Red Mark */}
+            <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-2.5">
+              <div className="min-w-0 flex-1">
+                {/* Role Badge */}
+                <div className="mb-1">
+                  <span
+                    className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                      user?.role === 'super_admin'
+                        ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                        : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                    }`}
+                  >
+                    {user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin'}
+                  </span>
+                </div>
+
+                {/* Admin Full Name — No Truncation / No Cut Words! */}
+                <p className="text-sm font-bold text-white leading-snug break-words">
+                  {user?.name || user?.email}
+                </p>
+
+                {/* Admin Email */}
+                <p className="text-xs text-slate-400 mt-0.5 break-all">
+                  {user?.email}
+                </p>
               </div>
 
-              {/* Admin Full Name — No Truncation / No Cut Words! */}
-              <p className="text-sm font-bold text-white leading-snug break-words">
-                {user?.name || user?.email}
-              </p>
-
-              {/* Admin Email */}
-              <p className="text-xs text-slate-400 mt-0.5 break-all">
-                {user?.email}
-              </p>
+              {/* University Logo on the Right (Red Mark) */}
+              {user?.role !== 'super_admin' && (
+                <div
+                  className="w-10 h-10 rounded-xl bg-white/95 p-1 flex items-center justify-center shadow-md border border-slate-700/80 shrink-0 transition-transform hover:scale-105"
+                  title={uniName || 'University Logo'}
+                >
+                  {uniLogo ? (
+                    <img
+                      src={uniLogo}
+                      alt={uniName || 'University Logo'}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <UniversityIcon className="w-5 h-5 text-blue-600" />
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
