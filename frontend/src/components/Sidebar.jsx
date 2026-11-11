@@ -54,26 +54,27 @@ export default function Sidebar() {
       {!collapsed ? (
         <>
           {/* Header Section */}
-          <div className="p-5 border-b border-slate-800/80">
+          <div className="p-4 border-b border-slate-800/80">
             {/* Top Row: SIFS Logo + Brand + Version + Collapse Toggle Icon */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative group">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {/* Logo wrapper with fixed aspect-square and shrink-0 to prevent frame squeezing */}
+                <div className="relative group shrink-0 w-10 h-10">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-blue-500 rounded-xl blur-xs opacity-50 group-hover:opacity-100 transition duration-300" />
                   <img
                     src="/logo.jpg"
                     alt="SIFS Badge"
-                    className="relative w-11 h-11 rounded-xl object-cover shadow-lg border border-amber-400/50 shrink-0 transition-transform group-hover:scale-105"
+                    className="relative w-10 h-10 rounded-xl object-contain shadow-lg border border-amber-400/50 transition-transform group-hover:scale-105"
                   />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="font-black tracking-wider text-base text-white">SIFS</span>
                     <span className="text-[9px] font-mono px-1.5 py-0.2 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded font-bold">
                       v2.0
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 font-medium whitespace-nowrap">
+                  <p className="text-[11px] text-slate-400 font-medium truncate leading-tight mt-0.5" title="Smart ID Formatting System">
                     Smart ID Formatting System
                   </p>
                 </div>
@@ -83,7 +84,7 @@ export default function Sidebar() {
               <button
                 type="button"
                 onClick={toggleCollapse}
-                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer shrink-0 ml-1"
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer shrink-0"
                 title="Collapse sidebar"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +180,7 @@ export default function Sidebar() {
                 <img
                   src="/logo.jpg"
                   alt="SIFS"
-                  className="w-10 h-10 rounded-xl object-cover border border-amber-400/50 shadow-md group-hover:scale-105 transition-transform"
+                  className="w-10 h-10 rounded-xl object-contain border border-amber-400/50 shadow-md group-hover:scale-105 transition-transform"
                 />
                 <div className="absolute inset-0 bg-blue-600/80 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
