@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import { getUniversityLogo } from '../utils/universityLogos';
 import {
   DashboardIcon,
   UniversityIcon,
@@ -19,6 +21,32 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem('sifs_sidebar_collapsed') === 'true';
   });
+
+  const [uniLogoUrl, setUniLogoUrl] = useState(() => user?.university_logo || null);
+  const [uniName, setUniName] = useState(() => user?.university_name || '');
+
+  useEffect(() => {
+    if (user?.university_id) {
+      if (!user.university_name || !user.university_logo) {
+        api.get(`/universities/${user.university_id}`)
+          .then(res => {
+            if (res.data) {
+              setUniName(res.data.name || '');
+              setUniLogoUrl(res.data.logo_url || null);
+            }
+          })
+          .catch(() => {});
+      } else {
+        setUniName(user.university_name);
+        setUniLogoUrl(user.university_logo);
+      }
+    } else {
+      setUniName('');
+      setUniLogoUrl(null);
+    }
+  }, [user]);
+
+  const uniLogo = getUniversityLogo(uniName, uniLogoUrl);
 
   const toggleCollapse = () => {
     setCollapsed(prev => {
@@ -169,8 +197,8 @@ export default function Sidebar() {
         <div className="flex flex-col h-full justify-between">
           <div>
             {/* Header Section (Exact matching height h-[178px] with divider at identical Y) */}
-            <div className="h-[178px] p-3 border-b border-slate-800/80 flex flex-col items-center justify-between shrink-0">
-              {/* Top Group: SIFS Logo Button + SIFS Brand Text right underneath (in Green Mark position) */}
+            <div className="h-[178px] p-2.5 border-b border-slate-800/80 flex flex-col items-center justify-between shrink-0">
+              {/* Top Group: SIFS Logo Button + SIFS Brand Text */}
               <div className="flex flex-col items-center">
                 <button
                   type="button"
@@ -192,24 +220,51 @@ export default function Sidebar() {
                   </div>
                 </button>
 
-                {/* SIFS text placed right under the logo badge (Green Mark) */}
+                {/* SIFS text placed right under the logo badge */}
                 <p className="text-xs font-black tracking-wider text-white text-center mt-1">
                   SIFS
                 </p>
               </div>
 
-              {/* Role Badge matching uncollapsed [ Client Admin ] at identical height level */}
-              <div className="w-full flex justify-center pb-1">
+              {/* Middle Group: Role Badge */}
+              {/* 1st Pic Green Mark: CLIENT ADMIN | 2nd Pic Red Mark: SUPER ADMIN */}
+              <div className="w-full flex justify-center my-auto">
                 <span
-                  className={`text-[8.5px] font-bold uppercase tracking-tight px-1.5 py-0.5 rounded-full border text-center ${
+                  className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border text-center leading-tight shadow-sm ${
                     user?.role === 'super_admin'
                       ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
                       : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
                   }`}
                   title={user?.name || (user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin')}
                 >
-                  {user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin'}
+                  {user?.role === 'super_admin' ? (
+                    <>SUPER<br />ADMIN</>
+                  ) : (
+                    <>CLIENT<br />ADMIN</>
+                  )}
                 </span>
+              </div>
+
+              {/* Bottom Group (1st Pic Orange Mark): University Logo for Client Admin */}
+              <div className="w-full flex justify-center pb-0.5">
+                {user?.role !== 'super_admin' ? (
+                  <div
+                    className="w-8 h-8 rounded-lg bg-white/95 p-1 flex items-center justify-center shadow-md border border-slate-700/80 transition-transform hover:scale-105"
+                    title={uniName || 'University Logo'}
+                  >
+                    {uniLogo ? (
+                      <img
+                        src={uniLogo}
+                        alt={uniName || 'University Logo'}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <UniversityIcon className="w-4 h-4 text-blue-600" />
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-8 h-8" />
+                )}
               </div>
             </div>
 
