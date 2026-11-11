@@ -53,11 +53,11 @@ export default function Sidebar() {
       {/* ─── UNCOLLAPSED MODE (Wide — 256px) ────────────────────────── */}
       {!collapsed ? (
         <>
-          {/* Header Section */}
-          <div className="p-4 border-b border-slate-800/80">
-            {/* Top Row: SIFS Logo + Brand + Version + Collapse Toggle Icon */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
+          {/* Header Section (Exact height h-[178px] matching collapsed) */}
+          <div className="h-[178px] px-3.5 py-4 border-b border-slate-800/80 flex flex-col justify-between shrink-0">
+            {/* Top Row: SIFS Logo + Brand (No v2.0) + Collapse Toggle Icon */}
+            <div className="flex items-center justify-between gap-1.5">
+              <div className="flex items-center gap-2 min-w-0">
                 {/* Logo wrapper with fixed aspect-square and shrink-0 to prevent frame squeezing */}
                 <div className="relative group shrink-0 w-10 h-10">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-blue-500 rounded-xl blur-xs opacity-50 group-hover:opacity-100 transition duration-300" />
@@ -68,13 +68,10 @@ export default function Sidebar() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-black tracking-wider text-base text-white">SIFS</span>
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded font-bold">
-                      v2.0
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 font-medium truncate leading-tight mt-0.5" title="Smart ID Formatting System">
+                  <span className="font-black tracking-wider text-base text-white block leading-tight">
+                    SIFS
+                  </span>
+                  <p className="text-[11px] text-slate-400 font-medium tracking-tight whitespace-nowrap leading-tight mt-0.5">
                     Smart ID Formatting System
                   </p>
                 </div>
@@ -95,9 +92,9 @@ export default function Sidebar() {
             </div>
 
             {/* User Identity Details as Requested */}
-            <div className="mt-4 pt-3.5 border-t border-slate-800/60">
+            <div className="pt-2 border-t border-slate-800/60">
               {/* Role Badge */}
-              <div className="mb-2">
+              <div className="mb-1.5">
                 <span
                   className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
                     user?.role === 'super_admin'
@@ -122,10 +119,13 @@ export default function Sidebar() {
           </div>
 
           {/* Navigation Section */}
-          <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
-            <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500 px-3 py-1.5">
-              {user?.role === 'super_admin' ? 'System Console' : 'Admission Portal'}
-            </p>
+          <nav className="flex-1 p-3 overflow-y-auto space-y-2">
+            {/* Section Heading Slot (Height: h-8 flex items-center) */}
+            <div className="h-8 flex items-center px-3 mb-1">
+              <p className="text-[10px] uppercase tracking-wider font-bold text-slate-500">
+                {user?.role === 'super_admin' ? 'System Console' : 'Admission Portal'}
+              </p>
+            </div>
 
             {links.map((l) => {
               const Icon = l.icon;
@@ -135,7 +135,7 @@ export default function Sidebar() {
                   to={l.to}
                   end={l.exact}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    `h-11 flex items-center gap-3 px-3.5 rounded-xl text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white shadow-lg shadow-blue-600/30 font-semibold'
                         : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
@@ -153,11 +153,11 @@ export default function Sidebar() {
             })}
           </nav>
 
-          {/* Footer / Sign Out */}
-          <div className="p-4 border-t border-slate-800/80 bg-[#050811]">
+          {/* Footer / Sign Out (Height: h-[72px]) */}
+          <div className="h-[72px] p-4 border-t border-slate-800/80 bg-[#050811] flex items-center shrink-0">
             <button
               onClick={() => { logout(); navigate('/login'); }}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
+              className="w-full h-10 flex items-center justify-center gap-2 px-3 text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
             >
               <LogoutIcon className="w-4 h-4" />
               <span>Sign Out</span>
@@ -166,55 +166,64 @@ export default function Sidebar() {
         </>
       ) : (
         /* ─── COLLAPSED MODE (Mini Rail — 80px) ────────────────────────── */
-        <div className="flex flex-col h-full items-center py-4 justify-between">
-          {/* Top: SIFS Logo + SIFS + Role + Expand Toggle */}
-          <div className="w-full flex flex-col items-center">
-            {/* SIFS Logo with Expand Icon on Hover */}
-            <button
-              type="button"
-              onClick={toggleCollapse}
-              className="relative group p-1 focus:outline-none cursor-pointer"
-              title="Expand sidebar"
-            >
-              <div className="relative">
-                <img
-                  src="/logo.jpg"
-                  alt="SIFS"
-                  className="w-10 h-10 rounded-xl object-contain border border-amber-400/50 shadow-md group-hover:scale-105 transition-transform"
-                />
-                <div className="absolute inset-0 bg-blue-600/80 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                  </svg>
-                </div>
+        <div className="flex flex-col h-full justify-between">
+          <div>
+            {/* Header Section (Exact matching height h-[178px] with divider at identical Y) */}
+            <div className="h-[178px] p-3 border-b border-slate-800/80 flex flex-col items-center justify-between shrink-0">
+              {/* Top Group: SIFS Logo Button + SIFS Brand Text right underneath (in Green Mark position) */}
+              <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={toggleCollapse}
+                  className="relative group p-0.5 focus:outline-none cursor-pointer"
+                  title="Expand sidebar"
+                >
+                  <div className="relative">
+                    <img
+                      src="/logo.jpg"
+                      alt="SIFS"
+                      className="w-10 h-10 rounded-xl object-contain border border-amber-400/50 shadow-md group-hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute inset-0 bg-blue-600/80 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </button>
+
+                {/* SIFS text placed right under the logo badge (Green Mark) */}
+                <p className="text-xs font-black tracking-wider text-white text-center mt-1">
+                  SIFS
+                </p>
               </div>
-            </button>
 
-            {/* SIFS Text */}
-            <p className="text-xs font-black tracking-wider text-white text-center mt-1.5">
-              SIFS
-            </p>
+              {/* Role Badge matching uncollapsed [ Client Admin ] at identical height level */}
+              <div className="w-full flex justify-center pb-1">
+                <span
+                  className={`text-[8.5px] font-bold uppercase tracking-tight px-1.5 py-0.5 rounded-full border text-center ${
+                    user?.role === 'super_admin'
+                      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                      : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                  }`}
+                  title={user?.name || (user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin')}
+                >
+                  {user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin'}
+                </span>
+              </div>
+            </div>
 
-            {/* Compact Role Badge */}
-            <span
-              className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded mt-1 border text-center ${
-                user?.role === 'super_admin'
-                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                  : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
-              }`}
-              title={user?.role === 'super_admin' ? 'Super Admin' : 'Client Admin'}
-            >
-              {user?.role === 'super_admin' ? 'Super' : 'Admin'}
-            </span>
+            {/* Navigation Section */}
+            <nav className="p-3 overflow-y-auto space-y-2 flex flex-col items-center">
+              {/* Portal Active Indicator Slot (Height: h-8 matching uncollapsed ADMISSION PORTAL) */}
+              <div className="h-8 flex items-center justify-center mb-1">
+                <div
+                  className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse shadow-sm shadow-blue-400/50"
+                  title={user?.role === 'super_admin' ? 'System Console Active' : 'Admission Portal Active'}
+                />
+              </div>
 
-            {/* Divider */}
-            <div className="w-12 h-px bg-slate-800 my-4" />
-
-            {/* Portal Indicator */}
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mb-3 animate-pulse" title="Portal Active" />
-
-            {/* 3rd Pic Navigation Icons (Centered with Tooltips) */}
-            <nav className="flex flex-col gap-2.5 items-center w-full px-2">
+              {/* Navigation Icons (Height: h-11 matching uncollapsed) */}
               {links.map((l) => {
                 const Icon = l.icon;
                 return (
@@ -224,7 +233,7 @@ export default function Sidebar() {
                     end={l.exact}
                     title={l.label}
                     className={({ isActive }) =>
-                      `w-11 h-11 flex items-center justify-center rounded-xl transition-all ${
+                      `h-11 w-11 flex items-center justify-center rounded-xl transition-all ${
                         isActive
                           ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white shadow-lg shadow-blue-600/30'
                           : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
@@ -238,11 +247,11 @@ export default function Sidebar() {
             </nav>
           </div>
 
-          {/* Bottom: Sign Out Icon */}
-          <div className="w-full flex flex-col items-center pt-3 border-t border-slate-800/80">
+          {/* Footer / Sign Out (Height: h-[72px] matching uncollapsed) */}
+          <div className="h-[72px] p-4 border-t border-slate-800/80 bg-[#050811] flex items-center justify-center shrink-0">
             <button
               onClick={() => { logout(); navigate('/login'); }}
-              className="w-11 h-11 flex items-center justify-center text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
               title="Sign Out"
             >
               <LogoutIcon className="w-5 h-5" />
