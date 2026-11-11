@@ -47,15 +47,18 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
    - Full Department Name (`full_name`) + Normalized Short Code (`code`).
    - Active code grid in department management and formatted dropdowns `Full Name (CODE)` in Batches and Admission form.
 7. **Multi-Tenant Institutional University Logos & Custom Branding**:
-   - Permanent institutional badge with logo in Client Admin sidebar (`Sidebar.jsx`).
-   - Instant clickable logo update in Client Admin Dashboard banner (`ClientAdminDashboard.jsx`).
+   - Institutional branding integrated directly into both **Uncollapsed (Wide — 256px)** and **Collapsed (Mini Rail — 80px)** navigation sidebars (`Sidebar.jsx`).
+   - Dedicated university logo card on the right side of the Client Admin identity block in wide mode, and centered in the lower header rail in mini mode.
+   - Prominent enlarged university logo (`w-12 h-12` / 48px) and institutional title situated at top right of Admission Dashboard (`ClientAdminDashboard.jsx`), with instant clickable upload modal (`📷`).
    - Super Admin university tenant tables & admin access tables display institutional logos (`SuperAdminDashboard.jsx`, `ManageUniversities.jsx`, `ManageAdmins.jsx`).
-   - Photo-style `"LOGO"` upload frame with client-side canvas auto-resizing.
-   - Strict fallback to clean blue bank icon (never SIFS) when no custom logo is uploaded.
-   - Top-left SIFS brand header preserved on all administrative portals.
-   - Express body-parser increased to 10MB (`backend/index.js`) for Base64 logo & photo uploads.
-8. **Option 3 Hybrid Modern UI/UX Architecture & 3D Smart Card Tilt**:
+   - Photo-style upload frame with client-side canvas auto-resizing.
+   - Strict fallback to clean university icon when no custom logo is uploaded.
+   - Express body-parser configured for 10MB payload (`backend/index.js`) for Base64 logo & photo uploads.
+8. **Option 3 Hybrid Modern UI/UX Architecture, 3D Smart Card Tilt & Collapsible Navigation**:
    - **Cinematic Dark Login Screen**: Deep-space slate (`#070C18`), ambient radial glow orbs, and frosted glassmorphic card (`backdrop-blur-2xl bg-slate-900/80`).
+   - **Collapsible Dual-Mode Executive Sidebar**: One-click smooth transition between Wide (256px) and Mini Rail (80px) with `localStorage` state persistence (`sifs_sidebar_collapsed`).
+   - **Pixel-Synchronized Vertical Alignment**: Header container (`h-[178px]`), role badge, active portal indicator, 5 navigation icons (`Dashboard`, `Departments`, `Batches`, `Admit Student`, `Student List`), and Sign Out footer maintain identical Y-coordinates with zero vertical shifting during collapse/expand.
+   - **Zero Word Truncation Guarantee**: Admin names and institutional titles wrap naturally without clipping or premature ellipses.
    - **High-Density Executive Dashboard**: Crisp `#F8FAFC` canvas across Super Admin and Client Admin portals with live format rule breakdown pills.
    - **3D PVC Card Perspective Hover**: Interactive physical smart card physics (`.card-3d`, `.card-3d-wrap`, `perspective: 1200px`) with real-time keystroke rendering.
    - **Stacked Batch & Academic Year Display**: Renders batch name on Line 1 (`1st Batch`, `54th Batch`) and admission year on Line 2 (`(2026)`) directly underneath for close-credit institutions, preventing card truncation while preserving cohort years in dropdowns.
