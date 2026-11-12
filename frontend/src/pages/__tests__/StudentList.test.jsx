@@ -106,7 +106,7 @@ describe('Frontend UI Tests: Student Directory (StudentList.jsx)', () => {
     });
 
     // Click "ID Card" action button
-    const idCardBtn = screen.getByRole('button', { name: /ID Card/i });
+    const idCardBtn = screen.getByRole('button', { name: /^ID Card$/i });
     fireEvent.click(idCardBtn);
 
     // Verify modal elements
@@ -124,7 +124,7 @@ describe('Frontend UI Tests: Student Directory (StudentList.jsx)', () => {
       expect(screen.getByText('CSE26FL001')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /ID Card/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^ID Card$/i }));
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /Student Identity Card/i })).toBeInTheDocument();
@@ -135,6 +135,30 @@ describe('Frontend UI Tests: Student Directory (StudentList.jsx)', () => {
 
     await waitFor(() => {
       expect(screen.queryByRole('heading', { name: /Student Identity Card/i })).not.toBeInTheDocument();
+    });
+  });
+
+  test('TC_UI_LIST_06 [Batch Sheet Print Modal]: should open batch print sheet modal with A4 grid', async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText('CSE26FL001')).toBeInTheDocument();
+    });
+
+    const batchPrintBtn = screen.getByRole('button', { name: /Print ID Cards/i });
+    expect(batchPrintBtn).toBeInTheDocument();
+    fireEvent.click(batchPrintBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Batch ID Card Sheet Print/i)).toBeInTheDocument();
+      expect(screen.getByText(/A4 CR-80 Standard/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Print All ID Sheets/i })).toBeInTheDocument();
+    });
+
+    // Dismiss batch modal
+    fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+    await waitFor(() => {
+      expect(screen.queryByText(/Batch ID Card Sheet Print/i)).not.toBeInTheDocument();
     });
   });
 });

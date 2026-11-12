@@ -11,7 +11,8 @@ import {
   AdmitIcon,
   StudentsIcon,
   AdminsIcon,
-  LogoutIcon
+  LogoutIcon,
+  TrashIcon
 } from './Icons';
 
 export default function Sidebar() {
@@ -60,6 +61,7 @@ export default function Sidebar() {
     { to: '/super-admin',              label: 'Dashboard',     icon: DashboardIcon, exact: true },
     { to: '/super-admin/universities', label: 'Universities',  icon: UniversityIcon },
     { to: '/super-admin/admins',       label: 'Manage Admins', icon: AdminsIcon },
+    { to: '/super-admin/trash',        label: 'Recycle Bin',   icon: TrashIcon },
   ];
 
   const clientLinks = [
@@ -68,6 +70,7 @@ export default function Sidebar() {
     { to: '/admin/batches',     label: 'Batches',       icon: BatchIcon },
     { to: '/admin/admit',       label: 'Admit Student', icon: AdmitIcon },
     { to: '/admin/students',    label: 'Student List',  icon: StudentsIcon },
+    { to: '/admin/trash',       label: 'Recycle Bin',   icon: TrashIcon },
   ];
 
   const links = user?.role === 'super_admin' ? superLinks : clientLinks;

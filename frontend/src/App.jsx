@@ -12,6 +12,7 @@ import ManageDepartments    from './pages/ManageDepartments';
 import ManageBatches        from './pages/ManageBatches';
 import AdmitStudent         from './pages/AdmitStudent';
 import StudentList          from './pages/StudentList';
+import RecycleBin           from './pages/RecycleBin';
 
 export default function App() {
   return (
@@ -29,6 +30,8 @@ export default function App() {
             <ProtectedRoute allowedRoles={['super_admin']}><ManageUniversities /></ProtectedRoute>} />
           <Route path="/super-admin/admins" element={
             <ProtectedRoute allowedRoles={['super_admin']}><ManageAdmins /></ProtectedRoute>} />
+          <Route path="/super-admin/trash" element={
+            <ProtectedRoute allowedRoles={['super_admin']}><RecycleBin /></ProtectedRoute>} />
 
           {/* Client Admin */}
           <Route path="/admin" element={
@@ -41,6 +44,8 @@ export default function App() {
             <ProtectedRoute allowedRoles={['client_admin']}><AdmitStudent /></ProtectedRoute>} />
           <Route path="/admin/students" element={
             <ProtectedRoute allowedRoles={['client_admin']}><StudentList /></ProtectedRoute>} />
+          <Route path="/admin/trash" element={
+            <ProtectedRoute allowedRoles={['client_admin']}><RecycleBin /></ProtectedRoute>} />
 
           <Route path="/unauthorized" element={
             <div className="min-h-screen flex items-center justify-center">

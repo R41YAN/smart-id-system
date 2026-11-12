@@ -2,13 +2,16 @@ const pool = require('../db/connection');
 
 const getAll = async (req, res) => {
   try {
+    const { trash } = req.query;
     const uniId = req.user.role === 'super_admin'
       ? (req.query.university_id || null)
       : req.user.university_id;
 
+    const trashCond = trash === 'true' ? 'deleted_at IS NOT NULL' : 'deleted_at IS NULL';
+
     const query = uniId
-      ? 'SELECT id, university_id, name, COALESCE(code, name) AS code, COALESCE(full_name, name) AS full_name, created_at FROM departments WHERE university_id=$1 ORDER BY COALESCE(code, name) ASC'
-      : 'SELECT id, university_id, name, COALESCE(code, name) AS code, COALESCE(full_name, name) AS full_name, created_at FROM departments ORDER BY COALESCE(code, name) ASC';
+      ? `SELECT id, university_id, name, COALESCE(code, name) AS code, COALESCE(full_name, name) AS full_name, created_at FROM departments WHERE university_id=$1 AND ${trashCond} ORDER BY COALESCE(code, name) ASC`
+      : `SELECT id, university_id, name, COALESCE(code, name) AS code, COALESCE(full_name, name) AS full_name, created_at FROM departments WHERE ${trashCond} ORDER BY COALESCE(code, name) ASC`;
 
     const result = uniId ? await pool.query(query, [uniId]) : await pool.query(query);
     res.json(result.rows);
@@ -43,8 +46,11 @@ const create = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    await pool.query('DELETE FROM departments WHERE id=$1', [req.params.id]);
-    res.json({ message: 'Department deleted' });
+    const batches = await pool.query('SELECT id FROM batches WHERE department_id=$1 AND deleted_at IS NULL LIMIT 1', [req.params.id]);
+    if (batches.rows.length > 0)
+      return res.status(403).json({ message: 'Cannot delete department with active batches' });
+    await pool.query('UPDATE departments SET deleted_at = NOW() WHERE id=$1', [req.params.id]);
+    res.json({ message: 'Department moved to Recycle Bin' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

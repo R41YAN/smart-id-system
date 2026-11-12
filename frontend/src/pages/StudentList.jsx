@@ -30,6 +30,7 @@ export default function StudentList() {
   const [filter, setFilter] = useState({ department_id: '', batch_id: '' });
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showBatchModal, setShowBatchModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoMsg, setPhotoMsg] = useState('');
@@ -132,6 +133,15 @@ export default function StudentList() {
     );
   }, [students, searchQuery]);
 
+  const sheetBatches = useMemo(() => {
+    const chunkSize = 8;
+    const chunks = [];
+    for (let i = 0; i < displayedStudents.length; i += chunkSize) {
+      chunks.push(displayedStudents.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }, [displayedStudents]);
+
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this student record?')) return;
     try {
@@ -187,7 +197,21 @@ export default function StudentList() {
           </div>
 
           {/* Export / Print Actions */}
-          <div className="flex items-center gap-2.5 print:hidden">
+          <div className="flex flex-wrap items-center gap-2.5 print:hidden">
+            <button
+              onClick={() => setShowBatchModal(true)}
+              disabled={displayedStudents.length === 0}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
+              title="Batch Print ID Cards on standard A4 sheets (8 cards per sheet)"
+            >
+              <svg className="w-4 h-4 text-blue-200" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="2" y="4" width="20" height="16" rx="2" strokeWidth="2" />
+                <circle cx="8" cy="11" r="3" strokeWidth="2" />
+                <path d="M14 9h4m-4 4h4m-4 4h2" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span>Print ID Cards ({displayedStudents.length})</span>
+            </button>
+
             <button
               onClick={exportCSV}
               disabled={students.length === 0}
@@ -450,6 +474,119 @@ export default function StudentList() {
                 <PrinterIcon className="w-4 h-4" />
                 <span>Print Card</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Batch ID Card Sheet Print Modal (A4 Grid — 8 cards per page) */}
+      {showBatchModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex flex-col p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden !important;
+              }
+              #batch-print-container, #batch-print-container * {
+                visibility: visible !important;
+              }
+              #batch-print-container {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+              }
+              .sifs-page-break {
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+              @page {
+                size: A4 portrait;
+                margin: 6mm;
+              }
+            }
+          `}</style>
+
+          <div className="max-w-5xl w-full mx-auto bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden my-auto border border-slate-200 print:border-none print:shadow-none print:w-full print:max-w-none print:bg-transparent">
+            {/* Modal Control Header (Hidden in Print) */}
+            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex flex-wrap items-center justify-between gap-3 print:hidden">
+              <div>
+                <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
+                  <span>Batch ID Card Sheet Print</span>
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold border border-blue-200">
+                    A4 CR-80 Standard
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Rendering {displayedStudents.length} student card{displayedStudents.length === 1 ? '' : 's'} across {sheetBatches.length} printable A4 page{sheetBatches.length === 1 ? '' : 's'} (8 cards/sheet in 2×4 layout).
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowBatchModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/70 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/20 active:scale-[0.98] transition-all cursor-pointer"
+                >
+                  <PrinterIcon className="w-4 h-4" />
+                  <span>Print All ID Sheets ({sheetBatches.length} Page{sheetBatches.length === 1 ? '' : 's'})</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Printable Sheets Area */}
+            <div id="batch-print-container" className="p-4 sm:p-6 bg-slate-100/50 overflow-y-auto max-h-[78vh] print:max-h-none print:p-0 print:bg-transparent">
+              {sheetBatches.map((sheet, pageIdx) => (
+                <div
+                  key={pageIdx}
+                  className="bg-white rounded-2xl border border-slate-300 shadow-sm p-4 mb-8 mx-auto print:border-none print:shadow-none print:p-0 print:mb-0 print:rounded-none sifs-page-break"
+                  style={{ width: '100%', maxWidth: '210mm', minHeight: '290mm', boxSizing: 'border-box' }}
+                >
+                  {/* Page Guide Banner */}
+                  <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-200 text-[11px] text-slate-400 font-mono print:hidden">
+                    <span>A4 SHEET — PAGE {pageIdx + 1} OF {sheetBatches.length}</span>
+                    <span>2 COLUMNS × 4 ROWS (8 CR-80 BADGES)</span>
+                  </div>
+
+                  {/* 2x4 Badge Grid */}
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-3 justify-items-center">
+                    {sheet.map((student) => (
+                      <div key={student.id} className="relative">
+                        {/* Outer cut guideline */}
+                        <div className="absolute -inset-0.5 border border-dashed border-slate-300 pointer-events-none rounded-xl" />
+                        <StudentIdCard
+                          universityName={student.university_name || user?.university_name || 'SIFS ACADEMY'}
+                          universityLogo={student.university_logo || user?.university_logo}
+                          studentName={student.name}
+                          deptCode={student.department_code || student.department_name}
+                          batchOrIntakeLabel={student.semester_code ? 'Intake' : 'Batch'}
+                          batchOrIntakeValue={
+                            student.semester_code
+                              ? `${SEM_LABELS[student.semester_code]} ${student.year}`
+                              : `${getOrdinal(student.batch_number)} Batch`
+                          }
+                          academicYear={student.semester_code ? null : student.year}
+                          studentId={student.student_id}
+                          photo={student.photo}
+                          compact={true}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

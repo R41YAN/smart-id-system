@@ -12,6 +12,7 @@
 
 const request = require('supertest');
 const app = require('../../index');
+const pool = require('../../db/connection');
 
 describe('Integration Tests: Student Admission & Management (/api/students)', () => {
   let superAdminToken;
@@ -42,6 +43,8 @@ describe('Integration Tests: Student Admission & Management (/api/students)', ()
     muAdminToken = muRes.body.token;
 
     // 4. Retrieve Batches
+    await pool.query('UPDATE batches b SET current_serial = COALESCE((SELECT MAX(serial_number) FROM students s WHERE s.batch_id = b.id), 0)');
+
     const batchesRes = await request(app)
       .get('/api/batches')
       .set('Authorization', `Bearer ${superAdminToken}`);

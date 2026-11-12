@@ -7,6 +7,7 @@ const universityRoutes = require('./routes/universityRoutes');
 const departmentRoutes = require('./routes/departmentRoutes');
 const batchRoutes      = require('./routes/batchRoutes');
 const studentRoutes    = require('./routes/studentRoutes');
+const trashRoutes      = require('./routes/trashRoutes');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/universities', universityRoutes);
 app.use('/api/departments',  departmentRoutes);
 app.use('/api/batches',      batchRoutes);
 app.use('/api/students',     studentRoutes);
+app.use('/api/trash',        trashRoutes);
 
 // 404
 app.use((req, res) =>
