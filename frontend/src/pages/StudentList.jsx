@@ -171,7 +171,6 @@ export default function StudentList() {
       'Batch/Intake',
       'Email',
       'Phone',
-      'Photo URL (Optional)',
       'Admission Date'
     ];
     const rows = displayedStudents.map((s, i) => [
@@ -183,7 +182,6 @@ export default function StudentList() {
       `"${s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch (${s.year})`}"`,
       `"${s.email || ''}"`,
       `"${s.phone || ''}"`,
-      `"${(s.photo || '').replace(/"/g, '""')}"`,
       `"${new Date(s.admitted_at).toLocaleDateString()}"`
     ]);
 
