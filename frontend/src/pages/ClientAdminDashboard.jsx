@@ -325,7 +325,25 @@ export default function ClientAdminDashboard() {
                           {s.student_id}
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-semibold text-slate-800">{s.name}</td>
+                      <td className="px-6 py-4 font-bold text-slate-900">
+                        <div className="flex items-center gap-3">
+                          {s.photo ? (
+                            <img
+                              src={s.photo}
+                              alt={s.name}
+                              className="w-8 h-8 rounded-full object-cover object-center ring-2 ring-blue-100 shrink-0 border border-slate-200 select-none"
+                            />
+                          ) : (
+                            <div
+                              className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200 select-none"
+                              title="No photo attached"
+                            >
+                              {(s.name || '?')[0].toUpperCase()}
+                            </div>
+                          )}
+                          <span className="truncate">{s.name}</span>
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-slate-600">
                         <span className="font-mono text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                           {s.department_name}

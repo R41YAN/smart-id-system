@@ -208,7 +208,25 @@ export default function RecycleBin() {
                       {data.students.map((s) => (
                         <tr key={s.id} className="hover:bg-slate-50/70 transition-colors">
                           <td className="px-4 py-3.5 font-mono font-bold text-blue-600">{s.student_id}</td>
-                          <td className="px-4 py-3.5 font-bold text-slate-800">{s.name}</td>
+                          <td className="px-4 py-3.5 font-bold text-slate-800">
+                            <div className="flex items-center gap-3">
+                              {s.photo ? (
+                                <img
+                                  src={s.photo}
+                                  alt={s.name}
+                                  className="w-8 h-8 rounded-full object-cover object-center ring-2 ring-blue-100 shrink-0 border border-slate-200 select-none"
+                                />
+                              ) : (
+                                <div
+                                  className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200 select-none"
+                                  title="No photo attached"
+                                >
+                                  {(s.name || '?')[0].toUpperCase()}
+                                </div>
+                              )}
+                              <span className="truncate">{s.name}</span>
+                            </div>
+                          </td>
                           <td className="px-4 py-3.5 text-slate-500">
                             {s.department_name} • {s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch ${s.year}`}
                           </td>
