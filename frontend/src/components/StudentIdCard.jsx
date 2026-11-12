@@ -23,71 +23,106 @@ export default function StudentIdCard({
       <div
         ref={cardRef}
         className="w-full bg-white rounded-xl border border-slate-300 overflow-hidden text-slate-800 shadow-xs print:shadow-none print:border print:border-slate-400 select-none flex flex-col justify-between"
-        style={{ height: '62mm', width: '90mm', boxSizing: 'border-box' }}
+        style={{
+          height: '62mm',
+          width: '90mm',
+          boxSizing: 'border-box',
+          WebkitPrintColorAdjust: 'exact',
+          printColorAdjust: 'exact'
+        }}
       >
-        {/* Card Header Band with Navy & Gold Styling */}
-        <div className="relative bg-gradient-to-r from-[#070C18] via-[#0B132B] to-[#1C2541] px-3 py-1.5 border-b border-amber-400 flex items-center justify-between shrink-0">
+        {/* Card Header Band with Navy & Gold Styling (Forces dark background in print) */}
+        <div
+          className="relative bg-gradient-to-r from-[#070C18] via-[#0B132B] to-[#1C2541] px-3.5 py-2 border-b-2 border-amber-400 flex items-center justify-between shrink-0"
+          style={{
+            backgroundColor: '#070C18',
+            WebkitPrintColorAdjust: 'exact',
+            printColorAdjust: 'exact'
+          }}
+        >
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="w-6 h-6 rounded-md bg-white/10 p-0.5 flex items-center justify-center shrink-0 border border-amber-400/40">
+            <div
+              className="w-7 h-7 rounded-md bg-white/10 p-0.5 flex items-center justify-center shrink-0 border border-amber-400/40"
+              style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+            >
               {displayLogo ? (
                 <img src={displayLogo} alt="Logo" className="w-full h-full object-contain rounded-xs" />
               ) : (
-                <svg className="w-3.5 h-3.5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-4 h-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               )}
             </div>
             <div className="overflow-hidden">
-              <p className="text-[8px] uppercase font-bold tracking-wider text-amber-300 truncate leading-tight">
+              <p className="text-[10px] sm:text-[11px] uppercase font-extrabold tracking-wider text-amber-300 truncate leading-tight">
                 {universityName}
               </p>
-              <p className="text-[9px] font-black text-white tracking-tight leading-tight">
+              <p className="text-xs font-black text-white tracking-wide leading-tight mt-0.5">
                 STUDENT ID
               </p>
             </div>
           </div>
-          <span className="text-[7px] font-mono font-bold text-amber-300 bg-amber-400/10 px-1 py-0.5 rounded border border-amber-400/30 shrink-0">
+          <span
+            className="text-[8px] font-mono font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded border border-amber-400/40 shrink-0"
+            style={{
+              backgroundColor: 'rgba(251, 191, 36, 0.2)',
+              WebkitPrintColorAdjust: 'exact',
+              printColorAdjust: 'exact'
+            }}
+          >
             OFFICIAL
           </span>
         </div>
 
         {/* Compact Card Body */}
-        <div className="p-2 flex-1 flex flex-col justify-between">
-          <div className="flex items-start gap-2.5">
+        <div className="p-3 flex-1 flex flex-col justify-between">
+          <div className="flex items-start gap-3">
             {/* Photo / Silhouette */}
-            <div className="w-14 h-16 rounded-md bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+            <div className="w-18 h-22 rounded-lg bg-slate-100 border-2 border-slate-300 overflow-hidden shrink-0 flex items-center justify-center">
               {photo ? (
                 <img src={photo} alt={studentName} className="w-full h-full object-cover object-center" />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400">
-                  <svg className="w-6 h-6 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-7 h-7 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                   </svg>
-                  <span className="text-[7px] font-mono text-slate-400">PHOTO</span>
+                  <span className="text-[8px] font-mono font-bold text-slate-400 mt-0.5">PHOTO</span>
                 </div>
               )}
             </div>
 
             {/* Info details */}
             <div className="flex-1 overflow-hidden min-w-0">
-              <p className="text-xs font-black text-slate-900 truncate leading-tight">
+              <p className="text-sm sm:text-[15px] font-black text-slate-900 truncate leading-snug tracking-tight">
                 {studentName}
               </p>
-              <div className="mt-1 flex items-center gap-1.5 text-[9px]">
-                <span className="font-bold text-slate-500 uppercase">Dept:</span>
-                <span className="font-mono font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded border border-blue-200/50">
+              <div className="mt-1 flex items-center gap-1.5 text-xs">
+                <span className="font-bold text-slate-500 uppercase">DEPT:</span>
+                <span
+                  className="font-mono text-xs font-black text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
+                  style={{ backgroundColor: '#eff6ff', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+                >
                   {deptCode}
                 </span>
               </div>
-              <div className="mt-0.5 flex items-center gap-1.5 text-[9px] truncate">
+              <div className="mt-1 flex items-center gap-1.5 text-xs truncate">
                 <span className="font-bold text-slate-500">{batchOrIntakeLabel}:</span>
-                <span className="font-semibold text-slate-800 truncate">
+                <span className="font-extrabold text-slate-800 truncate">
                   {batchOrIntakeValue} {academicYear ? `(${academicYear})` : ''}
                 </span>
               </div>
-              <div className="mt-1 bg-amber-50/60 border border-amber-200/60 rounded px-1.5 py-0.5 flex items-center justify-between">
-                <span className="text-[8px] font-bold uppercase text-amber-900">ID:</span>
-                <span className="font-mono text-[11px] font-black tracking-wide text-blue-800">
+
+              {/* ID Box — ID Number placed immediately next to 'ID:' (Moved from right to left) */}
+              <div
+                className="mt-1.5 bg-amber-50/90 border border-amber-300 rounded-lg px-2.5 py-1 flex items-center gap-2 justify-start"
+                style={{
+                  backgroundColor: '#fffbeb',
+                  WebkitPrintColorAdjust: 'exact',
+                  printColorAdjust: 'exact'
+                }}
+              >
+                <span className="text-xs font-extrabold uppercase text-amber-950 tracking-wider">ID:</span>
+                <span className="font-mono text-sm sm:text-base font-black tracking-wider text-blue-900">
                   {studentId}
                 </span>
               </div>
@@ -95,11 +130,18 @@ export default function StudentIdCard({
           </div>
 
           {/* Barcode & Verification */}
-          <div className="pt-1 border-t border-slate-100 flex items-center justify-between mt-1">
-            <div className="flex-1 max-w-[170px] overflow-hidden">
-              <Barcode value={studentId} height={18} width={1.2} />
+          <div className="pt-1.5 border-t border-slate-200 flex items-center justify-between mt-1.5">
+            <div className="flex-1 max-w-[185px] overflow-hidden">
+              <Barcode value={studentId} height={24} width={1.3} />
             </div>
-            <span className="text-[7px] font-mono font-bold text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded border border-emerald-200 shrink-0">
+            <span
+              className="text-[8px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300 shrink-0"
+              style={{
+                backgroundColor: '#ecfdf5',
+                WebkitPrintColorAdjust: 'exact',
+                printColorAdjust: 'exact'
+              }}
+            >
               VERIFIED
             </span>
           </div>
@@ -113,17 +155,31 @@ export default function StudentIdCard({
       <div
         ref={cardRef}
         className="card-3d w-full bg-white rounded-3xl shadow-xl shadow-slate-900/10 border border-slate-200/90 overflow-hidden relative print:shadow-none print:border-2"
+        style={{
+          WebkitPrintColorAdjust: 'exact',
+          printColorAdjust: 'exact'
+        }}
       >
         {/* Lanyard Hole Visual */}
         <div className="w-14 h-2 bg-slate-200/90 rounded-full mx-auto mt-3 mb-1 print:hidden shadow-inner" />
 
-        {/* Card Header Band with Navy & Gold Styling */}
-        <div className="relative bg-gradient-to-r from-[#070C18] via-[#0B132B] to-[#1C2541] px-5 py-4 border-b-2 border-amber-400">
+        {/* Card Header Band with Navy & Gold Styling (Forces dark background in print) */}
+        <div
+          className="relative bg-gradient-to-r from-[#070C18] via-[#0B132B] to-[#1C2541] px-5 py-4 border-b-2 border-amber-400"
+          style={{
+            backgroundColor: '#070C18',
+            WebkitPrintColorAdjust: 'exact',
+            printColorAdjust: 'exact'
+          }}
+        >
           {/* Subtle gold decorative glow */}
           <div className="absolute top-0 right-0 w-28 h-full bg-gradient-to-l from-amber-400/10 to-transparent pointer-events-none" />
 
           <div className="flex items-center gap-3 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-amber-400/40 p-1.5 flex items-center justify-center shrink-0 shadow-sm">
+            <div
+              className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-amber-400/40 p-1.5 flex items-center justify-center shrink-0 shadow-sm"
+              style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+            >
               {displayLogo ? (
                 <img src={displayLogo} alt="Logo" className="w-full h-full object-contain rounded" />
               ) : (
@@ -218,6 +274,10 @@ export default function StudentIdCard({
                 ? 'bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 border-amber-300 text-amber-950 shadow-sm'
                 : 'bg-slate-50 border-slate-200 text-slate-800'
             }`}
+            style={{
+              WebkitPrintColorAdjust: 'exact',
+              printColorAdjust: 'exact'
+            }}
           >
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
               Generated Student ID

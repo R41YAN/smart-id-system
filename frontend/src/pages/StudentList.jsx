@@ -4,6 +4,10 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import StudentIdCard from '../components/StudentIdCard';
 import {
+  buildExportFileName,
+  triggerPrintWithFileName
+} from '../utils/exportHelpers';
+import {
   DownloadIcon,
   PrinterIcon,
   TrashIcon,
@@ -152,17 +156,34 @@ export default function StudentList() {
     }
   };
 
+  const activeDept = departments.find(d => String(d.id) === String(filter.department_id));
+  const activeBatch = batches.find(b => String(b.id) === String(filter.batch_id));
+  const activeDeptCode = activeDept?.code || activeDept?.name;
+
   const exportCSV = () => {
     if (displayedStudents.length === 0) return;
-    const headers = ['#', 'Student ID', 'Full Name', 'Department', 'Intake / Batch', 'Email', 'Phone', 'Admission Date'];
+    const headers = [
+      '#',
+      'Student ID',
+      'Full Name',
+      'Department Code',
+      'Department Name',
+      'Batch/Intake',
+      'Email',
+      'Phone',
+      'Photo URL (Optional)',
+      'Admission Date'
+    ];
     const rows = displayedStudents.map((s, i) => [
       i + 1,
       `"${s.student_id}"`,
       `"${(s.name || '').replace(/"/g, '""')}"`,
-      `"${s.department_name}"`,
-      `"${s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch ${s.year}`}"`,
+      `"${s.department_code || s.department_name || ''}"`,
+      `"${s.department_name || ''}"`,
+      `"${s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch (${s.year})`}"`,
       `"${s.email || ''}"`,
       `"${s.phone || ''}"`,
+      `"${(s.photo || '').replace(/"/g, '""')}"`,
       `"${new Date(s.admitted_at).toLocaleDateString()}"`
     ]);
 
@@ -171,15 +192,47 @@ export default function StudentList() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `SIFS_Student_Roster_${new Date().toISOString().slice(0, 10)}.csv`);
+    const baseName = buildExportFileName({
+      universityName: user?.university_name,
+      deptCode: activeDeptCode,
+      batch: activeBatch,
+      context: 'Student_Roster'
+    });
+    link.setAttribute('download', `${baseName}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrintRoster = () => {
+    const fileName = buildExportFileName({
+      universityName: user?.university_name,
+      deptCode: activeDeptCode,
+      batch: activeBatch,
+      context: 'Student_Roster'
+    });
+    triggerPrintWithFileName(fileName);
+  };
+
+  const handlePrintSingleCard = () => {
+    if (!selectedStudent) return;
+    const fileName = buildExportFileName({
+      universityName: selectedStudent.university_name || user?.university_name,
+      deptCode: selectedStudent.department_code || selectedStudent.department_name,
+      student: selectedStudent
+    });
+    triggerPrintWithFileName(fileName);
+  };
+
+  const handleBatchPrint = () => {
+    const fileName = buildExportFileName({
+      universityName: user?.university_name,
+      deptCode: activeDeptCode,
+      batch: activeBatch,
+      context: 'ID_Cards'
+    });
+    triggerPrintWithFileName(fileName);
   };
 
   return (
@@ -222,7 +275,7 @@ export default function StudentList() {
               <span>Export CSV</span>
             </button>
             <button
-              onClick={handlePrint}
+              onClick={handlePrintRoster}
               disabled={students.length === 0}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white rounded-xl text-xs font-bold shadow-sm active:scale-[0.98] transition-all cursor-pointer"
               title="Print or Save as PDF"
@@ -468,7 +521,7 @@ export default function StudentList() {
                 Close
               </button>
               <button
-                onClick={() => window.print()}
+                onClick={handlePrintSingleCard}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 shadow transition-all cursor-pointer"
               >
                 <PrinterIcon className="w-4 h-4" />
@@ -484,6 +537,11 @@ export default function StudentList() {
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex flex-col p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
           <style>{`
             @media print {
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
               body * {
                 visibility: hidden !important;
               }
@@ -537,7 +595,7 @@ export default function StudentList() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => window.print()}
+                  onClick={handleBatchPrint}
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/20 active:scale-[0.98] transition-all cursor-pointer"
                 >
                   <PrinterIcon className="w-4 h-4" />

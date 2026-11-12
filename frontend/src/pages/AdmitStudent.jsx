@@ -4,6 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import StudentIdCard from '../components/StudentIdCard';
 import {
+  buildExportFileName,
+  triggerPrintWithFileName
+} from '../utils/exportHelpers';
+import {
   AdmitIcon,
   CheckCircleIcon,
   SparklesIcon,
@@ -265,11 +269,27 @@ export default function AdmitStudent() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `SIFS_Bulk_Admission_Template_${sampleDept}.csv`);
+    const baseName = buildExportFileName({
+      universityName: university?.name || user?.university_name,
+      deptCode: sampleDept,
+      batch: batches[0],
+      context: 'Bulk_Admission_Template'
+    });
+    link.setAttribute('download', `${baseName}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+  const handlePrintSingleCard = () => {
+    if (!result) return;
+    const fileName = buildExportFileName({
+      universityName: university?.name || user?.university_name,
+      deptCode: deptCode,
+      student: result
+    });
+    triggerPrintWithFileName(fileName);
   };
 
   const handleBulkSubmit = async () => {
@@ -587,7 +607,7 @@ export default function AdmitStudent() {
                 {result && (
                   <div className="mt-4 space-y-2 animate-in fade-in duration-200">
                     <button
-                      onClick={() => window.print()}
+                      onClick={handlePrintSingleCard}
                       className="w-full flex items-center justify-center gap-2 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
                     >
                       <PrinterIcon className="w-4 h-4" />
