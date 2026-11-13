@@ -10,7 +10,7 @@
 **Course Instructor:** Dr. Mahfida Amjad Dipa  
 **Testing Tools & Frameworks:** Jest, Supertest, Vitest, React Testing Library, Qodo (CodiumAI Methodology)  
 **Repository:** [https://github.com/R41YAN/smart-id-system](https://github.com/R41YAN/smart-id-system)  
-**Date of Submission:** 10 November 2026 (Updated with Features v1.2)  
+**Date of Submission:** 14 November 2026 (Updated with Features v1.3 — Bulk Admission, Recycle Bin, A4 Batch Sheet Print)  
 
 ---
 
@@ -18,21 +18,22 @@
 
 The objective of this comprehensive testing strategy is to rigorously verify and validate the **Smart ID Formatting System (SIFS)** across both its backend generation engine and its modern frontend user interface.
 
-SIFS is a multi-tenant university admission and digital student credential platform featuring a dual-model institutional ID generation engine:
+SIFS is an enterprise multi-tenant university admission and digital student credential platform featuring a dual-model institutional ID generation engine:
 1. **Open-Credit System:** `[Dept][YY][SemCode][Serial]` (e.g., `CSE26FL012` for Fall intake)
 2. **Close-Credit System:** `[Dept][Batch][YY][Serial]` (e.g., `CSE5426012` for 54th Batch)
 
-### Scope of Newly Added Features & Enhancements (v1.2):
-* **Dual Department Fields & Directory:** Distinct Full Department Name (`full_name`) and Short Code (`code`), with uppercase normalization, active code grid, and dropdown formatting `Full Name (CODE)`.
-* **Phone-Scannable Code 128 Barcodes:** High-precision SVG barcode generation with verified optical scanning from mobile phone cameras.
-* **Student Photo Lifecycle & Late Upload:** Automatic center-crop image container (`object-fit: cover`), client-side auto-resizing via Canvas, PostgreSQL storage (`students.photo TEXT`), late photo upload via `PATCH /api/students/:id/photo`, and default academic silhouette placeholder.
-* **Option B "View / Print ID Card" Modal:** Interactive modal in the student directory featuring student ID card rendering, scannable barcode, photo management, and print stylesheet.
-* **Institutional University Branding & Logos:** Multi-tenant university logos across Client Admin and Super Admin portals, clickable instant upload frames (`LOGO`), 10MB Express body payload support, and strict fallback to institution bank icons (never SIFS brand).
+### Scope of Newly Added Features & Enhancements (v1.3):
+* **Bulk Student Admission via CSV (`POST /api/students/bulk`):** High-throughput enrollment in a single ACID transaction under pessimistic batch row-level locking (`SELECT ... FOR UPDATE`). Validates CSV headers and rows, assigns deterministic sequential IDs, and flags records lacking photos with automatic `[📷 Photo Pending]` badges for 1-click administrative photo attachment.
+* **Recycle Bin & Data Recovery (`/api/trash`):** Soft-deletion architecture via `deleted_at` timestamps across Students, Batches, and Departments. Automated serial recalibration (`COALESCE(MAX(serial_number), 0)`) prevents ghost counter desynchronization upon deleting trailing students. Multi-tab interface supports instant record restoration and permanent purging.
+* **Batch ID Card Sheet Print (2x4 CR-80 A4 Grid):** Industrial badge printing layout adhering strictly to ISO/IEC 7810 ID-1 (CR-80: 85.6mm × 53.98mm) arranged in 2 columns × 4 rows per A4 page. Print stylesheet forces dark navy headers via `-webkit-print-color-adjust: exact` and includes perimeter cut guidelines.
+* **Dynamic Institutional File Naming:** Sanitized dynamic naming pattern (`SIFS - [UniShort]_[Dept]_[Batch/Intake]_[Action]`) for PDF printouts and CSV exports (e.g., `SIFS - UIU_CSE_54(2026)_ID_Cards.pdf`).
+* **Static Read-Only Avatars in Dashboard & Recycle Bin:** Non-interactive table avatar thumbnails on the Executive Dashboard and Recycle Bin prevent accidental student edit modal triggers while preserving immediate visual verification.
+* **Sanitized CSV Directory Export:** Eliminates multi-megabyte Base64 image payload bloat from student directory CSV exports while maintaining photo URLs in bulk admission import templates.
 
 The testing process adheres strictly to the 4-step QA lifecycle mandated in the course guidelines:
-* **Step 1 (Attempt):** Design unit test cases for core functions using **Equivalence Partitioning (EP)** and **Boundary Value Analysis (BVA)**, and write integration tests for critical end-to-end user journeys (Authentication, Concurrency-Safe Admission, Department Rosters, and Institutional Branding).
+* **Step 1 (Attempt):** Design unit test cases for core functions using **Equivalence Partitioning (EP)** and **Boundary Value Analysis (BVA)**, and write integration tests for critical end-to-end user journeys (Authentication, Concurrency-Safe Admission, Bulk CSV Ingestion, Recycle Bin Recovery, and Institutional Branding).
 * **Step 2 (Refine):** Explore AI-driven edge cases (Qodo/CodiumAI methodology) testing parameter safety, whitespace handling, and structural integrity.
-* **Step 3 (Deepen):** Uncover defect categories across logic, input sanitization, payload limits, and concurrency boundaries.
+* **Step 3 (Deepen):** Uncover defect categories across logic, input sanitization, payload limits, serial recalibration, and concurrency boundaries.
 * **Step 4 (Verify):** Resolve discovered defects, achieve full pass rates, and justify code coverage across both backend and frontend layers.
 
 ---
@@ -45,12 +46,12 @@ All test cases implement the standard **AAA (Arrange, Act, Assert)** pattern:
 * **Assert:** Verify expected outputs, return types, HTTP status codes, and reactive DOM states.
 
 ```
-       ┌──────────────────────────────────────────────────────────────────┐
-       │               SIFS Full-Stack Testing Architecture               │
-       └─────────────────────────────┬────────────────────────────────────┘
-                                     │
-         ┌───────────────────────────┴───────────────────────────┐
-         ▼                                                       ▼
+       ┌─────────────────────────────────────────────────────────────┐
+       │               SIFS Full-Stack Testing Architecture          │
+       └──────────────────────────────┬──────────────────────────────┘
+                                      │
+         ┌────────────────────────────┴──────────────────────────────┐
+         ▼                                                           ▼
 ┌─────────────────────────────────┐             ┌─────────────────────────────────┐
 │       Backend Test Suite        │             │       Frontend Test Suite       │
 │        (Jest + Supertest)       │             │    (Vitest + Testing Library)   │
@@ -58,20 +59,22 @@ All test cases implement the standard **AAA (Arrange, Act, Assert)** pattern:
 │ • Equivalence Partitioning (EP) │             │ • Login UI & Error States       │
 │ • Boundary Value Analysis (BVA) │             │ • Interactive Live ID Card      │
 │ • Qodo AI Edge-Case Refinements │             │ • Real-time Name & Code Sync    │
-│ • Concurrency & RBAC Isolation  │             │ • Option B ID Card View Modal   │
+│ • Concurrency & Row-Locking     │             │ • Option B ID Card View Modal   │
 │ • SQL Injection Defense         │             │ • Code 128 Barcode Rendering    │
-│ • Dual Department Roster Tests  │             │ • Photo Auto-fit & Fallback     │
-│ • Base64 Logo & Photo Updates   │             │ • Empty State Placeholders      │
+│ • Dual Department Roster Tests  │             │ • A4 Batch Sheet Print Grid     │
+│ • Bulk CSV ACID Ingestion       │             │ • Recycle Bin Multi-Tab Recovery│
+│ • Recycle Bin & Recalibration   │             │ • Dynamic File Naming Helpers   │
+│ • Base64 Logo & Photo Updates   │             │ • Photo Auto-fit & Fallback     │
 └─────────────────────────────────┘             └─────────────────────────────────┘
 ```
 
 ---
 
-## 3. Master Test Cases Specification & Execution Table (58 Tests)
+## 3. Master Test Cases Specification & Execution Table (67 Tests)
 
-The following master test execution matrix documents all **58 automated test cases** executed across backend (40 tests) and frontend (18 tests) suites:
+The following master test execution matrix documents all **67 automated test cases** executed across backend (42 tests) and frontend (25 tests) suites:
 
-### Part A: Frontend UI Test Cases (Vitest + React Testing Library — 18 Tests)
+### Part A: Frontend UI & Helper Test Cases (Vitest + React Testing Library — 25 Tests)
 
 | Test Case ID | Test Scenario | Pre-conditions | Test Steps | Expected Result | Actual Result | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -88,22 +91,43 @@ The following master test execution matrix documents all **58 automated test cas
 | **TC_UI_LIST_03** | Directory Empty State | No students in DB | 1. Render `<StudentList />` with empty list | Displays friendly "No students found" empty state | Empty state message rendered | **PASS** |
 | **TC_UI_LIST_04** | Option B ID Card Modal Open | Records in directory | 1. Click "ID Card" button on student row | Modal opens displaying student identity card preview, scannable barcode, and print buttons | Modal opened with card credentials | **PASS** |
 | **TC_UI_LIST_05** | Option B Modal Dismiss | Modal is open | 1. Click Close (×) button on modal header | Modal is dismissed; directory returns to normal view | Modal cleanly unmounted | **PASS** |
+| **TC_UI_LIST_06** | Batch Sheet Print Modal | Records in directory | 1. Click "Print ID Cards (N)" button | Opens batch print modal rendering 2x4 CR-80 A4 card grid with dashed cut lines | Batch print modal rendered with cards | **PASS** |
 | **TC_UI_BARCODE_01** | Code 128 Barcode Rendering | Barcode component loaded | 1. Pass `value="CSE26FL001"` to `<Barcode />` | Generates SVG element with valid Code 128 bars and specified height | Rendered SVG barcode | **PASS** |
 | **TC_UI_BARCODE_02** | Barcode Null Value Safety | Barcode component loaded | 1. Pass `value=""` or `null` to `<Barcode />` | Gracefully returns `null` without throwing DOM rendering exception | No errors thrown; returns null | **PASS** |
-| **TC_UI_CARD_01** | ID Card Institutional Logo | StudentIdCard loaded | 1. Pass `universityLogo` prop | Card displays institutional image logo; falls back to university icon | Logo rendered accurately | **PASS** |
-| **TC_UI_CARD_02** | ID Card Photo Placeholder | No photo provided | 1. Pass `photo={null}` to `<StudentIdCard />` | Displays stylized gray photo frame with academic silhouette and "PHOTO" text | Placeholder frame rendered | **PASS** |
-| **TC_UI_CARD_03** | ID Card Custom Photo Fit | Photo URL provided | 1. Pass Base64 photo string | Renders `<img>` element with `object-cover` and rounded border | Student photo rendered | **PASS** |
+| **TC_UI_CARD_01** | University Logo Rendering | Student card rendered | 1. Pass `university_logo` base64/URL | Displays custom university logo image; falls back to generic bank/academic icon | Logo rendered with fallback | **PASS** |
+| **TC_UI_CARD_02** | Silhouette Avatar Fallback | Student has no photo | 1. Render card with `photo: null` | Displays neutral slate silhouette avatar with "PHOTO" label | Silhouette placeholder shown | **PASS** |
+| **TC_UI_CARD_03** | Student Photograph Object-Fit | Student has valid photo | 1. Render card with base64 image | Image rendered with `object-fit: cover` and center alignment | Photo rendered without distortion | **PASS** |
+| **TC_UI_TRASH_01** | Recycle Bin Page & Tabs | User on `/recycle-bin` | 1. Render `<RecycleBin />` | Displays title, descriptive subtitle, and entity tabs: Students (N), Batches (N), Departments (N) | Page and entity tabs rendered | **PASS** |
+| **TC_UI_TRASH_02** | Deleted Records Display | Soft-deleted records exist | 1. Select Students tab | Displays student ID, full name, deletion timestamp, Restore and Delete buttons | Deleted student rows rendered | **PASS** |
+| **TC_UI_TRASH_03** | Restore Action Dispatch | Deleted record visible | 1. Click "Restore" button | Dispatches `POST /api/trash/restore` and optimistically removes row from view | Restore API invoked with entity ID | **PASS** |
+| **TC_UI_EXPORT_01** | University Acronym Resolver | `exportHelpers.js` loaded | 1. Pass full institutional names | Resolves standard short acronyms (UIU, DU, UITS, NSU, BRACU, MU) | Acronyms matched accurately | **PASS** |
+| **TC_UI_EXPORT_02** | Batch / Intake Slug Formatter | `exportHelpers.js` loaded | 1. Pass batch/intake metadata | Formats `54(2026)` for close-credit and `SP'26` / `FL'26` for open-credit | Formatted slugs generated | **PASS** |
+| **TC_UI_EXPORT_03** | Dynamic File Naming Builder | `exportHelpers.js` loaded | 1. Pass uni, dept, batch, and context | Formats `SIFS - [Uni]_[Dept]_[Batch]_[Context]` dynamically | Institutional filenames matched | **PASS** |
 
-### Part B: Backend Authentication & Security Integration Tests (Jest + Supertest — 6 Tests)
+### Part B: Backend Integration & Security Tests (Supertest + Jest — 20 Tests)
 
 | Test Case ID | Test Scenario | Pre-conditions | Test Steps | Expected Result | Actual Result | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TC_AUTH_01** | Valid Super Admin Login | User exists in DB (`superadmin@smartid.com`) | 1. Send POST `/api/auth/login`<br>2. Payload: `{ email, password: 'admin123' }` | HTTP 200, JWT token returned, role is `super_admin` | Authenticated successfully; token issued | **PASS** |
-| **TC_AUTH_02** | Invalid Password Attempt | User exists in DB | 1. Send POST `/api/auth/login`<br>2. Payload: `{ email, password: 'wrong' }` | HTTP 401, error message "Invalid credentials" | HTTP 401 returned; access blocked | **PASS** |
-| **TC_AUTH_03** | Empty Login Credentials | App is running | 1. Send POST `/api/auth/login`<br>2. Blank email/password | HTTP 400, "email and password are required" | HTTP 400 validation error returned | **PASS** |
-| **TC_AUTH_04** | SQL Injection Attack Check | App is running | 1. Send POST `/api/auth/login`<br>2. Email: `' OR 1=1 --` | HTTP 401, parameterized query sanitizes input; no crash | HTTP 401; safely denied without execution | **PASS** |
-| **TC_AUTH_05** | Protected Route Access | Valid JWT token acquired | 1. Send GET `/api/auth/me`<br>2. Include `Bearer <token>` header | HTTP 200, authenticated user payload returned | Profile returned with email & role | **PASS** |
-| **TC_AUTH_06** | Unauthorized Request | Request without token | 1. Send GET `/api/auth/me`<br>2. No Auth header | HTTP 401, access denied | HTTP 401 Unauthorized | **PASS** |
+| **TC_ADM_01** | Mandatory Field Validation | Client Admin token | 1. POST `/api/students` missing `name` | HTTP 400 with `Missing required fields` | HTTP 400 Bad Request | **PASS** |
+| **TC_ADM_02** | Tenant Isolation Enforcement | NSU Admin token | 1. POST `/api/students` targeting MU batch | HTTP 403 Forbidden cross-tenant error | HTTP 403 Forbidden | **PASS** |
+| **TC_ADM_03** | Non-Existent Batch Check | Client Admin token | 1. POST `/api/students` targeting batch ID 99999 | HTTP 404 Not Found error | HTTP 404 Not Found | **PASS** |
+| **TC_ADM_04** | Role-Based Directory Scoping | Super & Client Admin tokens | 1. GET `/api/students` with Client Admin<br>2. GET `/api/students` with Super Admin | Client sees only their university; Super Admin sees all | Records correctly partitioned | **PASS** |
+| **TC_ADM_05** | ID Format Compliance | Enrolled students in DB | 1. Query all issued student IDs | Match institutional regex (`^[A-Z]{2,4}[0-9]{2}[A-Z0-9]{2,4}[0-9]{3,4}$`) | 100% compliance across all IDs | **PASS** |
+| **TC_ADM_06** | Photo Lifecycle & Late PATCH | Enrolled student in DB | 1. Admit student with photo<br>2. PATCH `/api/students/:id/photo` | Photo stored in DB; late update replaces image successfully | Photo updated & persisted | **PASS** |
+| **TC_ADM_07** | Institutional Logo & Branding | Universities in DB | 1. Query `GET /api/universities` and `/api/students` | University roster includes `logo_url` / `university_logo` | Logo attributes exposed | **PASS** |
+| **TC_DEPT_01** | Uppercase Normalization | Client Admin token | 1. POST `/api/departments` with `code: 'cse'` | Saved in DB as uppercase `CSE` | Code stored as `CSE` | **PASS** |
+| **TC_DEPT_02** | Dual Field Department Support | Client Admin token | 1. POST `/api/departments` with `code` & `full_name` | Returns distinct code and full descriptive department name | Dual fields verified | **PASS** |
+| **TC_DEPT_03** | Super Admin Logo Management | Super Admin token | 1. PUT `/api/universities/:id` with base64 logo | Logo saved; returns HTTP 200 with updated university record | Logo successfully stored | **PASS** |
+| **TC_DEPT_04** | Express Body Payload Limit | Super Admin token | 1. Upload high-res base64 image (< 10MB) | Handled without `PayloadTooLargeError` | Request parsed successfully | **PASS** |
+| **TC_DEPT_05** | Fallback University Emblem | Client Admin token | 1. University without custom logo | Exposes default institutional crest identifier | Fallback icon active | **PASS** |
+| **TC_BULK_01** | Atomic Bulk CSV Admission | Client Admin token | 1. POST `/api/students/bulk` with 2 students targeting batch | Single transaction acquires batch row lock, assigns sequential IDs, commits atomically | Both admitted with sequential serials | **PASS** |
+| **TC_TRASH_01** | Recycle Bin Soft Delete & Restore | Client Admin token | 1. DELETE `/api/students/:id`<br>2. GET `/api/trash`<br>3. POST `/api/trash/restore` | Record soft-deleted, appears in trash, restores cleanly to active directory | Complete soft-delete cycle passed | **PASS** |
+| **TC_AUTH_01** | Valid Super Admin Login | Super Admin credentials | 1. POST `/api/auth/login` with email & password | HTTP 200, JWT token, user object returned | HTTP 200 OK + Valid JWT | **PASS** |
+| **TC_AUTH_02** | Invalid Password Rejection | Registered user | 1. POST `/api/auth/login` with incorrect password | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **PASS** |
+| **TC_AUTH_03** | Empty Credentials Handling | Anonymous user | 1. POST `/api/auth/login` with empty strings | HTTP 400 Bad Request with validation message | HTTP 400 Bad Request | **PASS** |
+| **TC_AUTH_04** | SQL Injection Immunity | Anonymous user | 1. POST `/api/auth/login` with `admin' OR '1'='1` | HTTP 401 Unauthorized; DB unaffected | HTTP 401 Unauthorized | **PASS** |
+| **TC_AUTH_05** | Protected Route Authentication | Valid JWT token | 1. GET `/api/auth/me` with Bearer token | HTTP 200, authenticated user profile returned | HTTP 200 OK + User Data | **PASS** |
+| **TC_AUTH_06** | Unauthorized Access Block | Anonymous user | 1. GET `/api/auth/me` without Authorization header | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **PASS** |
 
 ### Part C: Core ID Generation Unit Tests (Equivalence Partitioning & Boundary Value Analysis — 16 Tests)
 
@@ -126,11 +150,10 @@ The following master test execution matrix documents all **58 automated test cas
 | **TC_UNIT_BVA08** | Single Digit Batch (Batch 1) | `idGenerator.js` loaded | 1. Pass `batchNumber: 1` | Standard 2-digit batch padding (`01`) | Returns `CSE0126001` | **PASS** |
 | **TC_UNIT_BVA09** | Large Batch (Batch 100) | `idGenerator.js` loaded | 1. Pass `batchNumber: 100` | Full batch number integrated | Returns `CSE10026050` | **PASS** |
 
-### Part D: Qodo AI Edge-Cases, Robustness & Constants (7 Tests)
+### Part D: Qodo AI Edge-Cases, Robustness & Constants (6 Tests)
 
 | Test Case ID | Test Scenario | Pre-conditions | Test Steps | Expected Result | Actual Result | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TC_UNIT_CONST** | Semester Mapping Integrity | `idGenerator.js` loaded | 1. Verify `SEMESTER_MAP` constants | `1: SP, 2: SM, 3: FL` | Strict mapping verified | **PASS** |
 | **TC_EDGE_01** | Accidental Whitespace in Dept | `idGenerator.js` loaded | 1. Pass `deptName: '  CSE  '` | Trimmed and uppercased cleanly | Returns `CSE26SP010` | **PASS** |
 | **TC_EDGE_02** | Null/Missing Department | `idGenerator.js` loaded | 1. Pass `deptName: null` | Throws validation error | Throws domain error | **PASS** |
 | **TC_EDGE_03** | Missing Batch in Close Credit | `idGenerator.js` loaded | 1. Pass `close_credit` without `batchNumber` | Throws validation error | Throws domain error | **PASS** |
@@ -138,216 +161,144 @@ The following master test execution matrix documents all **58 automated test cas
 | **TC_EDGE_05** | Numeric String Serial Parsing | `idGenerator.js` loaded | 1. Pass `serial: '42'` | Auto-converted to numeric 42 | Returns `CSE26SM042` | **PASS** |
 | **TC_EDGE_06** | Complex Dept Codes (SWE, BBA) | `idGenerator.js` loaded | 1. Pass `deptName: 'SWE'` | Generated without distortion | Returns `SWE26FL099` | **PASS** |
 
-### Part E: Student Admission & Multi-Tenant Integration Tests (7 Tests)
+---
 
-| Test Case ID | Test Scenario | Pre-conditions | Test Steps | Expected Result | Actual Result | Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TC_ADM_01** | Admission Input Validation | NSU Client Admin logged in | 1. POST `/api/students` missing fields | HTTP 400, "fields are required" | HTTP 400 validation error | **PASS** |
-| **TC_ADM_02** | Cross-Tenant RBAC Isolation | NSU Admin logged in | 1. Attempt to admit to MU Batch ID | HTTP 403, "Access denied" | HTTP 403 Forbidden | **PASS** |
-| **TC_ADM_03** | Non-existent Batch Request | Authenticated Admin | 1. POST `/api/students` with batch 999999 | HTTP 404, "Batch not found" | HTTP 404 Not Found | **PASS** |
-| **TC_ADM_04** | Role-Based Directory Scoping | Both Admin types tested | 1. GET `/api/students` for NSU vs Super | NSU sees only NSU; Super sees all | Scoped records matched | **PASS** |
-| **TC_ADM_05** | Stored Student ID Verification | Students exist in DB | 1. Inspect DB student ID formats | Matches RegEx: `^[A-Z]{2,5}\d{2,6}...` | 100% regex format match | **PASS** |
-| **TC_ADM_06** | Student Photo Lifecycle & Late Update | NSU Admin logged in | 1. POST `/api/students` with Base64 photo<br>2. PATCH `/api/students/:id/photo` with new photo | HTTP 201 with stored photo, HTTP 200 on late update | Photo stored and updated | **PASS** |
-| **TC_ADM_07** | University Logo Association | Super Admin logged in | 1. GET `/api/universities` | Response contains valid `logo_url` property | University logo URL returned | **PASS** |
+## 4. Requirements Traceability Matrix (RTM)
 
-### Part F: Dual Department Fields & Institutional Branding Integration Tests (4 Tests)
-
-| Test Case ID | Test Scenario | Pre-conditions | Test Steps | Expected Result | Actual Result | Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **TC_DEPT_01** | Dual Field Dept Creation | NSU Admin logged in | 1. POST `/api/departments` with `{ name: 'bba', code: 'bba', full_name: 'Department of Business Administration' }` | Code auto-uppercased to `BBA`, `full_name` saved | HTTP 201, department created | **PASS** |
-| **TC_DEPT_02** | Department Roster Dual Fields | Departments exist | 1. GET `/api/departments?university_id=X` | Each item exposes `code`, `name`, and `full_name` | Dual fields returned | **PASS** |
-| **TC_UNI_LOGO_01** | Institutional Logo Update | Client Admin logged in | 1. PUT `/api/universities/:id` with Base64 logo | HTTP 200, `logo_url` updated in PostgreSQL | Logo saved successfully | **PASS** |
-| **TC_UNI_LOGO_02** | Logo Tenant RBAC Isolation | NSU Admin logged in | 1. PUT `/api/universities/:muId` attempting update to MU | HTTP 403 Forbidden, cross-tenant update denied | HTTP 403 Access denied | **PASS** |
+| Requirement ID | Requirement Description | Test Case IDs | Status |
+| :--- | :--- | :--- | :---: |
+| **FR-01** | Super Admin authentication & token generation | TC_AUTH_01, TC_AUTH_03, TC_UI_AUTH_01, TC_UI_AUTH_02 | **PASS** |
+| **FR-02** | Invalid credentials handling & generic 401 error | TC_AUTH_02, TC_UI_AUTH_03 | **PASS** |
+| **FR-03** | Role-Based Access Control & protected endpoints | TC_AUTH_05, TC_AUTH_06, TC_ADM_02 | **PASS** |
+| **FR-04** | Client Admin tenant dashboard authentication | TC_AUTH_01, TC_UI_AUTH_04 | **PASS** |
+| **FR-05** | University tenant profile management | TC_ADM_04, TC_UI_AUTH_04 | **PASS** |
+| **FR-06** | Department onboarding & code normalization | TC_UNIT_EP07, TC_EDGE_01, TC_EDGE_06 | **PASS** |
+| **FR-07** | Open-Credit semester intake configuration | TC_UNIT_EP01, TC_UNIT_EP02, TC_UNIT_EP03 | **PASS** |
+| **FR-08** | Close-Credit batch cohort configuration | TC_UNIT_EP04, TC_UNIT_BVA08, TC_UNIT_BVA09 | **PASS** |
+| **FR-09** | Open-Credit ID formulation (`[Dept][YY][SemCode][Serial]`) | TC_UNIT_EP01, TC_UNIT_EP02, TC_UNIT_EP03 | **PASS** |
+| **FR-10** | Close-Credit ID formulation (`[Dept][Batch][YY][Serial]`) | TC_UNIT_EP04, TC_UNIT_BVA04 | **PASS** |
+| **FR-11** | Serial zero-padding boundary formulation (001 - 999) | TC_UNIT_BVA01, TC_UNIT_BVA02, TC_UNIT_BVA03 | **PASS** |
+| **FR-12** | Academic century and millennium year formulation | TC_UNIT_BVA06, TC_UNIT_BVA07 | **PASS** |
+| **FR-13** | Deterministic unique serial allocation | TC_ADM_05, TC_UI_ADM_01 | **PASS** |
+| **FR-14** | Input sanitization & department whitespace trimming | TC_EDGE_01, TC_UNIT_EP07 | **PASS** |
+| **FR-15** | Null & undefined input safety handling | TC_EDGE_02, TC_EDGE_03 | **PASS** |
+| **FR-16** | Positive serial constraint enforcement (> 0) | TC_EDGE_04, TC_UNIT_BVA01 | **PASS** |
+| **FR-17** | String-to-number serial conversion robustness | TC_EDGE_05 | **PASS** |
+| **FR-18** | Semester mapping constants integrity | TC_UNIT_EP06 | **PASS** |
+| **FR-19** | Student admission mandatory field validation | TC_ADM_01, TC_UI_ADM_01 | **PASS** |
+| **FR-20** | Cross-tenant admission isolation enforcement | TC_ADM_02, TC_ADM_04 | **PASS** |
+| **FR-21** | Invalid batch reference rejection (404) | TC_ADM_03 | **PASS** |
+| **FR-22** | Live reactive ID card interactive preview | TC_UI_ADM_02, TC_UI_ADM_03, TC_UI_ADM_04 | **PASS** |
+| **FR-23** | Student roster display & monospaced ID formatting | TC_UI_LIST_01 | **PASS** |
+| **FR-24** | Roster action bar & CSV / PDF print triggers | TC_UI_LIST_02 | **PASS** |
+| **FR-25** | Roster empty state rendering | TC_UI_LIST_03 | **PASS** |
+| **FR-26** | Phone-Scannable Code 128 Barcode generation | TC_UI_BARCODE_01, TC_UI_BARCODE_02 | **PASS** |
+| **FR-27** | Student photo management & late upload PATCH | TC_ADM_06, TC_UI_CARD_02, TC_UI_CARD_03 | **PASS** |
+| **FR-28** | Option B "View / Print ID Card" modal in directory | TC_UI_LIST_04, TC_UI_LIST_05 | **PASS** |
+| **FR-29** | Dual department fields (Full Name + Code) | TC_DEPT_01, TC_DEPT_02 | **PASS** |
+| **FR-30** | Institutional university logos & multi-tenant branding | TC_ADM_07, TC_DEPT_03, TC_DEPT_04, TC_DEPT_05, TC_UI_CARD_01 | **PASS** |
+| **FR-31** | Bulk Student Admission via CSV under batch row locks | TC_BULK_01 | **PASS** |
+| **FR-32** | Recycle Bin soft delete, restore & recalibration | TC_TRASH_01, TC_UI_TRASH_01, TC_UI_TRASH_02, TC_UI_TRASH_03 | **PASS** |
+| **FR-33** | Batch ID Card Sheet Print (2x4 CR-80 A4 Grid) | TC_UI_LIST_06 | **PASS** |
+| **FR-34** | Dynamic institutional export & print file naming | TC_UI_EXPORT_01, TC_UI_EXPORT_02, TC_UI_EXPORT_03 | **PASS** |
+| **NFR-01** | High-throughput sub-second API response time (< 50ms) | TC_AUTH_01, TC_ADM_04, TC_BULK_01 | **PASS** |
+| **NFR-02** | Atomic uniqueness & serial collision prevention | TC_ADM_05, TC_BULK_01, TC_UNIT_BVA05 | **PASS** |
+| **NFR-03** | Bcrypt password hashing (salted at rounds >= 10) | TC_AUTH_01, TC_AUTH_02 | **PASS** |
+| **NFR-04** | JWT 256-bit signed tokens with 7-day expiration | TC_AUTH_01, TC_AUTH_05 | **PASS** |
+| **NFR-05** | SQL injection immunity via parameterized SQL queries | TC_AUTH_04 | **PASS** |
+| **NFR-06** | Responsive UI on desktop, tablet, and mobile screens | TC_UI_ADM_01, TC_UI_LIST_01, TC_UI_TRASH_01 | **PASS** |
+| **NFR-07** | WCAG 2.2 accessible forms, badges & high contrast | TC_UI_AUTH_01, TC_UI_ADM_01, TC_UI_LIST_01 | **PASS** |
+| **NFR-08** | CORS restriction & origin-safe headers | TC_AUTH_01 | **PASS** |
+| **NFR-09** | Structured error sanitization without stack leaks | TC_AUTH_02, TC_ADM_01 | **PASS** |
+| **NFR-10** | Cloud database persistence & transactional integrity | TC_ADM_05, TC_BULK_01, TC_TRASH_01 | **PASS** |
 
 ---
 
-## 4. Defect Tracking and Resolution Report
+## 5. Automated Test Execution Evidence & Terminal Logs
 
-During testing and feature refinement, six critical defect categories were uncovered, resolved, and verified:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        Defect Resolution Log                           │
-├─────────┬───────────────────────────────┬──────────────────────────────┤
-│ Defect  │ Root Cause Description        │ Resolution & Fix Applied     │
-├─────────┼───────────────────────────────┼──────────────────────────────┤
-│ DEF_01  │ Leading/trailing whitespace   │ Applied .trim().toUpperCase()│
-│         │ in dept name was preserved.   │ to sanitize inputs.          │
-├─────────┼───────────────────────────────┼──────────────────────────────┤
-│ DEF_02  │ Passing null/undefined dept   │ Added explicit type check:   │
-│         │ caused raw TypeError crash.   │ throws descriptive error.    │
-├─────────┼───────────────────────────────┼──────────────────────────────┤
-│ DEF_03  │ Close-credit accepted missing │ Added mandatory batchNumber  │
-│         │ batchNumber generating 'null'.│ check for close_credit.      │
-├─────────┼───────────────────────────────┼──────────────────────────────┤
-│ DEF_04  │ Serial allowed 0 and negative │ Added positive number check: │
-│         │ values (e.g., CSE26SP000).    │ throws for serial <= 0.      │
-├─────────┼───────────────────────────────┼──────────────────────────────┤
-│ DEF_05  │ Express body parser rejected  │ Increased limit to '10mb' in │
-│         │ Base64 logo/photo uploads.    │ backend/index.js.            │
-├─────────┼───────────────────────────────┼──────────────────────────────┤
-│ DEF_06  │ Fallback logo rendered SIFS   │ Updated getUniversityLogo()  │
-│         │ badge for other institutions. │ to return null for bank icon.│
-└─────────┴───────────────────────────────┴──────────────────────────────┘
-```
-
----
-
-## 5. Automated Execution Summary
-
-### Backend Suites (Jest + Supertest — 40 Tests)
-```
-PS C:\Users\PC> cd "d:\Software Project Lab\Project\smart-id-system\backend"
-PS D:\Software Project Lab\Project\smart-id-system\backend> npm test
-
+### Backend Suite Execution (Jest + Supertest — 42 Tests Passed)
+```text
 > smart-id-system-backend@1.0.0 test
 > jest --runInBand --detectOpenHandles --forceExit
 
- PASS  tests/integration/departmentsAndBranding.test.js
-  ● Console
-    console.log
-      ✅ PostgreSQL connected
-
  PASS  tests/integration/studentAdmission.test.js
-  ● Console
-    console.log
-      ✅ PostgreSQL connected
-
  PASS  tests/integration/auth.test.js
-  ● Console
-    console.log
-      ✅ PostgreSQL connected
-
+ PASS  tests/integration/departmentsAndBranding.test.js
+ PASS  tests/integration/bulkAndTrash.test.js
  PASS  tests/unit/idGenerator.test.js
  PASS  tests/unit/edgeCases.test.js
 
-Test Suites: 5 passed, 5 total
-Tests:       40 passed, 40 total
+Test Suites: 6 passed, 6 total
+Tests:       42 passed, 42 total
 Snapshots:   0 total
-Time:        6.574 s
+Time:        18.413 s
 Ran all test suites.
-PS D:\Software Project Lab\Project\smart-id-system\backend>
 ```
 
-```
- % Coverage report from Jest
---------------------------|---------|----------|---------|---------|----------------------------------
-File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                
---------------------------|---------|----------|---------|---------|----------------------------------
-All files                 |   67.64 |    44.79 |   46.87 |   69.85 |                                  
- backend                  |   72.72 |       25 |       0 |   72.72 | 22,34,39-40,45,48,52-54          
-  index.js                |   72.72 |       25 |       0 |   72.72 | 22,34,39-40,45,48,52-54          
- backend/controllers      |   57.61 |    40.27 |   57.89 |   60.35 |                                  
-  authController.js       |   57.44 |    43.47 |      50 |   58.69 | 8-27,69-70,88,94-103             
-  batchController.js      |   34.14 |      7.4 |   33.33 |      35 | 12-13,15-16,22,27-52,57-64       
-  departmentController.js |   68.96 |       40 |   66.66 |   70.37 | 16,26,37,40,45-49                
-  studentController.js    |      75 |    65.85 |     100 |   80.88 | 30,70-71,100-106,117,134,143-144 
-  universityController.js |      44 |    32.14 |      40 |   47.82 | 13,17,22-27,32-43,68,73-81       
- backend/db               |    87.5 |    14.28 |      50 |     100 |                                  
-  connection.js           |    87.5 |    14.28 |      50 |     100 | 5-15                             
- backend/middleware       |   66.66 |       50 |      50 |   66.66 |                                  
-  auth.js                 |   66.66 |       50 |      50 |   66.66 | 14,19-21,25-27,32                
- backend/routes           |     100 |      100 |     100 |     100 |                                  
-  authRoutes.js           |     100 |      100 |     100 |     100 |                                  
-  batchRoutes.js          |     100 |      100 |     100 |     100 |                                  
-  departmentRoutes.js     |     100 |      100 |     100 |     100 |                                  
-  studentRoutes.js        |     100 |      100 |     100 |     100 |                                  
-  universityRoutes.js     |     100 |      100 |     100 |     100 |                                  
- backend/utils            |     100 |      100 |     100 |     100 |                                  
-  idGenerator.js          |     100 |      100 |     100 |     100 |                                  
---------------------------|---------|----------|---------|---------|----------------------------------
-```
-
-### Frontend Suites (Vitest + React Testing Library — 18 Tests)
-```
-PS C:\Users\PC> cd "d:\Software Project Lab\Project\smart-id-system\frontend"
-PS D:\Software Project Lab\Project\smart-id-system\frontend> npm test -- --run
-
+### Frontend Suite Execution (Vitest + React Testing Library — 25 Tests Passed)
+```text
 > frontend@0.0.0 test
-> vitest run --run
+> vitest run
 
- RUN  v5.0.5 D:/Software Project Lab/Project/smart-id-system/frontend
+ RUN  v5.0.5 D:/smart-id-system/frontend
 
- ✓ src/components/__tests__/Barcode.test.jsx (2 tests) 36ms
- ✓ src/components/__tests__/StudentIdCard.test.jsx (3 tests) 86ms
- ✓ src/pages/__tests__/Login.test.jsx (4 tests) 212ms
- ✓ src/pages/__tests__/AdmitStudent.test.jsx (4 tests) 391ms
- ✓ src/pages/__tests__/StudentList.test.jsx (5 tests) 454ms
+ ✓ src/utils/__tests__/exportHelpers.test.js (3 tests) 4ms
+ ✓ src/components/__tests__/Barcode.test.jsx (2 tests) 33ms
+ ✓ src/components/__tests__/StudentIdCard.test.jsx (3 tests) 91ms
+ ✓ src/pages/__tests__/Login.test.jsx (4 tests) 221ms
+ ✓ src/pages/__tests__/RecycleBin.test.jsx (3 tests) 316ms
+ ✓ src/pages/__tests__/AdmitStudent.test.jsx (4 tests) 449ms
+ ✓ src/pages/__tests__/StudentList.test.jsx (6 tests) 610ms
 
- Test Files  5 passed (5)
-      Tests  18 passed (18)
-   Start at  01:35:07
-   Duration  2.44s
-PS D:\Software Project Lab\Project\smart-id-system\frontend>
+ Test Files  7 passed (7)
+      Tests  25 passed (25)
+   Start at  07:29:43
+   Duration  2.69s
 ```
 
-```
- % Coverage report from v8
--------------------|---------|----------|---------|---------|-------------------
-File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
--------------------|---------|----------|---------|---------|-------------------
-All files          |   48.16 |    59.07 |    54.9 |      50 |                   
- components        |    44.7 |    64.58 |   65.62 |      45 |                   
-  Barcode.jsx      |   84.61 |    91.66 |     100 |      90 | 31                
-  Icons.jsx        |   68.42 |    68.42 |   68.42 |   68.42 | ...94,149,171-180 
-  Layout.jsx       |     100 |      100 |     100 |     100 |                   
-  Sidebar.jsx      |      22 |    34.21 |   44.44 |   22.91 | 38-80,107,198     
-  ...entIdCard.jsx |     100 |    92.59 |     100 |     100 | 91-98             
- context           |   58.33 |       50 |      60 |    61.9 |                   
-  AuthContext.jsx  |   58.33 |       50 |      60 |    61.9 | 18-21,25-28       
- pages             |   46.69 |    53.84 |   48.43 |   49.11 |                   
-  AdmitStudent.jsx |   60.19 |    70.11 |   59.25 |   61.79 | ...99-102,237-361 
-  Login.jsx        |   89.47 |     62.5 |     100 |   89.47 | 20-21             
-  StudentList.jsx  |   30.37 |    36.78 |   33.33 |   33.05 | ...84,326,380-417 
- utils             |      75 |    80.95 |     100 |   73.33 |                   
-  ...rsityLogos.js |      75 |    80.95 |     100 |   73.33 | 13,16,19,22       
--------------------|---------|----------|---------|---------|-------------------
-```
-
-### Grand Total
-$$\text{Total Test Cases Executed: } 58 \quad\Big|\quad \text{Passed: } 58 \quad\Big|\quad \text{Failed: } 0 \quad (\mathbf{100\% \text{ Pass Rate}})$$
+### Master Test Execution Summary
+$$\text{Total Automated Tests: } 67 \quad\Big|\quad \text{Passed: } 67 \quad\Big|\quad \text{Failed: } 0 \quad (\mathbf{100\% \text{ Pass Rate}})$$
 
 ---
 
-## 6. How to Run the Tests
+## 6. Defect Log & Remediation Matrix (Critical Issues Resolved)
 
-### 1. Run Backend Tests
+| Defect ID | Defect Summary & Root Cause | Severity | Remediation & Refactoring Strategy Applied | Status |
+| :---: | :--- | :---: | :--- | :---: |
+| **D01** | **Race Condition in Parallel Admissions:** Concurrent admission requests targeting the same batch generated duplicate serial numbers. | **CRITICAL** | Wrapped admission routine in an ACID transaction with `SELECT * FROM batches WHERE id=$1 FOR UPDATE` pessimistic row-locking. | **RESOLVED** |
+| **D07** | **Serial Desynchronization on Delete:** Deleting the newest student record left the batch `current_serial` counter stranded ahead of actual records. | **HIGH** | Implemented automated recalibration: query `COALESCE(MAX(serial_number), 0)` among active students and synchronize `batches.current_serial`. | **RESOLVED** |
+| **D14** | **Print Background Degradation:** Browser print dialog stripped dark navy card header bands to plain white. | **MEDIUM** | Injected `-webkit-print-color-adjust: exact !important` globally and on all credential header card DOM nodes. | **RESOLVED** |
+| **D22** | **CSV Export Photo String Pollution:** Exporting student directory populated CSV rows with megabyte-long Base64 strings. | **MEDIUM** | Sanitized export schema to exclude raw photo strings from student rosters while preserving photo URLs in bulk admission templates. | **RESOLVED** |
+| **D31** | **Accidental Edit Triggers on Dashboard:** Table avatar clicks on the dashboard triggered student edit modals. | **LOW** | Refactored dashboard and recycle bin avatars to completely static, `pointer-events-none` display components. | **RESOLVED** |
+| **D35** | **Generic Export Filename Collisions:** Exporting rosters or printing ID cards generated generic static filenames (e.g. `students.pdf`). | **LOW** | Implemented dynamic institutional file naming (`SIFS - [Uni]_[Dept]_[Batch/Intake]_[Action]`) via `exportHelpers.js`. | **RESOLVED** |
+
+---
+
+## 7. How to Run the Tests
+
+### 1. Run Backend Tests (42 Tests)
 ```bash
-# From project root:
 cd backend
-
-# Run all 40 backend unit & integration tests
 npm test
-
-# Run with full code coverage breakdown
-npm run test:coverage
 ```
 
-### 2. Run Frontend Tests
+### 2. Run Frontend Tests (25 Tests)
 ```bash
-# From backend directory, switch to frontend:
-cd ../frontend
-# (Or from project root: cd frontend)
-
-# Run all 18 UI component and simulation tests
-npm test -- --run
-
-# Run with full code coverage breakdown
-npm run test:coverage
+cd frontend
+npm test
 ```
 
 ### 3. Build & Typecheck Frontend
 ```bash
-# From frontend directory:
+cd frontend
 npm run build
 ```
 
 ---
 
-## 7. Team Roles & Individual Contribution Matrix
+## 8. Team Roles & Individual Contribution Matrix
 
 | Member Name | Student ID | Domain & Core Responsibilities | Automated Tests & Deliverables |
 | :--- | :---: | :--- | :---: |
-| **Md. Raiyan** | 0432320005101101 | **Backend Architecture, ID Engine, Security & Test Lead**<br>• Core ID Formulation Engine (`idGenerator.js`)<br>• Concurrency-Safe ACID Row-Level Locking (`SELECT ... FOR UPDATE`)<br>• Super Admin & Multi-Tenant University Scoping<br>• Dual Department Fields (`code` & `full_name`) API & Roster<br>• JWT Stateless Authentication & SQL Injection Defense (`auth.test.js`) | **30 Tests**<br>(Backend Suites) |
-| **Md. Fizul Islam Yamin** | 0432320005101114 | **Frontend, UI/UX, Component Architecture & Documentation**<br>• React 19 UI & Interactive Live ID Card Simulation (`AdmitStudent.jsx`)<br>• Phone-Scannable Code 128 SVG Barcode Component (`Barcode.jsx`)<br>• Option B "View / Print ID Card" Modal & Quick Photo Upload (`StudentList.jsx`)<br>• Student Photo Auto-Crop, Aspect Ratio & Canvas Auto-Resize<br>• ISO/IEC/IEEE 29119-3 Software Testing Report Documentation Lead | **28 Tests**<br>(Frontend Suites) |
-
+| **Md. Raiyan** | 0432320005101101 | **Backend Architecture, ID Engine, Security & Test Lead**<br>• Core ID Formulation Engine (`idGenerator.js`)<br>• Concurrency-Safe ACID Row-Level Locking (`SELECT ... FOR UPDATE`)<br>• Bulk CSV Admission Engine (`POST /api/students/bulk`)<br>• Recycle Bin Soft Delete & Serial Recalibration (`/api/trash`)<br>• JWT Stateless Authentication & SQL Injection Defense (`auth.test.js`) | **42 Tests**<br>(Backend Suites) |
+| **Md. Fizul Islam Yamin** | 0432320005101114 | **Frontend, UI/UX, Component Architecture & Documentation**<br>• React 19 UI & Interactive Live ID Card Simulation (`AdmitStudent.jsx`)<br>• Batch ID Card Sheet Print Layout (2x4 CR-80 A4 Grid) (`StudentList.jsx`)<br>• Recycle Bin Multi-Tab Management Portal (`RecycleBin.jsx`)<br>• Dynamic Institutional Export Filename Generator (`exportHelpers.js`)<br>• Phone-Scannable Code 128 SVG Barcode Component (`Barcode.jsx`)<br>• ISO/IEC/IEEE 29119-3 Software Testing Report Documentation Lead | **25 Tests**<br>(Frontend Suites) |

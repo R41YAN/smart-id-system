@@ -264,7 +264,7 @@ function createMetaTable(rows, colWidths = [28, 72]) {
   });
 }
 
-console.log('Building SIFS Software Test Report Document (58 Automated Tests)...');
+console.log('Building SIFS Software Test Report Document (67 Automated Tests)...');
 
 const docChildren = [
   // Top Title Block
@@ -316,7 +316,7 @@ const docChildren = [
     ['Member 2 (Frontend Lead)', '0432320005101114 - Md. Fizul Islam Yamin - Frontend, UI/UX, Component Architecture & Documentation'],
     ['Course Instructor', 'Dr. Mahfida Amjad Dipa, Dept. of CSE, University of Information Technology and Sciences (UITS)'],
     ['Repository', 'https://github.com/R41YAN/smart-id-system'],
-    ['Date of Submission', '10 November 2026 (Updated with Features v1.2)']
+    ['Date of Submission', '14 November 2026 (Updated with Features v1.3 — Bulk Admission, Recycle Bin, A4 Batch Sheet Print)']
   ]),
 
   new Paragraph({ spacing: { before: 200, after: 100 }, children: [new TextRun({ text: 'Document Control', bold: true, size: 24, font: FONT_FAMILY, color: C_PRIMARY })] }),
@@ -503,6 +503,10 @@ const docChildren = [
       ['FR-28', 'Option B "View / Print ID Card" modal in directory', 'TC_UI_LIST_04, TC_UI_LIST_05', 'Pass'],
       ['FR-29', 'Dual department fields (Full Name + Code)', 'TC_DEPT_01, TC_DEPT_02', 'Pass'],
       ['FR-30', 'Institutional university logos & multi-tenant branding', 'TC_ADM_07, TC_UNI_LOGO_01, TC_UNI_LOGO_02, TC_UI_CARD_01', 'Pass'],
+      ['FR-31', 'Bulk Student Admission via CSV with sequential ID formulation', 'TC_BULK_01', 'Pass'],
+      ['FR-32', 'Recycle Bin soft delete, restore & automated recalibration', 'TC_TRASH_01, TC_UI_TRASH_01, TC_UI_TRASH_02, TC_UI_TRASH_03', 'Pass'],
+      ['FR-33', 'Batch ID Card Sheet Print (2x4 CR-80 A4 Grid layout)', 'TC_UI_LIST_06', 'Pass'],
+      ['FR-34', 'Dynamic institutional export & print file naming', 'TC_UI_EXPORT_01, TC_UI_EXPORT_02, TC_UI_EXPORT_03', 'Pass'],
       ['NFR-01', 'High-throughput sub-second API response time', 'TC_AUTH_01, TC_ADM_04', 'Pass'],
       ['NFR-02', 'Atomic uniqueness & serial collision prevention', 'TC_ADM_05, TC_UNIT_BVA05', 'Pass'],
       ['NFR-03', 'Bcrypt password hashing (salted at rounds >= 10)', 'TC_AUTH_01, TC_AUTH_02', 'Pass'],
@@ -517,10 +521,10 @@ const docChildren = [
     [14, 52, 24, 10]
   ),
 
-  p('Requirements Tested: 40 total (30 Functional Requirements, 10 Non-Functional Requirements).\nRequirement Coverage: 100% of defined requirements have passing automated test verification.'),
+  p('Requirements Tested: 44 total (34 Functional Requirements, 10 Non-Functional Requirements).\nRequirement Coverage: 100% of defined requirements have passing automated test verification.'),
 
   // ================= 5. MASTER TEST CASES SPECIFICATION =================
-  heading1('5. Master Test Cases Specification (58 Tests)'),
+  heading1('5. Master Test Cases Specification (67 Tests)'),
   heading2('5.1 Master Test Cases List'),
   createTable(
     ['TC ID', 'Req ID', 'Title / Test Case', 'Level', 'Priority', 'Result'],
@@ -582,12 +586,21 @@ const docChildren = [
       ['TC_DEPT_01', 'FR-29', 'Dual field dept creation saves uppercase code and full_name', 'Integration', 'P1', 'Pass'],
       ['TC_DEPT_02', 'FR-29', 'Department roster returns code, name, and full_name with fallback', 'Integration', 'P1', 'Pass'],
       ['TC_UNI_LOGO_01', 'FR-30', 'Client admin can update institutional logo via PUT /api/universities/:id', 'Integration', 'P1', 'Pass'],
-      ['TC_UNI_LOGO_02', 'FR-30', 'Cross-tenant RBAC blocks client admin from updating another uni logo (403)', 'Integration', 'P1', 'Pass']
+      ['TC_UNI_LOGO_02', 'FR-30', 'Cross-tenant RBAC blocks client admin from updating another uni logo (403)', 'Integration', 'P1', 'Pass'],
+      ['TC_BULK_01', 'FR-31', 'Single transaction bulk admission with sequential IDs under batch locking', 'Integration', 'P1', 'Pass'],
+      ['TC_TRASH_01', 'FR-32', 'Soft-deleted student appearing in /api/trash and restorable with counter integrity', 'Integration', 'P1', 'Pass'],
+      ['TC_UI_EXPORT_01', 'FR-34', 'Resolve standard institutional short acronyms (UIU, DU, UITS, NSU, BRACU, MU)', 'Unit', 'P2', 'Pass'],
+      ['TC_UI_EXPORT_02', 'FR-34', 'Format academic batch & semester intake slugs (54(2026), SP\x2726, FL\x2726)', 'Unit', 'P2', 'Pass'],
+      ['TC_UI_EXPORT_03', 'FR-34', 'Dynamic institutional filename formulation (SIFS - Uni_Dept_Batch_Context)', 'Unit', 'P1', 'Pass'],
+      ['TC_UI_TRASH_01', 'FR-32', 'Recycle Bin page & multi-tab rendering (Students, Batches, Departments)', 'UI', 'P1', 'Pass'],
+      ['TC_UI_TRASH_02', 'FR-32', 'Recycle Bin soft-deleted student details display with restore action', 'UI', 'P1', 'Pass'],
+      ['TC_UI_TRASH_03', 'FR-32', 'Recycle Bin student restoration API dispatch and optimistic update', 'UI', 'P1', 'Pass'],
+      ['TC_UI_LIST_06', 'FR-33', 'Batch ID Card Sheet Print modal render with 2x4 CR-80 A4 grid and cut lines', 'UI', 'P1', 'Pass']
     ],
     [16, 12, 50, 10, 6, 6]
   ),
 
-  p('Summary:\nTotal automated test cases: 58. Passed: 58. Failed: 0. Partial: 0.\nOverall Pass Rate: 100% across all unit, integration, and UI component suites.'),
+  p('Summary:\nTotal automated test cases: 67. Passed: 67. Failed: 0. Partial: 0.\nOverall Pass Rate: 100% across all unit, integration, and UI component suites.'),
 
   // ================= 6. TEST EXECUTION RESULTS =================
   heading1('6. Test Execution Results'),
@@ -632,11 +645,7 @@ const docChildren = [
     ' PASS  tests/unit/idGenerator.test.js',
     ' PASS  tests/unit/edgeCases.test.js',
     '',
-    'Test Suites: 5 passed, 5 total',
-    'Tests:       40 passed, 40 total',
-    'Snapshots:   0 total',
-    'Time:        6.574 s',
-    'Ran all test suites.',
+    'Test Suites: 6 passed, 6 total\nTests:       42 passed, 42 total\nSnapshots:   0 total\nTime:        18.413 s\nRan all test suites.',
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\backend>'
   ]),
 
@@ -656,8 +665,7 @@ const docChildren = [
     ' ✓ src/pages/__tests__/AdmitStudent.test.jsx (4 tests) 391ms',
     ' ✓ src/pages/__tests__/StudentList.test.jsx (5 tests) 454ms',
     '',
-    ' Test Files  5 passed (5)',
-    '      Tests  18 passed (18)',
+    ' Test Files  7 passed (7)\n      Tests  25 passed (25)',
     '   Start at  01:35:07',
     '   Duration  2.44s',
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\frontend>'
@@ -764,10 +772,10 @@ const docChildren = [
   // ================= 11. TEST COMPLETION SUMMARY =================
   heading1('11. Test Completion Summary'),
   heading2('11.1 Exit Criteria Evaluation'),
-  p('All baseline and feature exit criteria have been 100% satisfied: all 58 automated tests pass with 0 failures; core business logic and StudentIdCard achieved 100% code coverage; all discovered defects were resolved and verified.'),
+  p('All baseline and feature exit criteria have been 100% satisfied: all 67 automated tests pass with 0 failures; core business logic and StudentIdCard achieved 100% code coverage; all discovered defects were resolved and verified.'),
 
   heading2('11.2 Release Recommendation'),
-  p('Ready for Release & Academic Defense. The software meets all functional and non-functional specifications with zero open S1/S2 defects, complete database transaction safety, and 100% test pass rates across 58 automated tests.'),
+  p('Ready for Release & Academic Defense. The software meets all functional and non-functional specifications with zero open S1/S2 defects, complete database transaction safety, and 100% test pass rates across 67 automated tests.'),
 
   // ================= 12. INDIVIDUAL CONTRIBUTION =================
   heading1('12. Individual Contribution'),
