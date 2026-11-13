@@ -323,9 +323,9 @@ const docChildren = [
 
   createMetaTable([
     ['Repository URL', 'https://github.com/R41YAN/smart-id-system'],
-    ['Version Tested', 'v1.2.0-test (58 automated test cases, 100% pass rate)'],
+    ['Version Tested', 'v1.3.0-test (67 automated test cases, 100% pass rate)'],
     ['Live Environments', 'Frontend: http://localhost:5173 | Backend REST API: http://localhost:5000 | DB: Supabase PostgreSQL'],
-    ['Report Version', '1.2'],
+    ['Report Version', '1.3'],
     ['Prepared & Verified by', 'Md. Raiyan, Md. Fizul Islam Yamin'],
     ['Approved by', 'Dr. Mahfida Amjad Dipa'],
     ['Target Quality Tier', 'Production Grade / Academic Defense Tier']
@@ -338,7 +338,8 @@ const docChildren = [
     [
       ['1.0', '31 October 2026', 'First version: 45 automated test cases, unit & integration results, coverage, NFR checks, defects'],
       ['1.1', '02 November 2026', 'Full ISO/IEC/IEEE 29119-3 test report, defect resolution, full frontend & backend coverage'],
-      ['1.2', '10 November 2026', 'Added 13 tests (58 total): Code 128 Barcodes, Student Photo lifecycle, Option B Modal, Dual Department fields, and Multi-Tenant Institutional Branding']
+      ['1.2', '10 November 2026', 'Added 13 tests (58 total): Code 128 Barcodes, Student Photo lifecycle, Option B Modal, Dual Department fields, and Multi-Tenant Institutional Branding'],
+      ['1.3', '14 November 2026', 'Added 9 tests (67 total): Bulk Student Admission via CSV, Recycle Bin soft-delete and recalibration, Batch ID Card A4 Sheet Print (2x4 CR-80 grid), and dynamic institutional file naming.']
     ],
     [15, 25, 60]
   ),
@@ -346,7 +347,7 @@ const docChildren = [
   // ================= 1. INTRODUCTION =================
   heading1('1. Introduction'),
   heading2('1.1 Purpose'),
-  p('This report covers how we tested the Smart ID Formatting System (SIFS) at v1.2.0-test: what we tested, the testing methodology, the full automated execution results across 58 test cases, code coverage metrics across backend and frontend layers, and verification of new institutional features ready for university deployment and academic defense.'),
+  p('This report covers how we tested the Smart ID Formatting System (SIFS) at v1.3.0-test: what we tested, the testing methodology, the full automated execution results across 67 test cases, code coverage metrics across backend and frontend layers, and verification of new institutional features ready for university deployment and academic defense.'),
 
   heading2('1.2 Product Overview & New Features Scope'),
   p('SIFS is a multi-tenant university student admission and smart ID card formulation platform. It allows higher education institutions to configure deterministic ID formatting rules (supporting Open-Credit [Dept][YY][SemCode][Serial] and Close-Credit [Dept][Batch][YY][Serial] models), admit students with concurrency-safe atomic serial counters, generate interactive digital ID cards featuring phone-scannable Code 128 barcodes and profile photographs, manage student rosters with strict Role-Based Access Control, and customize institutional university logos across administrative portals. SIFS is built as a React 19 single-page application with Vite, an Express.js (Node.js 24) REST API, and a cloud-hosted PostgreSQL database on Supabase.'),
@@ -418,14 +419,14 @@ const docChildren = [
     '# Clone the repository and navigate into project directory',
     'git clone https://github.com/R41YAN/smart-id-system.git && cd smart-id-system',
     '',
-    '# Execute Backend Unit & Integration Tests (Jest + Supertest - 40 Tests)',
+    '# Execute Backend Unit & Integration Tests (Jest + Supertest - 42 Tests)',
     'cd backend && npm install',
-    'npm test                 # Run all 40 backend unit & integration tests',
+    'npm test                 # Run all 42 backend unit & integration tests',
     'npm run test:coverage    # Display complete backend coverage breakdown',
     '',
-    '# Execute Frontend UI Component Tests (Vitest + React Testing Library - 18 Tests)',
+    '# Execute Frontend UI Component Tests (Vitest + React Testing Library - 25 Tests)',
     'cd ../frontend && npm install',
-    'npm test -- --run        # Run all 18 frontend UI component tests',
+    'npm test                 # Run all 25 frontend UI component tests',
     'npm run test:coverage    # Display complete frontend code coverage'
   ]),
 
@@ -608,10 +609,10 @@ const docChildren = [
   createTable(
     ['Level / Layer', 'Runs', 'Passed', 'Failed', 'Pass %'],
     [
-      ['Unit (Core ID Generator Engine & Boundaries)', '23', '23', '0', '100%'],
-      ['Integration (API Auth, Admission, Branding & Rosters)', '17', '17', '0', '100%'],
-      ['Component / UI (React Vite UI Simulation & Modals)', '18', '18', '0', '100%'],
-      ['Total Full-Stack Suite', '58', '58', '0', '100%']
+      ['Unit (Core ID Generator Engine & Boundaries)', '22', '22', '0', '100%'],
+      ['Integration (API Auth, Admission, Branding, Bulk & Trash)', '20', '20', '0', '100%'],
+      ['Component / UI & Helpers (React 19 UI, Modals, A4 Sheet Print & Export)', '25', '25', '0', '100%'],
+      ['Total Full-Stack Suite', '67', '67', '0', '100%']
     ],
     [40, 15, 15, 15, 15]
   ),
@@ -619,7 +620,7 @@ const docChildren = [
   p('Zero test flakiness was observed across multiple clean clone runs on Node 24 and Windows 11.'),
 
   heading2('6.2 Test Run Evidence'),
-  p('Console Figure 1: Backend Jest Standard Test Run (40 Passed across 5 Suites)', { bold: true }),
+  p('Console Figure 1: Backend Jest Standard Test Run (42 Passed across 6 Suites)', { bold: true }),
   codeBlock([
     'PS C:\\Users\\PC> cd "d:\\Software Project Lab\\Project\\smart-id-system\\backend"',
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\backend> npm test',
@@ -649,7 +650,7 @@ const docChildren = [
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\backend>'
   ]),
 
-  p('Console Figure 2: Frontend Vitest Standard Component Run (18 Passed across 5 Suites)', { bold: true }),
+  p('Console Figure 2: Frontend Vitest Standard Component Run (25 Passed across 7 Suites)', { bold: true }),
   codeBlock([
     'PS C:\\Users\\PC> cd "d:\\Software Project Lab\\Project\\smart-id-system\\frontend"',
     'PS D:\\Software Project Lab\\Project\\smart-id-system\\frontend> npm test -- --run',
