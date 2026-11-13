@@ -8,7 +8,7 @@
 > - **Md. Fizul Islam Yamin** (ID: 0432320005101114) — *Frontend, UI/UX, Component Architecture & Documentation*  
 > **Course Instructor:** Dr. Mahfida Amjad Dipa
 
-[![Tests](https://img.shields.io/badge/Automated%20Tests-58%20Passed%20(100%25)-success?style=flat-square&logo=jest)](docs/SIFS_Software_Testing_Report.md)
+[![Tests](https://img.shields.io/badge/Automated%20Tests-67%20Passed%20(100%25)-success?style=flat-square&logo=jest)](docs/SIFS_Software_Testing_Report.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react)](https://react.dev/)
@@ -64,9 +64,26 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
    - **Stacked Batch & Academic Year Display**: Renders batch name on Line 1 (`1st Batch`, `54th Batch`) and admission year on Line 2 (`(2026)`) directly underneath for close-credit institutions, preventing card truncation while preserving cohort years in dropdowns.
    - **Instant Directory Search**: Real-time client-side search filtering across Student IDs, student names, emails, and departments.
 9. **Automatic Serial Recalibration Engine**:
-   - When a student record is removed (`DELETE /api/students/:id`), the backend dynamically recalibrates `batches.current_serial` to $\max(\text{serial\_number})$ of that batch, eliminating ghost counters and preserving sequential serial integrity.
-10. **Automated Master Test Suite (58 Tests, 100% Pass Rate)**:
-    - Full automated test suite across backend (40 tests, Jest + Supertest) and frontend (18 tests, Vitest + React Testing Library).
+   - When a student record is removed or restored, the backend dynamically recalibrates `batches.current_serial` to max serial of active students in that batch, eliminating ghost counters and preserving sequential serial integrity.
+10. **Concurrency-Safe Bulk Student Admission via CSV/Excel (`/admin/admit`)**:
+    - Dual admission mode: single enrollment or bulk CSV ingestion.
+    - Dynamic CSV template generator (`Full Name, Department Code, Batch/Intake, Email, Phone, Photo URL (Optional)`).
+    - Pre-import validation table checking department codes and batch numbers before committing.
+    - Handles photograph imports: automated URL ingestion or default silhouette with `[📷 Photo Pending]` badge (updatable with 1 click).
+    - ACID transaction with batch-row locking (`SELECT ... FOR UPDATE`) in `POST /api/students/bulk`.
+11. **Institutional Recycle Bin & Data Recovery (`/admin/trash` & `/super-admin/trash`)**:
+    - Non-destructive `deleted_at` soft delete across students, batches, and departments.
+    - Multi-tab recovery interface with 1-click **Restore**, **Delete Permanently**, and **Empty Recycle Bin** bulk-purge actions.
+    - Integrated Recycle Bin navigation link with live badge counts on both Client Admin and Super Admin sidebars.
+12. **Batch ID Card Sheet Print (PDF) — Exclusively on Student List (`/admin/students`)**:
+    - Dedicated `[ 🪪 Print ID Cards (${count}) ]` action button in the top-right header action cluster.
+    - Standard A4 sheet grid ($2 \times 4 = 8$ CR-80 cards per page) with cut guidelines and Code 128 barcodes.
+    - Color preservation (`-webkit-print-color-adjust: exact`) guaranteeing rich dark navy headers in physical prints and saved PDFs.
+13. **Dynamic Institutional File Naming & Static Avatars**:
+    - Standardized naming: `SIFS - [UniShort]_[Dept]_[Batch/Intake]_[Action]` (e.g., `SIFS - UIU_CSE_54(2026)_ID_Cards.pdf` or `SP'26`).
+    - Static read-only student photo avatars across Recent Admissions and Recycle Bin.
+14. **Automated Master Test Suite (67 Tests, 100% Pass Rate)**:
+    - Full automated test suite across backend (42 tests, Jest + Supertest) and frontend (25 tests, Vitest + React Testing Library).
 
 ---
 
