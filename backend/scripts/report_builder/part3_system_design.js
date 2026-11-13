@@ -23,7 +23,8 @@ const {
   tableCaption,
   figureCaption,
   createTable,
-  diagramCard
+  diagramCard,
+  screenshotPlaceholderBox
 } = require('./report_helpers');
 
 function getChapter3Children() {
@@ -293,7 +294,10 @@ Milestones:  M1: Architecture Signoff  ->  M2: ACID Engine  ->  M3: UI Sync  -> 
     figureCaption('Fig. 3.6. Activity diagram of single and bulk CSV student admission logic.'),
     sectionHeading('3.5 User Interface Design'),
     paragraph(
-      'The user interface of SIFS was engineered following modern human-computer interaction (HCI) principles, emphasizing clarity, cognitive ease, visual hierarchy, and zero clutter. Wireframes and interface workflows are detailed below:'
+      'The user interface of SIFS was engineered following modern human-computer interaction (HCI) principles, emphasizing cognitive ease, visual hierarchy, responsive typography, and operational efficiency. The administrative portal features an executive dashboard, real-time interactive credential builders, high-throughput bulk ingestion tools, a searchable student directory, a multi-card industrial print preview engine, and a resilient data recovery recycle bin.'
+    ),
+    paragraph(
+      'Below are the architectural wireframe models followed by dedicated screenshot frames. Each framed section clearly specifies the target route, exact UI elements to display, and instructions for embedding the high-resolution interface captures.'
     ),
     diagramCard(
       'Fig. 3.7: Wireframe Representation of Executive Admission Dashboard',
@@ -312,8 +316,40 @@ Milestones:  M1: Architecture Signoff  ->  M2: ACID Engine  ->  M3: UI Sync  -> 
       'The Executive Dashboard provides instant visibility into active faculties, total smart credentials issued, and recent enrollment activity featuring static read-only photo avatars.'
     ),
     figureCaption('Fig. 3.7. Wireframe model of SIFS Executive Admission Dashboard.'),
+    screenshotPlaceholderBox({
+      title: 'High-Resolution Screenshot of SIFS Executive Admission Dashboard',
+      screenName: 'Executive Admission Dashboard',
+      route: 'http://localhost:5173/ (Root Dashboard)',
+      elementsToInclude: 'Top institutional banner (Dhaka University emblem & active format rule: [Dept Code] + [Batch] + [YY] + [3-Digit Serial]), active department counter card (7), enrolled student counter card (2 Verified), Admission Engine status pill (Locked/Active toggle), and the "Recent Student Admissions" table displaying student IDs, static photo avatars, student names, departments, and enrollment dates.',
+      instructions: 'Start the frontend dev server (`npm run dev`), open the dashboard in browser at 100% zoom, capture the full viewport, and paste the image into this framed box.'
+    }),
+    figureCaption('Fig. 3.8. SIFS Executive Admission Dashboard showing institutional counters and recent student admissions with photo avatars.'),
+    screenshotPlaceholderBox({
+      title: 'High-Resolution Screenshot of Single Student Admission Modal with Live ID Preview',
+      screenName: 'Single Student Admission & Real-Time ID Card Preview',
+      route: 'Triggered via "+ Admit Student" button on Dashboard or Student Directory',
+      elementsToInclude: 'Admission dialog modal showing two distinct columns: Left Column containing admission form fields (Department dropdown, Batch/Intake selector, Full Name, Email, Phone, and Photo upload canvas cropper); Right Column containing the live reactive 3D Student ID Card preview that updates keystroke-by-keystroke with student details, institutional crest, and Code 128 barcode.',
+      instructions: 'Click "+ Admit Student" on the Dashboard, enter sample student data (e.g., Department: CSE, Batch: 54, Name: Tanvir Hasan), capture the modal dialog with the reactive ID card rendered on the right, and paste into this framed box.'
+    }),
+    figureCaption('Fig. 3.9. Single Student Admission interface featuring input form controls on the left and real-time reactive 3D ID card preview on the right.'),
+    screenshotPlaceholderBox({
+      title: 'High-Resolution Screenshot of Bulk Student Admission via CSV Engine',
+      screenName: 'Bulk Student Admission via CSV Modal',
+      route: 'Triggered via "Bulk Admission (CSV)" button on Student Directory',
+      elementsToInclude: 'Bulk admission modal dialog showing CSV drag-and-drop file upload dropzone, sample CSV schema guide (Full Name, Department Code, Batch/Intake, Email, Phone, Photo URL Optional), pre-ingestion matrix preview table displaying parsed student rows, validation status badges, and automatic [📷 Photo Pending] fallback flags.',
+      instructions: 'Open the Student Directory, click "Bulk Admission", load a sample CSV file or view the template upload dropzone, capture the modal, and paste into this framed box.'
+    }),
+    figureCaption('Fig. 3.10. Bulk Student Admission modal showing CSV drag-and-drop ingestion zone, schema matrix preview, and photo fallback badging.'),
+    screenshotPlaceholderBox({
+      title: 'High-Resolution Screenshot of Student Directory & Institutional Credential Roster',
+      screenName: 'Student Directory & Administrative Management Roster',
+      route: 'http://localhost:5173/students (/students Route)',
+      elementsToInclude: 'Complete student directory table with numbered rows, generated smart IDs, student photo avatars alongside student names, department badges, batch/intake labels, email addresses, admission dates, action buttons ("ID Card", "Delete"), search filter input bar, department filter dropdown, batch filter dropdown, and top action buttons: [Print ID Cards (N)], [Export CSV], and [Print / PDF].',
+      instructions: 'Navigate to `/students` in the running application, ensure multiple enrolled student rows with avatars are visible, capture the full table layout and action toolbar, and paste into this framed box.'
+    }),
+    figureCaption('Fig. 3.11. SIFS Student Directory displaying searchable roster, static student photo avatars, and batch action toolbar.'),
     diagramCard(
-      'Fig. 3.8: Wireframe Representation of Batch A4 Sheet Print Engine (2x4 CR-80 Grid)',
+      'Fig. 3.12: Wireframe Representation of Batch A4 Sheet Print Engine (2x4 CR-80 Grid)',
 `+---------------------------------------------------------------------------------------+
 | SIFS Student Directory                 [ Print ID Cards (2) ] [ Export CSV ] [ Print ]|
 +---------------------------------------------------------------------------------------+
@@ -334,7 +370,23 @@ Milestones:  M1: Architecture Signoff  ->  M2: ACID Engine  ->  M3: UI Sync  -> 
 +---------------------------------------------------------------------------------------+`,
       'The Batch Sheet Print engine formats cards strictly according to CR-80 physical dimensions (85.6mm x 53.98mm) arranged in a 2x4 matrix per A4 page with crisp dashed cut guidelines.'
     ),
-    figureCaption('Fig. 3.8. Wireframe model of Batch ID Card A4 Sheet Print layout engine.'),
+    figureCaption('Fig. 3.12. Wireframe model of Batch ID Card A4 Sheet Print layout engine.'),
+    screenshotPlaceholderBox({
+      title: 'High-Resolution Screenshot of Batch ID Card Sheet Print Layout (2x4 CR-80 Grid)',
+      screenName: 'Batch ID Card Sheet Print Preview (A4 Industrial Layout)',
+      route: 'Triggered via "Print ID Cards (N)" button on Student Directory',
+      elementsToInclude: 'A4 print preview viewport displaying physical CR-80 badges arranged in an industrial 2-column by 4-row layout (8 cards per page). Each badge showcases the dark navy header band with university emblem, student photograph, department and batch information, student ID placed directly next to the "ID:" label, scannable Code 128 barcode, [VERIFIED] badge, and subtle dashed perimeter cut guides.',
+      instructions: 'In the Student Directory, click "Print ID Cards (N)", open the print preview or modal view displaying multiple formatted ID badges on an A4 sheet, capture the sheet view, and paste into this framed box.'
+    }),
+    figureCaption('Fig. 3.13. Batch ID Card Sheet Print layout showing 2x4 CR-80 standard card matrix with dark navy headers and industrial cut guidelines.'),
+    screenshotPlaceholderBox({
+      title: 'High-Resolution Screenshot of Recycle Bin & Data Recovery Portal',
+      screenName: 'Recycle Bin & Data Recovery Management',
+      route: 'http://localhost:5173/recycle-bin (/recycle-bin Route)',
+      elementsToInclude: 'Recycle Bin portal displaying header with "Empty Recycle Bin" button, tabbed navigation pills ("Students (N)", "Batches (0)", "Departments (0)"), and deleted records table showing student ID, static read-only photo avatar, student full name, department & batch, soft-deletion timestamp, and individual action buttons: [Restore] and [Delete] (permanent purge confirmation).',
+      instructions: 'Navigate to `/recycle-bin` (after soft-deleting a test student), capture the Recycle Bin interface showing the student record with photo avatar and [Restore] button, and paste into this framed box.'
+    }),
+    figureCaption('Fig. 3.14. SIFS Recycle Bin and Data Recovery portal demonstrating soft-delete audit trail and restoration controls.'),
     sectionHeading('3.6 Design Decisions and Rationale'),
     paragraph(
       'During the engineering lifecycle, several fundamental architectural trade-offs were encountered. Table 3.2 documents the critical design choices, alternative strategies evaluated, and empirical evidence justifying the adopted approach.'

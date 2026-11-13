@@ -23,7 +23,8 @@ const {
   tableCaption,
   figureCaption,
   createTable,
-  diagramCard
+  diagramCard,
+  screenshotPlaceholderBox
 } = require('./report_helpers');
 
 function getChapter5and6Children() {
@@ -78,6 +79,14 @@ function getChapter5and6Children() {
       ],
       [28, 16, 28, 10, 10, 8]
     ),
+    screenshotPlaceholderBox({
+      title: 'High-Resolution Terminal Screenshot: 100% Automated Test Harness Execution (67/67 Tests Passing)',
+      screenName: 'Automated Test Runner Output (Jest & Vitest)',
+      route: 'CLI Commands: `npm test` (Backend: 42 tests) & `npm --prefix frontend test` (Frontend: 25 tests)',
+      elementsToInclude: 'Terminal window output showing all green checkmarks across test suites: 42 passed in Jest (auth, departments, batches, students, recycleBin, concurrency) and 25 passed in Vitest (Navbar, Sidebar, StudentCardModal, AdmitStudent, StudentList, RecycleBin, ClientAdminDashboard), demonstrating a 100% pass rate with zero failures.',
+      instructions: 'Run `npm test` in the backend directory and `npm test` in the frontend directory, capture the terminal screenshot showing all test suites green and passing, and paste into this framed box.'
+    }),
+    figureCaption('Fig. 5.1. Automated test suite execution terminal output demonstrating 100% pass rate (67/67 tests passing).'),
     sectionHeading('5.3 Code Review, Refactoring and Security Hardening'),
     paragraph(
       'Quality assurance included peer code reviews across all merged branches. Over the course of the project, 38 technical defects (D1–D38) were logged, triaged, and resolved. Table 5.3 summarizes the most critical defects resolved.'
@@ -106,7 +115,7 @@ function getChapter5and6Children() {
       'Continuous Integration and Continuous Deployment (CI/CD) were established utilizing GitHub Actions. Every push to the repository triggers an automated pipeline.'
     ),
     diagramCard(
-      'Fig. 5.1: Automated CI/CD Pipeline Workflow on GitHub Actions',
+      'Fig. 5.2: Automated CI/CD Pipeline Workflow on GitHub Actions',
 ` [ Git Push / PR ] ---> [ Stage 1: Checkout & Setup ] ---> [ Stage 2: Linting & Syntax Check ]
                                                                        |
 +----------------------------------------------------------------------+
@@ -119,7 +128,7 @@ v
 [ Stage 6: Automated Cloud Deployment ] ---> ( Live Production URL on Render / Vercel )`,
       'The pipeline enforces a zero-tolerance policy: if a single unit test fails or a build error occurs, deployment is immediately aborted.'
     ),
-    figureCaption('Fig. 5.1. Automated GitHub Actions CI/CD deployment pipeline.'),
+    figureCaption('Fig. 5.2. Automated GitHub Actions CI/CD deployment pipeline.'),
     tableCaption('Table 5.4. CI/CD Pipeline Stages and Quality Gate Verification Criteria'),
     createTable(
       ['Pipeline Stage', 'Execution Environment', 'Verification Criteria', 'Outcome'],

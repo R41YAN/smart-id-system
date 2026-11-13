@@ -507,6 +507,141 @@ function diagramCard(title, asciiDiagram, explanation) {
   });
 }
 
+function screenshotPlaceholderBox({
+  title,
+  screenName,
+  route,
+  elementsToInclude,
+  instructions
+}) {
+  const paragraphs = [];
+
+  // Header banner inside box
+  paragraphs.push(new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { before: 40, after: 30 },
+    children: [
+      new TextRun({
+        text: '📷  [ BLANK SPACE FOR UI SCREENSHOT / FIGURE ]',
+        bold: true,
+        size: 19, // 9.5pt
+        font: FONT_PRIMARY,
+        color: C_NAVY
+      })
+    ]
+  }));
+
+  paragraphs.push(new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { before: 20, after: 50 },
+    children: [
+      new TextRun({
+        text: `Target Interface: ${screenName}  |  Application Route: ${route}`,
+        bold: true,
+        size: 17, // 8.5pt
+        font: FONT_PRIMARY,
+        color: C_BLUE
+      })
+    ]
+  }));
+
+  // Generous blank area for pasting screenshot
+  paragraphs.push(new Paragraph({
+    alignment: AlignmentType.CENTER,
+    spacing: { before: 140, after: 140 },
+    children: [
+      new TextRun({
+        text: '------------------------  [ PASTE HIGH-RESOLUTION SCREENSHOT HERE ]  ------------------------',
+        size: 16,
+        font: FONT_CODE,
+        color: C_MUTED
+      })
+    ]
+  }));
+
+  // Detailed specifications
+  paragraphs.push(new Paragraph({
+    alignment: AlignmentType.LEFT,
+    spacing: { before: 40, after: 20, line: 220 },
+    children: [
+      new TextRun({
+        text: '1. What and which picture to place: ',
+        bold: true,
+        size: 16,
+        font: FONT_PRIMARY,
+        color: C_DARK
+      }),
+      new TextRun({
+        text: title,
+        size: 16,
+        font: FONT_PRIMARY,
+        color: C_BODY
+      })
+    ]
+  }));
+
+  paragraphs.push(new Paragraph({
+    alignment: AlignmentType.LEFT,
+    spacing: { before: 10, after: 20, line: 220 },
+    children: [
+      new TextRun({
+        text: '2. Required UI Elements to Show: ',
+        bold: true,
+        size: 16,
+        font: FONT_PRIMARY,
+        color: C_DARK
+      }),
+      new TextRun({
+        text: elementsToInclude,
+        size: 16,
+        font: FONT_PRIMARY,
+        color: C_BODY
+      })
+    ]
+  }));
+
+  paragraphs.push(new Paragraph({
+    alignment: AlignmentType.LEFT,
+    spacing: { before: 10, after: 40, line: 220 },
+    children: [
+      new TextRun({
+        text: '3. Placement Guidance: ',
+        bold: true,
+        size: 16,
+        font: FONT_PRIMARY,
+        color: C_DARK
+      }),
+      new TextRun({
+        text: instructions || 'Click inside this blank space, delete these instructional text lines, and press Ctrl+V to paste your captured screenshot. Align image to center.',
+        size: 16,
+        font: FONT_PRIMARY,
+        color: C_MUTED
+      })
+    ]
+  }));
+
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            borders: {
+              top: { style: BorderStyle.DASHED, size: 2, color: C_CALLOUT_BORDER },
+              bottom: { style: BorderStyle.DASHED, size: 2, color: C_CALLOUT_BORDER },
+              left: { style: BorderStyle.DASHED, size: 2, color: C_CALLOUT_BORDER },
+              right: { style: BorderStyle.DASHED, size: 2, color: C_CALLOUT_BORDER }
+            },
+            shading: { fill: 'F8FAFC', val: ShadingType.CLEAR },
+            margins: { top: 140, bottom: 140, left: 160, right: 160 },
+            children: paragraphs
+          })
+        ]
+      })
+    ]
+  });
+}
+
 console.log('Helpers and visual elements initialized successfully.');
 module.exports = {
   FONT_PRIMARY,
@@ -534,6 +669,7 @@ module.exports = {
   calloutBox,
   createTable,
   diagramCard,
+  screenshotPlaceholderBox,
   logoPath,
   repoDocxPath,
   brainDocxPath
