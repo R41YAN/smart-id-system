@@ -199,9 +199,12 @@ smart-id-system/
 │   └── package.json
 │
 ├── docs/
-│   ├── SIFS_Software_Testing_Report.md   # Full ISO/IEC/IEEE 29119-3 Testing Report (58 Tests)
-│   ├── SIFS_Software_Testing_Report.docx # Formatted Word testing report document
-│   └── SIFS_Friend_PC_Setup_Guide.pdf    # Complete lab setup & presentation guide
+│   ├── SIFS_CSE416_Course_Project_Report.pdf  # Comprehensive Course Project Report (PDF)
+│   ├── SIFS_CSE416_Course_Project_Report.docx # Formatted Word Project Report Document
+│   ├── SIFS_CSE416_Presentation_Slides.pptx   # Defense Presentation Slides (PowerPoint)
+│   ├── SIFS_Software_Testing_Report.md        # Full ISO/IEC/IEEE 29119-3 Testing Report (89 Tests)
+│   ├── SIFS_Software_Testing_Report.docx      # Formatted Word testing report document
+│   └── SIFS_Friend_PC_Setup_Guide.pdf         # Complete lab setup & presentation guide
 │
 ├── package.json                         # Root project scripts (install:all, test, dev)
 ├── run.bat                              # One-click Windows full-stack launcher
@@ -299,11 +302,15 @@ To change the password of any existing account: `cd backend && node scripts/set_
 
 ---
 
-## 📄 Academic Testing Reports
+## 📄 Academic Project Documentation & Reports
 
-Comprehensive testing documentation following **ISO/IEC/IEEE 29119-3** standards is available in the `docs/` directory:
-- [SIFS Software Testing Report (Markdown)](docs/SIFS_Software_Testing_Report.md)
-- [SIFS Software Testing Report (Word DOCX)](docs/SIFS_Software_Testing_Report.docx)
+Official course deliverables, testing reports, and defense assets are maintained in the `docs/` directory:
+- **Course Project Report (PDF)**: [SIFS Course Project Report (PDF)](docs/SIFS_CSE416_Course_Project_Report.pdf)
+- **Course Project Report (DOCX)**: [SIFS Course Project Report (Word DOCX)](docs/SIFS_CSE416_Course_Project_Report.docx)
+- **Presentation Slides (PPTX)**: [SIFS Defense Presentation Slides (PowerPoint)](docs/SIFS_CSE416_Presentation_Slides.pptx)
+- **Software Testing Report (Markdown)**: [SIFS Software Testing Report (Markdown)](docs/SIFS_Software_Testing_Report.md)
+- **Software Testing Report (Word DOCX)**: [SIFS Software Testing Report (Word DOCX)](docs/SIFS_Software_Testing_Report.docx)
+- **Setup & Evaluation Guide (PDF)**: [SIFS Friend PC & Lab Setup Guide (PDF)](docs/SIFS_Friend_PC_Setup_Guide.pdf)
 
 ---
 
