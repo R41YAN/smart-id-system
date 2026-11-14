@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS universities (
   logo_url    TEXT,
   is_locked   BOOLEAN DEFAULT FALSE,
   created_by  INT REFERENCES users(id) ON DELETE SET NULL,
-  created_at  TIMESTAMPTZ DEFAULT NOW()
+  created_at  TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at  TIMESTAMPTZ
 );
 
 -- Add FK from users -> universities

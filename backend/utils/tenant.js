@@ -17,6 +17,9 @@ const OWNER_QUERIES = {
   department: `SELECT d.id, d.deleted_at, d.university_id
                FROM departments d
                WHERE d.id = $1`,
+  university: `SELECT u.id, u.deleted_at, u.id AS university_id
+               FROM universities u
+               WHERE u.id = $1`,
 };
 
 /** True if the logged-in user may access data of the given university. */

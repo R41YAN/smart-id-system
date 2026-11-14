@@ -65,6 +65,11 @@ export default function ManageAdmins() {
     }
   };
 
+  const activeUniIds = new Set(universities.map(u => u.id));
+  const activeUsers = users.filter(
+    u => u.role === 'super_admin' || !u.university_id || activeUniIds.has(u.university_id)
+  );
+
   return (
     <Layout>
       <div className="space-y-8">
@@ -199,12 +204,12 @@ export default function ManageAdmins() {
           <div className="p-6 border-b border-slate-100 flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-slate-900">Active Administrative Staff</h2>
-              <p className="text-xs text-slate-500 mt-0.5">{users.length} accounts configured</p>
+              <p className="text-xs text-slate-500 mt-0.5">{activeUsers.length} accounts configured</p>
             </div>
           </div>
 
           <div className="divide-y divide-slate-100">
-            {users.map((u) => (
+            {activeUsers.map((u) => (
               <div
                 key={u.id}
                 className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors"

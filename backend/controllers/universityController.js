@@ -11,10 +11,11 @@ const getAll = async (req, res) => {
       result = await pool.query(
         `SELECT u.*, us.name AS created_by_name
          FROM universities u LEFT JOIN users us ON u.created_by = us.id
+         WHERE u.deleted_at IS NULL
          ORDER BY u.created_at DESC`
       );
     } else {
-      result = await pool.query('SELECT * FROM universities WHERE id = $1', [req.user.university_id]);
+      result = await pool.query('SELECT * FROM universities WHERE id = $1 AND deleted_at IS NULL', [req.user.university_id]);
     }
     res.json(result.rows);
   } catch (err) {
@@ -27,7 +28,7 @@ const getOne = async (req, res) => {
   // Client admins may only read their own university
   if (!id || !canAccessUniversity(req.user, id)) return res.status(404).json({ message: 'University not found' });
   try {
-    const result = await pool.query('SELECT * FROM universities WHERE id = $1', [id]);
+    const result = await pool.query('SELECT * FROM universities WHERE id = $1 AND deleted_at IS NULL', [id]);
     if (!result.rows.length) return res.status(404).json({ message: 'University not found' });
     res.json(result.rows[0]);
   } catch (err) {
@@ -87,7 +88,7 @@ const remove = async (req, res) => {
   const id = parseId(req.params.id);
   if (!id) return res.status(400).json({ message: 'Invalid university id' });
   try {
-    const uni = await pool.query('SELECT * FROM universities WHERE id=$1', [id]);
+    const uni = await pool.query('SELECT * FROM universities WHERE id=$1 AND deleted_at IS NULL', [id]);
     if (!uni.rows.length) return res.status(404).json({ message: 'University not found' });
     if (uni.rows[0].is_locked)
       return res.status(403).json({ message: 'Cannot delete: university has admitted students' });
@@ -95,8 +96,8 @@ const remove = async (req, res) => {
       'SELECT 1 FROM students s JOIN departments d ON s.department_id = d.id WHERE d.university_id=$1 LIMIT 1', [id]);
     if (used.rows.length)
       return res.status(403).json({ message: 'Cannot delete: university has student records (including in the Recycle Bin)' });
-    await pool.query('DELETE FROM universities WHERE id=$1', [id]);
-    res.json({ message: 'University deleted' });
+    await pool.query('UPDATE universities SET deleted_at = NOW() WHERE id=$1', [id]);
+    res.json({ message: 'University moved to Recycle Bin' });
   } catch (err) {
     return serverError(res, err, 'University error');
   }

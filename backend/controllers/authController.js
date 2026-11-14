@@ -54,6 +54,16 @@ const login = async (req, res) => {
     if (!match)
       return res.status(401).json({ message: 'Invalid credentials' });
 
+    // Block login if client admin's university has been moved to Recycle Bin
+    if (user.role === 'client_admin' && user.university_id) {
+      const uniCheck = await pool.query('SELECT deleted_at FROM universities WHERE id=$1', [user.university_id]);
+      if (uniCheck.rows.length === 0 || uniCheck.rows[0].deleted_at) {
+        return res.status(403).json({
+          message: 'Your university has been moved to the Recycle Bin. Please contact the Super Admin.'
+        });
+      }
+    }
+
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, university_id: user.university_id },
       JWT_SECRET,
@@ -94,26 +104,31 @@ const getMe = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT u.id, u.name, u.email, u.role, u.university_id, u.created_at,
-              un.name AS university_name, un.logo_url AS university_logo, un.type AS university_type
+              un.name AS university_name, un.logo_url AS university_logo, un.type AS university_type, un.deleted_at AS university_deleted_at
        FROM users u
        LEFT JOIN universities un ON u.university_id = un.id
        WHERE u.id = $1`,
       [req.user.id]
     );
     if (result.rows.length === 0) return res.status(404).json({ message: 'User not found' });
-    res.json(result.rows[0]);
+    const user = result.rows[0];
+    if (user.role === 'client_admin' && user.university_deleted_at) {
+      return res.status(403).json({ message: 'Your university has been moved to the Recycle Bin' });
+    }
+    res.json(user);
   } catch (err) {
     return serverError(res, err, 'Auth error');
   }
 };
 
-// GET /api/auth/users  — Super Admin lists all users
+// GET /api/auth/users  — Super Admin lists all active users
 const listUsers = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT u.id, u.name, u.email, u.role, u.university_id, 
               un.name AS university_name, un.logo_url AS university_logo, un.type AS university_type, u.created_at
        FROM users u LEFT JOIN universities un ON u.university_id = un.id
+       WHERE u.role = 'super_admin' OR (un.id IS NOT NULL AND un.deleted_at IS NULL)
        ORDER BY u.created_at DESC`
     );
     res.json(result.rows);

@@ -50,7 +50,10 @@ export default function SuperAdminDashboard() {
   }, []);
 
   const openCreditCount = universities.filter(u => u.type === 'open_credit').length;
-  const clientAdminsCount = users.filter(u => u.role === 'client_admin').length;
+  const activeUniIds = new Set(universities.map(u => u.id));
+  const clientAdminsCount = users.filter(
+    u => u.role === 'client_admin' && (!u.university_id || activeUniIds.has(u.university_id))
+  ).length;
 
   return (
     <Layout>
