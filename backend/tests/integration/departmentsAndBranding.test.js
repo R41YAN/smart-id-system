@@ -26,13 +26,13 @@ describe('Integration Tests: Departments & Institutional Branding', () => {
     // 1. Authenticate Super Admin
     const superRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'superadmin@smartid.com', password: 'admin123' });
+      .send({ email: 'superadmin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     superAdminToken = superRes.body.token;
 
     // 2. Authenticate NSU Admin (Client Admin)
     const nsuRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'nsu_admin@smartid.com', password: 'admin123' });
+      .send({ email: 'nsu_admin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     nsuAdminToken = nsuRes.body.token;
     nsuUniId = nsuRes.body.user.university_id;
     originalNsuLogo = nsuRes.body.user.university_logo || null;
@@ -40,7 +40,7 @@ describe('Integration Tests: Departments & Institutional Branding', () => {
     // 3. Authenticate MU Admin (Client Admin)
     const muRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'mu_admin@smartid.com', password: 'admin123' });
+      .send({ email: 'mu_admin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     muAdminToken = muRes.body.token;
     muUniId = muRes.body.user.university_id;
   });

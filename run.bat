@@ -27,6 +27,13 @@ if not exist "frontend\node_modules\" (
     call npm install --prefix frontend
 )
 
+if not exist "backend\.env" (
+    echo [ERROR] backend\.env not found!
+    echo Copy backend\.env.example to backend\.env and fill in your database URL and JWT_SECRET.
+    pause
+    exit /b 1
+)
+
 echo [3/3] Launching SIFS Full-Stack Application...
 echo Starting Backend API on http://localhost:5000 ...
 start "SIFS Backend API (Port 5000)" cmd /k "cd /d "%~dp0backend" && npm run dev"
@@ -48,11 +55,8 @@ echo ========================================================
 echo    SIFS is now running!
 echo.
 echo    Frontend: http://localhost:5173
-echo    Backend:  http://localhost:5000 (Connected to Supabase)
+echo    Backend:  http://localhost:5000
 echo.
-echo    Ready-to-use Admin Accounts:
-echo    - Super Admin:  superadmin@smartid.com / admin123
-echo    - UITS Admin:   uits_admin@smartid.com  / admin123
-echo    - NSU Admin:    nsu_admin@smartid.com   / admin123
+echo    Log in with the admin accounts created by "npm run seed -- --reset".
 echo ========================================================
 echo.

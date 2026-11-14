@@ -23,7 +23,7 @@ describe('Integration Tests: Authentication Flow (/api/auth)', () => {
     // Arrange
     const credentials = {
       email: 'superadmin@smartid.com',
-      password: 'admin123'
+      password: process.env.TEST_ADMIN_PASSWORD
     };
 
     // Act
@@ -68,7 +68,7 @@ describe('Integration Tests: Authentication Flow (/api/auth)', () => {
     const emptyPayloads = [
       { email: '', password: '' },
       { email: 'superadmin@smartid.com', password: '' },
-      { email: '', password: 'admin123' }
+      { email: '', password: process.env.TEST_ADMIN_PASSWORD }
     ];
 
     // Act & Assert
@@ -110,7 +110,7 @@ describe('Integration Tests: Authentication Flow (/api/auth)', () => {
     // 1. Arrange: Login first to obtain valid token
     const loginRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'nsu_admin@smartid.com', password: 'admin123' });
+      .send({ email: 'nsu_admin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
 
     const token = loginRes.body.token;
     expect(token).toBeDefined();

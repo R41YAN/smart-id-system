@@ -122,8 +122,9 @@ export default function ClientAdminDashboard() {
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-6 border-b border-slate-200/80">
           <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-700 mb-1.5">Welcome back</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Admission Dashboard
+              Admission <span className="bg-[linear-gradient(transparent_58%,#FDE68A_58%)] px-0.5">Dashboard</span>
             </h1>
             <p className="text-sm text-slate-500 mt-1 font-medium">
               Institutional student enrollment, ID generation engine & directory
@@ -217,30 +218,21 @@ export default function ClientAdminDashboard() {
           )}
         </div>
 
-        {/* Live ID Formatting Formula Pill */}
-        <div className="bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-slate-50 border border-blue-200/70 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-700 shadow-xs">
-          <div className="flex items-center gap-3">
-            <span className="px-2.5 py-1 bg-blue-600 text-white rounded-lg font-mono font-bold text-[11px] tracking-wider shrink-0 shadow-xs">
-              FORMAT RULE
-            </span>
-            <div className="flex items-center gap-1.5 flex-wrap font-mono font-bold text-xs text-blue-900">
-              <span className="bg-white/80 border border-blue-200 px-2 py-0.5 rounded shadow-2xs">[Dept Code]</span>
-              <span>+</span>
-              <span className="bg-white/80 border border-blue-200 px-2 py-0.5 rounded shadow-2xs">
-                {isOpen ? '[YY]' : '[Batch]'}
-              </span>
-              <span>+</span>
-              <span className="bg-white/80 border border-blue-200 px-2 py-0.5 rounded shadow-2xs">
-                {isOpen ? '[SemCode]' : '[YY]'}
-              </span>
-              <span>+</span>
-              <span className="bg-emerald-50 border border-emerald-300 text-emerald-800 px-2 py-0.5 rounded shadow-2xs">
-                [3-Digit Serial]
-              </span>
-            </div>
-          </div>
-          <span className="text-[11px] font-medium text-slate-500">
-            Example: <strong className="font-mono text-slate-800">{isOpen ? 'CSE26FL001' : 'CSE5426001'}</strong>
+        {/* Live ID Formatting Formula — sticky note */}
+        <div className="inline-flex flex-wrap items-center gap-2.5 bg-amber-100 rounded-md px-4 py-3 -rotate-[0.6deg] shadow-[0_6px_14px_-8px_rgba(146,64,14,0.45)] text-sm">
+          <span className="text-xs font-bold uppercase tracking-wider text-amber-900">ID format</span>
+          <span className="font-mono text-[13px] font-semibold px-2.5 py-1 rounded-lg bg-sky-100 text-sky-900">Dept</span>
+          <span className="font-mono text-[13px] font-semibold px-2.5 py-1 rounded-lg bg-purple-100 text-purple-900">
+            {isOpen ? 'YY' : 'Batch'}
+          </span>
+          <span className="font-mono text-[13px] font-semibold px-2.5 py-1 rounded-lg bg-orange-100 text-orange-900">
+            {isOpen ? 'Semester' : 'YY'}
+          </span>
+          <span className="font-mono text-[13px] font-semibold px-2.5 py-1 rounded-lg bg-blue-100 text-blue-900">
+            3-digit Serial
+          </span>
+          <span className="font-semibold text-amber-900">
+            e.g. <strong className="font-mono">{isOpen ? 'CSE26FL001' : 'CSE5426001'}</strong>
           </span>
         </div>
 

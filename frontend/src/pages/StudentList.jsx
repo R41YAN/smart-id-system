@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
+import { toCsv } from '../utils/csv';
 import { useAuth } from '../context/AuthContext';
 import StudentIdCard from '../components/StudentIdCard';
 import {
@@ -175,17 +176,18 @@ export default function StudentList() {
     ];
     const rows = displayedStudents.map((s, i) => [
       i + 1,
-      `"${s.student_id}"`,
-      `"${(s.name || '').replace(/"/g, '""')}"`,
-      `"${s.department_code || s.department_name || ''}"`,
-      `"${s.department_name || ''}"`,
-      `"${s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch (${s.year})`}"`,
-      `"${s.email || ''}"`,
-      `"${s.phone || ''}"`,
-      `"${new Date(s.admitted_at).toLocaleDateString()}"`
+      s.student_id,
+      s.name || '',
+      s.department_code || s.department_name || '',
+      s.department_name || '',
+      s.semester_code ? `${SEM_LABELS[s.semester_code]} ${s.year}` : `${getOrdinal(s.batch_number)} Batch (${s.year})`,
+      s.email || '',
+      s.phone || '',
+      new Date(s.admitted_at).toLocaleDateString()
     ]);
 
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+    // csvCell() escapes quotes and blocks spreadsheet formula injection (e.g. a name like =HYPERLINK(...))
+    const csvContent = '\uFEFF' + toCsv(headers, rows);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

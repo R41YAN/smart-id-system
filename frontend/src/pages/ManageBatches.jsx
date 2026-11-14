@@ -205,6 +205,8 @@ export default function ManageBatches() {
                   <input
                     type="number"
                     required
+                    min="1"
+                    max="99"
                     placeholder="e.g. 54"
                     value={form.batch_number}
                     onChange={e => setForm({ ...form, batch_number: e.target.value })}

@@ -1,4 +1,10 @@
 const pool = require('../db/connection');
+const { loadOwned } = require('../utils/tenant');
+const { serverError } = require('../utils/http');
+
+// Letters only, 2–6 characters (e.g. CSE, EEE, BBA). Digits are not allowed because the
+// department code is followed by numbers in the student ID, which would make IDs ambiguous.
+const DEPT_CODE_RE = /^[A-Z]{2,6}$/;
 
 const getAll = async (req, res) => {
   try {
@@ -16,7 +22,7 @@ const getAll = async (req, res) => {
     const result = uniId ? await pool.query(query, [uniId]) : await pool.query(query);
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'Department error');
   }
 };
 
@@ -27,6 +33,12 @@ const create = async (req, res) => {
 
   if (!deptCode) {
     return res.status(400).json({ message: 'Department code is required' });
+  }
+  if (!DEPT_CODE_RE.test(deptCode)) {
+    return res.status(400).json({ message: 'Department code must be 2–6 letters (A–Z), e.g. CSE' });
+  }
+  if (deptFullName.length > 150) {
+    return res.status(400).json({ message: 'Department name must be at most 150 characters' });
   }
 
   const uniId = req.user.role === 'client_admin' ? req.user.university_id : university_id;
@@ -40,19 +52,25 @@ const create = async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (err) {
     if (err.code === '23505') return res.status(409).json({ message: 'Department already exists' });
-    res.status(500).json({ message: 'Server error', error: err.message });
+    if (err.code === '23503') return res.status(400).json({ message: 'University not found' });
+    return serverError(res, err, 'Create department error');
   }
 };
 
 const remove = async (req, res) => {
   try {
-    const batches = await pool.query('SELECT id FROM batches WHERE department_id=$1 AND deleted_at IS NULL LIMIT 1', [req.params.id]);
+    const owned = await loadOwned('department', req.params.id, req.user);
+    if (owned.status) return res.status(owned.status).json({ message: owned.message });
+    if (owned.record.deleted_at)
+      return res.status(400).json({ message: 'Department is already in the Recycle Bin' });
+
+    const batches = await pool.query('SELECT id FROM batches WHERE department_id=$1 AND deleted_at IS NULL LIMIT 1', [owned.record.id]);
     if (batches.rows.length > 0)
       return res.status(403).json({ message: 'Cannot delete department with active batches' });
-    await pool.query('UPDATE departments SET deleted_at = NOW() WHERE id=$1', [req.params.id]);
+    await pool.query('UPDATE departments SET deleted_at = NOW() WHERE id=$1', [owned.record.id]);
     res.json({ message: 'Department moved to Recycle Bin' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'Department error');
   }
 };
 

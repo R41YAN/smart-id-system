@@ -1,5 +1,8 @@
 -- ============================================================
 -- Smart ID System — PostgreSQL Schema
+-- ⚠️ WARNING: this file DROPS ALL TABLES. It is only used by
+--    `npm run seed -- --reset` to build a fresh demo database.
+--    To upgrade an EXISTING database, run db/migrations/*.sql instead.
 -- ============================================================
 
 DROP TABLE IF EXISTS students CASCADE;
@@ -52,6 +55,7 @@ CREATE TABLE IF NOT EXISTS departments (
   code          VARCHAR(20),
   full_name     VARCHAR(150),
   created_at    TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at    TIMESTAMPTZ,
   UNIQUE(university_id, name)
 );
 
@@ -66,7 +70,8 @@ CREATE TABLE IF NOT EXISTS batches (
   semester_code   VARCHAR(2) CHECK (semester_code IN ('SP','SM','FL')),
   semester_index  INT CHECK (semester_index IN (1,2,3)),
   current_serial  INT NOT NULL DEFAULT 0,
-  created_at      TIMESTAMPTZ DEFAULT NOW()
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at      TIMESTAMPTZ
 );
 
 -- Students table
@@ -81,7 +86,10 @@ CREATE TABLE IF NOT EXISTS students (
   photo         TEXT,
   serial_number INT NOT NULL,
   admitted_by   INT REFERENCES users(id) ON DELETE SET NULL,
-  admitted_at   TIMESTAMPTZ DEFAULT NOW()
+  admitted_at   TIMESTAMPTZ DEFAULT NOW(),
+  deleted_at    TIMESTAMPTZ,
+  -- Safety net: a serial can be used only once per batch (IDs are never reused)
+  CONSTRAINT uq_students_batch_serial UNIQUE (batch_id, serial_number)
 );
 
 CREATE INDEX IF NOT EXISTS idx_students_dept   ON students(department_id);

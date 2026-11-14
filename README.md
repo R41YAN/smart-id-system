@@ -8,7 +8,7 @@
 > - **Md. Fizul Islam Yamin** (ID: 0432320005101114) — *Frontend, UI/UX, Component Architecture & Documentation*  
 > **Course Instructor:** Dr. Mahfida Amjad Dipa
 
-[![Tests](https://img.shields.io/badge/Automated%20Tests-67%20Passed%20(100%25)-success?style=flat-square&logo=jest)](docs/SIFS_Software_Testing_Report.md)
+[![Tests](https://img.shields.io/badge/Automated%20Tests-89%20Passed%20(100%25)-success?style=flat-square&logo=jest)](docs/SIFS_Software_Testing_Report.md)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat-square&logo=vite)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react)](https://react.dev/)
@@ -53,7 +53,7 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
    - Super Admin university tenant tables & admin access tables display institutional logos (`SuperAdminDashboard.jsx`, `ManageUniversities.jsx`, `ManageAdmins.jsx`).
    - Photo-style upload frame with client-side canvas auto-resizing.
    - Strict fallback to clean university icon when no custom logo is uploaded.
-   - Express body-parser configured for 10MB payload (`backend/index.js`) for Base64 logo & photo uploads.
+   - Express body-parser configured for a 3 MB payload (`backend/index.js`); images are validated and limited to ~1 MB each.
 8. **Option 3 Hybrid Modern UI/UX Architecture, 3D Smart Card Tilt & Collapsible Navigation**:
    - **Cinematic Dark Login Screen**: Deep-space slate (`#070C18`), ambient radial glow orbs, and frosted glassmorphic card (`backdrop-blur-2xl bg-slate-900/80`).
    - **Collapsible Dual-Mode Executive Sidebar**: One-click smooth transition between Wide (256px) and Mini Rail (80px) with `localStorage` state persistence (`sifs_sidebar_collapsed`).
@@ -63,8 +63,8 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
    - **3D PVC Card Perspective Hover**: Interactive physical smart card physics (`.card-3d`, `.card-3d-wrap`, `perspective: 1200px`) with real-time keystroke rendering.
    - **Stacked Batch & Academic Year Display**: Renders batch name on Line 1 (`1st Batch`, `54th Batch`) and admission year on Line 2 (`(2026)`) directly underneath for close-credit institutions, preventing card truncation while preserving cohort years in dropdowns.
    - **Instant Directory Search**: Real-time client-side search filtering across Student IDs, student names, emails, and departments.
-9. **Automatic Serial Recalibration Engine**:
-   - When a student record is removed or restored, the backend dynamically recalibrates `batches.current_serial` to max serial of active students in that batch, eliminating ghost counters and preserving sequential serial integrity.
+9. **Permanent, Never-Reused Serials**:
+   - Serial counters only increase. A student moved to the Recycle Bin keeps their ID, so restoring them can never collide with a newer student, and no ID is ever given to two different people.
 10. **Concurrency-Safe Bulk Student Admission via CSV/Excel (`/admin/admit`)**:
     - Dual admission mode: single enrollment or bulk CSV ingestion.
     - Dynamic CSV template generator (`Full Name, Department Code, Batch/Intake, Email, Phone, Photo URL (Optional)`).
@@ -82,8 +82,8 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
 13. **Dynamic Institutional File Naming & Static Avatars**:
     - Standardized naming: `SIFS - [UniShort]_[Dept]_[Batch/Intake]_[Action]` (e.g., `SIFS - UIU_CSE_54(2026)_ID_Cards.pdf` or `SP'26`).
     - Static read-only student photo avatars across Recent Admissions and Recycle Bin.
-14. **Automated Master Test Suite (67 Tests, 100% Pass Rate)**:
-    - Full automated test suite across backend (42 tests, Jest + Supertest) and frontend (25 tests, Vitest + React Testing Library).
+14. **Automated Master Test Suite (89 Tests, 100% Pass Rate)**:
+    - Backend: 61 tests (Jest + Supertest), including 19 security regression tests. Frontend: 28 tests (Vitest + React Testing Library).
 
 ---
 
@@ -157,7 +157,7 @@ smart-id-system/
 │   │       └── departmentsAndBranding.test.js # Dual dept & branding (4 tests)
 │   ├── scripts/
 │   │   └── generate_test_report_docx.js # ISO/IEC/IEEE 29119-3 DOCX report generator
-│   ├── index.js                     # Express app entrypoint (10MB body parser limit)
+│   ├── index.js                     # Express app entrypoint (3 MB body limit, security headers)
 │   └── package.json
 │
 ├── frontend/
@@ -212,66 +212,56 @@ smart-id-system/
 
 ## 🚀 Quick Setup & Execution Guide
 
-SIFS is designed with **Zero-Configuration Instant Execution**. When pulled from Git onto any machine (such as a friend's PC or lab workstation), the backend automatically connects to the pre-configured Cloud Supabase PostgreSQL database—**no local PostgreSQL installation, no manual database seeding, and no manual `.env` file creation required!**
-
-### Option A: One-Click Launcher (Windows — Recommended)
-Simply double-click **`run.bat`** in the project root folder.
-* Verifies Node.js and automatically installs dependencies if missing.
-* Starts the Backend API on `http://localhost:5000` (connected to Cloud Supabase).
-* Starts the Frontend Vite server on `http://localhost:5173`.
-* Automatically launches your web browser to `http://localhost:5173`.
-
----
-
-### Option B: Terminal Commands
-
-#### 1. Install Dependencies
+### 1. Configure the backend (`backend/.env`)
+Secrets are **never** stored in the code. Create your own config file once:
 ```bash
-# Install all dependencies across backend and frontend in one step:
+cd backend
+cp .env.example .env        # Windows: copy .env.example .env
+```
+Then edit `backend/.env`:
+- `DATABASE_URL` — your Supabase connection string (Project Settings → Database), or local PostgreSQL settings
+- `JWT_SECRET` — a long random value, generate one with:
+  `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
+- `SEED_ADMIN_PASSWORD` — (optional) password for the demo admin accounts
+
+The server refuses to start if `JWT_SECRET` or the database settings are missing.
+
+### 2. Prepare the database
+```bash
+cd backend
+npm run migrate              # existing database: adds missing columns, repairs serial counters (no data loss)
+npm run seed -- --reset      # NEW/demo database only: ⚠️ deletes everything and creates demo data
+```
+
+### 3. Run
+**Option A — Windows:** double-click **`run.bat`** (checks Node.js and `backend/.env`, installs packages, starts both servers, opens the browser).
+
+**Option B — Terminal:**
+```bash
 npm run install:all
-
-# (Or individually: cd backend && npm install, then cd ../frontend && npm install)
-```
-
-#### 2. Start Backend API Server
-```bash
-cd backend
-npm run dev
-# Server automatically connects to Cloud Supabase and runs on http://localhost:5000
-```
-
-#### 3. Start Frontend Client Application
-```bash
-# In a new terminal window:
-cd frontend
-npm run dev
-# Frontend runs on http://localhost:5173
+cd backend && npm run dev     # API → http://localhost:5000
+cd frontend && npm run dev    # UI  → http://localhost:5173 (new terminal)
 ```
 
 ---
 
-## 🧪 Automated Testing Instructions (58 Tests)
+## 🧪 Automated Testing Instructions (89 Tests)
 
-### 1. Run Backend Tests (40 Tests)
+### 1. Backend Tests (61 Tests — Jest + Supertest)
+Integration tests **delete and re-create all data** in the database they use, so they run only against a
+separate throw-away database set in `TEST_DATABASE_URL` (never the real/demo one):
 ```bash
 cd backend
-
-# Run all 40 unit and integration tests
-npm test
-
-# Run with full code coverage breakdown
+# in backend/.env:  TEST_DATABASE_URL=postgresql://postgres:<password>@localhost:5432/sifs_test
+npm test                # all 61 unit + integration tests (includes 19 security regression tests)
+npm run test:unit       # only the 23 ID-engine unit tests (no database needed)
 npm run test:coverage
 ```
 
-### 2. Run Frontend Tests (18 Tests)
+### 2. Frontend Tests (28 Tests — Vitest + React Testing Library)
 ```bash
-# Switch from backend to frontend directory:
-cd ../frontend
-
-# Run all 18 UI component and simulation tests
+cd frontend
 npm test -- --run
-
-# Run with full code coverage breakdown
 npm run test:coverage
 ```
 
@@ -283,16 +273,29 @@ npm run build
 
 ---
 
-## 🔑 Default Login Credentials
+## 🔑 Login Accounts
 
-| Role | University / Scope | Email | Password |
-|---|---|---|---|
-| **Super Admin** | System-Wide Platform | `superadmin@smartid.com` | `admin123` |
-| **Client Admin** | University of Information Technology and Sciences (UITS) | `uits_admin@smartid.com` | `admin123` |
-| **Client Admin** | Dhaka University (DU) | `du_admin@smartid.com` | `admin123` |
-| **Client Admin** | North South University (NSU) | `nsu_admin@smartid.com` | `admin123` |
-| **Client Admin** | BRAC University (BRAC) | `brac_admin@smartid.com` | `admin123` |
-| **Client Admin** | Metropolitan University (MU) | `mu_admin@smartid.com` | `admin123` |
+`npm run seed -- --reset` creates the demo accounts below and prints their password
+(`SEED_ADMIN_PASSWORD` from `.env`, or a random one):
+
+| Role | University / Scope | Email |
+|---|---|---|
+| **Super Admin** | System-Wide Platform | `superadmin@smartid.com` |
+| **Client Admin** | North South University (NSU) | `nsu_admin@smartid.com` |
+| **Client Admin** | Metropolitan University (MU) | `mu_admin@smartid.com` |
+
+To change the password of any existing account: `cd backend && node scripts/set_password.js <email>`
+
+---
+
+## 🔐 Security Model
+
+- **Secrets in `.env` only** — no database password or JWT secret in the source code; the server validates them at start-up.
+- **Strict tenant isolation** — every endpoint that takes an id (students, batches, departments, universities, Recycle Bin) checks that the record belongs to the logged-in admin's university (`backend/utils/tenant.js`). Records of other universities answer *404 Not Found*.
+- **IDs are never reused** — serial counters only go up; a deleted student keeps its ID and can always be restored. A `UNIQUE (batch_id, serial_number)` constraint guards this in the database.
+- **Login protection** — 5 failed attempts per account/IP lock login for 15 minutes; tokens expire after 8 hours (configurable).
+- **Input validation** — department codes (2–6 letters), batch numbers (1–99), semester code/index pairs, emails, phones and image uploads (PNG/JPEG/WEBP/GIF/SVG data or http(s) URL, max ~1 MB).
+- **No internal error details** are sent to the browser; CSV exports are protected against spreadsheet formula injection.
 
 ---
 

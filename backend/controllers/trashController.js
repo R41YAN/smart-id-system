@@ -1,4 +1,9 @@
 const pool = require('../db/connection');
+const { loadOwned } = require('../utils/tenant');
+const { serverError } = require('../utils/http');
+
+const TRASH_TYPES = ['student', 'batch', 'department'];
+const capitalize = (t) => t.charAt(0).toUpperCase() + t.slice(1);
 
 // GET /api/trash — View all soft-deleted records for this university
 const getTrash = async (req, res) => {
@@ -62,116 +67,129 @@ const getTrash = async (req, res) => {
       totalCount: studentsRes.rows.length + batchesRes.rows.length + deptsRes.rows.length
     });
   } catch (err) {
-    console.error('Get trash error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'Get trash error');
   }
 };
 
-// POST /api/trash/restore — Restore a soft-deleted record
+// POST /api/trash/restore — Restore a soft-deleted record (only records of the caller's own university)
 const restoreItem = async (req, res) => {
   const { type, id } = req.body;
   if (!type || !id) {
     return res.status(400).json({ message: 'type and id are required' });
   }
+  if (!TRASH_TYPES.includes(type)) {
+    return res.status(400).json({ message: 'Invalid entity type' });
+  }
 
   try {
+    const owned = await loadOwned(type, id, req.user);
+    if (owned.status) return res.status(owned.status).json({ message: owned.message });
+    const { record } = owned;
+    if (!record.deleted_at) {
+      return res.status(400).json({ message: `${capitalize(type)} is not in the Recycle Bin` });
+    }
+
     if (type === 'student') {
-      const studentRes = await pool.query('SELECT batch_id FROM students WHERE id=$1', [id]);
-      if (!studentRes.rows.length) return res.status(404).json({ message: 'Student not found in trash' });
-      const batchId = studentRes.rows[0].batch_id;
-
-      await pool.query('UPDATE students SET deleted_at = NULL WHERE id=$1', [id]);
-
-      // Recalibrate batch serial
-      const maxSerialRes = await pool.query(
-        'SELECT COALESCE(MAX(serial_number), 0) AS max_serial FROM students WHERE batch_id=$1 AND deleted_at IS NULL',
-        [batchId]
-      );
-      await pool.query('UPDATE batches SET current_serial=$1 WHERE id=$2', [maxSerialRes.rows[0].max_serial, batchId]);
-
+      // A student can only come back if its batch is active.
+      const parent = await pool.query('SELECT deleted_at FROM batches WHERE id=$1', [record.batch_id]);
+      if (parent.rows[0]?.deleted_at) {
+        return res.status(409).json({ message: 'Restore the batch of this student first' });
+      }
+      // Serial numbers are never reused, so the restored student keeps its original, still-unique ID.
+      await pool.query('UPDATE students SET deleted_at = NULL WHERE id=$1', [record.id]);
       return res.json({ message: 'Student restored successfully' });
     }
 
     if (type === 'batch') {
-      await pool.query('UPDATE batches SET deleted_at = NULL WHERE id=$1', [id]);
+      const parent = await pool.query('SELECT deleted_at FROM departments WHERE id=$1', [record.department_id]);
+      if (parent.rows[0]?.deleted_at) {
+        return res.status(409).json({ message: 'Restore the department of this batch first' });
+      }
+      await pool.query('UPDATE batches SET deleted_at = NULL WHERE id=$1', [record.id]);
       return res.json({ message: 'Batch restored successfully' });
     }
 
-    if (type === 'department') {
-      await pool.query('UPDATE departments SET deleted_at = NULL WHERE id=$1', [id]);
-      return res.json({ message: 'Department restored successfully' });
-    }
-
-    return res.status(400).json({ message: 'Invalid entity type' });
+    await pool.query('UPDATE departments SET deleted_at = NULL WHERE id=$1', [record.id]);
+    return res.json({ message: 'Department restored successfully' });
   } catch (err) {
-    console.error('Restore error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'Restore error');
   }
 };
 
-// DELETE /api/trash/permanent — Permanently delete a single item
+// DELETE /api/trash/permanent — Permanently delete a single item that is already in the Recycle Bin
 const permanentDelete = async (req, res) => {
   const { type, id } = req.body;
   if (!type || !id) {
     return res.status(400).json({ message: 'type and id are required' });
   }
+  if (!TRASH_TYPES.includes(type)) {
+    return res.status(400).json({ message: 'Invalid entity type' });
+  }
 
   try {
-    if (type === 'student') {
-      await pool.query('DELETE FROM students WHERE id=$1', [id]);
-      return res.json({ message: 'Student permanently deleted' });
+    const owned = await loadOwned(type, id, req.user);
+    if (owned.status) return res.status(owned.status).json({ message: owned.message });
+    const { record } = owned;
+    if (!record.deleted_at) {
+      return res.status(400).json({ message: `Only items in the Recycle Bin can be deleted permanently` });
     }
 
-    if (type === 'batch') {
-      await pool.query('DELETE FROM batches WHERE id=$1', [id]);
-      return res.json({ message: 'Batch permanently deleted' });
-    }
-
-    if (type === 'department') {
-      await pool.query('DELETE FROM departments WHERE id=$1', [id]);
-      return res.json({ message: 'Department permanently deleted' });
-    }
-
-    return res.status(400).json({ message: 'Invalid entity type' });
+    const table = { student: 'students', batch: 'batches', department: 'departments' }[type];
+    await pool.query(`DELETE FROM ${table} WHERE id=$1 AND deleted_at IS NOT NULL`, [record.id]);
+    return res.json({ message: `${capitalize(type)} permanently deleted` });
   } catch (err) {
-    console.error('Permanent delete error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    if (err.code === '23503') {
+      return res.status(409).json({
+        message: 'Cannot delete permanently: it still contains students. Delete those students permanently first.',
+      });
+    }
+    return serverError(res, err, 'Permanent delete error');
   }
 };
 
 // POST /api/trash/empty — Empty all trash for the university
 const emptyTrash = async (req, res) => {
+  let client;
   try {
     const isClient = req.user.role === 'client_admin';
     const uniId = req.user.university_id;
 
+    client = await pool.connect();
+    await client.query('BEGIN'); // all-or-nothing
+
     if (isClient) {
-      await pool.query(`
+      await client.query(`
         DELETE FROM students 
         WHERE deleted_at IS NOT NULL 
           AND department_id IN (SELECT id FROM departments WHERE university_id = $1)
       `, [uniId]);
 
-      await pool.query(`
+      await client.query(`
         DELETE FROM batches 
         WHERE deleted_at IS NOT NULL 
           AND department_id IN (SELECT id FROM departments WHERE university_id = $1)
       `, [uniId]);
 
-      await pool.query(`
+      await client.query(`
         DELETE FROM departments 
         WHERE deleted_at IS NOT NULL AND university_id = $1
       `, [uniId]);
     } else {
-      await pool.query('DELETE FROM students WHERE deleted_at IS NOT NULL');
-      await pool.query('DELETE FROM batches WHERE deleted_at IS NOT NULL');
-      await pool.query('DELETE FROM departments WHERE deleted_at IS NOT NULL');
+      await client.query('DELETE FROM students WHERE deleted_at IS NOT NULL');
+      await client.query('DELETE FROM batches WHERE deleted_at IS NOT NULL');
+      await client.query('DELETE FROM departments WHERE deleted_at IS NOT NULL');
     }
 
+    await client.query('COMMIT');
     res.json({ message: 'Recycle bin emptied permanently' });
   } catch (err) {
-    console.error('Empty trash error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    if (client) { try { await client.query('ROLLBACK'); } catch (_) {} }
+    if (err.code === '23503') {
+      return res.status(409).json({ message: 'Some items still contain active students and could not be deleted' });
+    }
+    return serverError(res, err, 'Empty trash error');
+  } finally {
+    if (client) client.release();
   }
 };
 

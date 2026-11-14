@@ -1,21 +1,29 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const pool = require('./connection');
 const { generateStudentId } = require('../utils/idGenerator');
 
-async function seed() {
-  console.log('🌱 Starting database setup and seeding...');
+/**
+ * ⚠️ DESTRUCTIVE: applies schema.sql, which DROPS all tables, then inserts demo data.
+ * Run with:  npm run seed -- --reset
+ * Admin password: SEED_ADMIN_PASSWORD from backend/.env, otherwise a random one is generated.
+ */
+async function seed({ adminPassword, closePool = true, quiet = false } = {}) {
+  const log = quiet ? () => {} : console.log;
+  const password = adminPassword || process.env.SEED_ADMIN_PASSWORD || crypto.randomBytes(9).toString('base64url');
+  log('🌱 Starting database setup and seeding...');
 
   try {
     // 1. Read and apply schema
     const schemaPath = path.join(__dirname, 'schema.sql');
     const schemaSql = fs.readFileSync(schemaPath, 'utf8');
     await pool.query(schemaSql);
-    console.log('✅ Database schema applied successfully');
+    log('✅ Database schema applied successfully');
 
     // 2. Hash default password
-    const passwordHash = await bcrypt.hash('admin123', 10);
+    const passwordHash = await bcrypt.hash(password, 12);
 
     // 3. Create Super Admin
     const superAdminRes = await pool.query(
@@ -25,7 +33,7 @@ async function seed() {
       ['System Super Admin', 'superadmin@smartid.com', passwordHash]
     );
     const superAdmin = superAdminRes.rows[0];
-    console.log(`✅ Super Admin created: ${superAdmin.email}`);
+    log(`✅ Super Admin created: ${superAdmin.email}`);
 
     // 4. Create Sample Universities
     const nsuRes = await pool.query(
@@ -43,7 +51,7 @@ async function seed() {
       [superAdmin.id]
     );
     const mu = muRes.rows[0];
-    console.log(`✅ Universities created: ${nsu.name} (open_credit), ${mu.name} (close_credit)`);
+    log(`✅ Universities created: ${nsu.name} (open_credit), ${mu.name} (close_credit)`);
 
     // 5. Create Client Admins
     const nsuAdminRes = await pool.query(
@@ -61,7 +69,7 @@ async function seed() {
       [passwordHash, mu.id]
     );
     const muAdmin = muAdminRes.rows[0];
-    console.log(`✅ Client Admins created: ${nsuAdmin.email}, ${muAdmin.email}`);
+    log(`✅ Client Admins created: ${nsuAdmin.email}, ${muAdmin.email}`);
 
     // 6. Create Departments
     const deptCseNsu = (await pool.query(
@@ -83,7 +91,7 @@ async function seed() {
       `INSERT INTO departments (university_id, name) VALUES ($1, 'EEE') RETURNING id, name`,
       [mu.id]
     )).rows[0];
-    console.log('✅ Sample departments created');
+    log('✅ Sample departments created');
 
     // 7. Create Batches
     // NSU (Open Credit): CSE 2026 Spring (SP, index 1)
@@ -101,7 +109,7 @@ async function seed() {
        RETURNING id, year, batch_number`,
       [deptCseMu.id]
     )).rows[0];
-    console.log('✅ Sample batches created');
+    log('✅ Sample batches created');
 
     // 8. Create Sample Students
     // NSU Student 1: Open Credit -> CSE26SP001
@@ -162,27 +170,37 @@ async function seed() {
 
     // Mark universities as locked
     await pool.query(`UPDATE universities SET is_locked = TRUE WHERE id IN ($1, $2)`, [nsu.id, mu.id]);
-    console.log('✅ Sample students admitted and IDs formatted successfully');
+    log('✅ Sample students admitted and IDs formatted successfully');
 
-    console.log('\n======================================================');
-    console.log('🎉 SEEDING COMPLETED SUCCESSFULLY!');
-    console.log('======================================================');
-    console.log('Default Credentials:');
-    console.log('  Super Admin:');
-    console.log('    Email:    superadmin@smartid.com');
-    console.log('    Password: admin123');
-    console.log('  Client Admin (Open Credit - NSU):');
-    console.log('    Email:    nsu_admin@smartid.com');
-    console.log('    Password: admin123');
-    console.log('  Client Admin (Close Credit - MU):');
-    console.log('    Email:    mu_admin@smartid.com');
-    console.log('    Password: admin123');
-    console.log('======================================================\n');
+    log('\n======================================================');
+    log('🎉 SEEDING COMPLETED SUCCESSFULLY!');
+    log('======================================================');
+    log('Default Credentials:');
+    log('  Super Admin:');
+    log('    Email:    superadmin@smartid.com');
+    log(`    Password: ${password}`);
+    log('  Client Admin (Open Credit - NSU):');
+    log('    Email:    nsu_admin@smartid.com');
+    log(`    Password: ${password}`);
+    log('  Client Admin (Close Credit - MU):');
+    log('    Email:    mu_admin@smartid.com');
+    log(`    Password: ${password}`);
+    log('======================================================\n');
   } catch (err) {
     console.error('❌ Seeding error:', err);
+    throw err;
   } finally {
-    await pool.end();
+    if (closePool) await pool.end();
   }
 }
 
-seed();
+module.exports = { seed };
+
+if (require.main === module) {
+  if (!process.argv.includes('--reset')) {
+    console.error('\n⚠️  This command DELETES ALL DATA in the configured database and re-creates demo data.');
+    console.error('   If you are sure, run:  npm run seed -- --reset\n');
+    process.exit(1);
+  }
+  seed().catch(() => process.exit(1));
+}

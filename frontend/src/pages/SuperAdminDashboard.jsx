@@ -58,8 +58,9 @@ export default function SuperAdminDashboard() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/60">
           <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-700 mb-1.5">Welcome back</p>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Super Admin Console
+              Super Admin <span className="bg-[linear-gradient(transparent_58%,#FDE68A_58%)] px-0.5">Console</span>
             </h1>
             <p className="text-sm text-slate-500 mt-1">
               Global system monitoring, university tenants, and administrative access

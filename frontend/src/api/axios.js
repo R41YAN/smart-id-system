@@ -14,7 +14,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    // An expired/invalid session sends the user back to login.
+    // A wrong password ON the login form must not reload the page, or its error message is lost.
+    const isLoginRequest = err.config?.url?.includes('/auth/login');
+    if (err.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';

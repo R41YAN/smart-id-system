@@ -1,4 +1,8 @@
 const pool = require('../db/connection');
+const { canAccessUniversity, parseId } = require('../utils/tenant');
+const { serverError, isValidImage } = require('../utils/http');
+
+const LOGO_ERROR = 'logo_url must be a PNG/JPEG/WEBP/GIF/SVG image or an http(s) URL (max ~1 MB)';
 
 const getAll = async (req, res) => {
   try {
@@ -14,17 +18,20 @@ const getAll = async (req, res) => {
     }
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'University error');
   }
 };
 
 const getOne = async (req, res) => {
+  const id = parseId(req.params.id);
+  // Client admins may only read their own university
+  if (!id || !canAccessUniversity(req.user, id)) return res.status(404).json({ message: 'University not found' });
   try {
-    const result = await pool.query('SELECT * FROM universities WHERE id = $1', [req.params.id]);
+    const result = await pool.query('SELECT * FROM universities WHERE id = $1', [id]);
     if (!result.rows.length) return res.status(404).json({ message: 'University not found' });
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'University error');
   }
 };
 
@@ -33,6 +40,9 @@ const create = async (req, res) => {
   if (!name || !type) return res.status(400).json({ message: 'name and type are required' });
   if (!['open_credit', 'close_credit'].includes(type))
     return res.status(400).json({ message: 'type must be open_credit or close_credit' });
+  if (typeof name !== 'string' || name.trim().length > 200)
+    return res.status(400).json({ message: 'name must be at most 200 characters' });
+  if (!isValidImage(logo_url)) return res.status(400).json({ message: LOGO_ERROR });
   try {
     const result = await pool.query(
       `INSERT INTO universities (name, type, logo_url, created_by) VALUES ($1,$2,$3,$4) RETURNING *`,
@@ -40,13 +50,17 @@ const create = async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'University error');
   }
 };
 
 const update = async (req, res) => {
   const { name, logo_url } = req.body;
-  const targetId = parseInt(req.params.id, 10);
+  const targetId = parseId(req.params.id);
+  if (!targetId) return res.status(400).json({ message: 'Invalid university id' });
+  if (logo_url !== undefined && !isValidImage(logo_url)) return res.status(400).json({ message: LOGO_ERROR });
+  if (name !== undefined && name !== null && (typeof name !== 'string' || !name.trim() || name.trim().length > 200))
+    return res.status(400).json({ message: 'name must be 1–200 characters' });
   try {
     // Client Admin can only update their own assigned university; Super Admin can update any
     if (req.user.role !== 'super_admin' && req.user.university_id !== targetId) {
@@ -65,20 +79,26 @@ const update = async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'University error');
   }
 };
 
 const remove = async (req, res) => {
+  const id = parseId(req.params.id);
+  if (!id) return res.status(400).json({ message: 'Invalid university id' });
   try {
-    const uni = await pool.query('SELECT * FROM universities WHERE id=$1', [req.params.id]);
+    const uni = await pool.query('SELECT * FROM universities WHERE id=$1', [id]);
     if (!uni.rows.length) return res.status(404).json({ message: 'University not found' });
     if (uni.rows[0].is_locked)
       return res.status(403).json({ message: 'Cannot delete: university has admitted students' });
-    await pool.query('DELETE FROM universities WHERE id=$1', [req.params.id]);
+    const used = await pool.query(
+      'SELECT 1 FROM students s JOIN departments d ON s.department_id = d.id WHERE d.university_id=$1 LIMIT 1', [id]);
+    if (used.rows.length)
+      return res.status(403).json({ message: 'Cannot delete: university has student records (including in the Recycle Bin)' });
+    await pool.query('DELETE FROM universities WHERE id=$1', [id]);
     res.json({ message: 'University deleted' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'University error');
   }
 };
 

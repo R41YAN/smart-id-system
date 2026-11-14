@@ -77,7 +77,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`min-h-screen bg-[#070C18] text-slate-100 flex flex-col shrink-0 border-r border-slate-800/80 shadow-2xl print:hidden select-none transition-all duration-300 ease-in-out ${
+      className={`min-h-screen bg-[#0F172A] text-slate-100 flex flex-col shrink-0 border-r border-slate-800/80 shadow-2xl print:hidden select-none transition-all duration-300 ease-in-out ${
         collapsed ? 'w-20' : 'w-64'
       }`}
     >
@@ -188,14 +188,14 @@ export default function Sidebar() {
                   className={({ isActive }) =>
                     `h-11 flex items-center gap-3 px-3.5 rounded-xl text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white shadow-lg shadow-blue-600/30 font-semibold'
+                        ? 'bg-blue-400 text-[#0B1B3A] font-extrabold shadow-[0_3px_0_#1D4ED8]'
                         : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
-                      <Icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <Icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? 'text-[#0B1B3A]' : 'text-slate-400'}`} />
                       <span>{l.label}</span>
                     </>
                   )}
@@ -205,7 +205,7 @@ export default function Sidebar() {
           </nav>
 
           {/* Footer / Sign Out (Height: h-[72px]) */}
-          <div className="h-[72px] p-4 border-t border-slate-800/80 bg-[#050811] flex items-center shrink-0">
+          <div className="h-[72px] p-4 border-t border-slate-800/80 bg-[#0B1222] flex items-center shrink-0">
             <button
               onClick={() => { logout(); navigate('/login'); }}
               className="w-full h-10 flex items-center justify-center gap-2 px-3 text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
@@ -313,7 +313,7 @@ export default function Sidebar() {
                     className={({ isActive }) =>
                       `h-11 w-11 flex items-center justify-center rounded-xl transition-all ${
                         isActive
-                          ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white shadow-lg shadow-blue-600/30'
+                          ? 'bg-blue-400 text-[#0B1B3A] shadow-[0_3px_0_#1D4ED8]'
                           : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
                       }`
                     }
@@ -326,7 +326,7 @@ export default function Sidebar() {
           </div>
 
           {/* Footer / Sign Out (Height: h-[72px] matching uncollapsed) */}
-          <div className="h-[72px] p-4 border-t border-slate-800/80 bg-[#050811] flex items-center justify-center shrink-0">
+          <div className="h-[72px] p-4 border-t border-slate-800/80 bg-[#0B1222] flex items-center justify-center shrink-0">
             <button
               onClick={() => { logout(); navigate('/login'); }}
               className="w-10 h-10 flex items-center justify-center text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"

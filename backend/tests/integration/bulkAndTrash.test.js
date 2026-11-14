@@ -10,12 +10,12 @@ describe('Integration Tests: Bulk Admission & Recycle Bin (/api/students/bulk & 
   beforeAll(async () => {
     const superRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'superadmin@smartid.com', password: 'admin123' });
+      .send({ email: 'superadmin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     superAdminToken = superRes.body.token;
 
     const clientRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'nsu_admin@smartid.com', password: 'admin123' });
+      .send({ email: 'nsu_admin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     clientAdminToken = clientRes.body.token;
 
     const deptsRes = await request(app)

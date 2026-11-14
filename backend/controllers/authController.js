@@ -1,19 +1,26 @@
 const pool = require('../db/connection');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
-
-const JWT_SECRET = process.env.JWT_SECRET || 'smart_id_super_secret_key_2026';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const { JWT_SECRET, JWT_EXPIRES_IN } = require('../config');
+const { serverError } = require('../utils/http');
 
 // POST /api/auth/register  — Super Admin creates new user accounts
 const register = async (req, res) => {
   const { name, email, password, role, university_id } = req.body;
   if (!name || !email || !password)
     return res.status(400).json({ message: 'name, email and password are required' });
+  if (typeof password !== 'string' || password.length < 8)
+    return res.status(400).json({ message: 'password must be at least 8 characters' });
+  if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return res.status(400).json({ message: 'email is not valid' });
+  const userRole = role || 'client_admin';
+  if (!['super_admin', 'client_admin'].includes(userRole))
+    return res.status(400).json({ message: 'role must be super_admin or client_admin' });
+  if (userRole === 'client_admin' && !university_id)
+    return res.status(400).json({ message: 'university_id is required for a client_admin' });
 
   try {
-    const exists = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    const exists = await pool.query('SELECT id FROM users WHERE LOWER(email) = LOWER($1)', [email.trim()]);
     if (exists.rows.length > 0)
       return res.status(409).json({ message: 'Email already registered' });
 
@@ -22,12 +29,12 @@ const register = async (req, res) => {
       `INSERT INTO users (name, email, password_hash, role, university_id)
        VALUES ($1,$2,$3,$4,$5)
        RETURNING id, name, email, role, university_id, created_at`,
-      [name, email, hash, role || 'client_admin', university_id || null]
+      [name, email.toLowerCase().trim(), hash, userRole, userRole === 'client_admin' ? university_id : null]
     );
     res.status(201).json({ message: 'User created', user: result.rows[0] });
   } catch (err) {
-    console.error('Register error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    if (err.code === '23503') return res.status(400).json({ message: 'University not found' });
+    return serverError(res, err, 'Register error');
   }
 };
 
@@ -38,7 +45,7 @@ const login = async (req, res) => {
     return res.status(400).json({ message: 'email and password are required' });
 
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const result = await pool.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1)', [String(email).trim()]);
     if (result.rows.length === 0)
       return res.status(401).json({ message: 'Invalid credentials' });
 
@@ -75,11 +82,10 @@ const login = async (req, res) => {
 
     if (isConnError) {
       return res.status(503).json({
-        message: 'Database connection failed. Please ensure your computer is connected to the internet to reach the Cloud Supabase database.',
-        error: err.message
+        message: 'Database connection failed. Please ensure your computer is connected to the internet to reach the Cloud Supabase database.'
       });
     }
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'Login error');
   }
 };
 
@@ -97,7 +103,7 @@ const getMe = async (req, res) => {
     if (result.rows.length === 0) return res.status(404).json({ message: 'User not found' });
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'Auth error');
   }
 };
 
@@ -112,7 +118,7 @@ const listUsers = async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    return serverError(res, err, 'Auth error');
   }
 };
 

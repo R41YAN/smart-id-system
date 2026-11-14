@@ -27,19 +27,19 @@ describe('Integration Tests: Student Admission & Management (/api/students)', ()
     // 1. Authenticate Super Admin
     const superRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'superadmin@smartid.com', password: 'admin123' });
+      .send({ email: 'superadmin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     superAdminToken = superRes.body.token;
 
     // 2. Authenticate NSU Admin (Open Credit)
     const nsuRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'nsu_admin@smartid.com', password: 'admin123' });
+      .send({ email: 'nsu_admin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     nsuAdminToken = nsuRes.body.token;
 
     // 3. Authenticate MU Admin (Close Credit)
     const muRes = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'mu_admin@smartid.com', password: 'admin123' });
+      .send({ email: 'mu_admin@smartid.com', password: process.env.TEST_ADMIN_PASSWORD });
     muAdminToken = muRes.body.token;
 
     // 4. Retrieve Batches

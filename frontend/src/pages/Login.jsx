@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import { BoardDecor } from '../components/Decor';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
@@ -33,39 +34,31 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#070C18] p-4 relative overflow-hidden selection:bg-blue-500 selection:text-white">
-      {/* Background Subtle Tech Grid */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-20"
-        style={{
-          backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)',
-          backgroundSize: '24px 24px'
-        }}
-      />
-
-      {/* Cinematic Ambient Glow Orbs */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-blue-600/25 rounded-full blur-[120px] pointer-events-none animate-ambient" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-[140px] pointer-events-none animate-ambient" style={{ animationDelay: '4s' }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-cyan-500/10 rounded-full blur-[160px] pointer-events-none" />
+    <div className="sifs-board min-h-screen flex items-center justify-center p-4 relative overflow-hidden text-slate-100 selection:bg-blue-400 selection:text-slate-900">
+      <BoardDecor />
 
       <div className="w-full max-w-md relative z-10">
-        {/* Glassmorphic Login Card */}
-        <div className="bg-slate-900/80 backdrop-blur-2xl rounded-3xl shadow-2xl shadow-black/80 border border-slate-700/60 p-8 sm:p-10 transition-all">
+        {/* Index-card style login card */}
+        <div className="relative bg-slate-800 border-2 border-b-[6px] border-slate-700 rounded-[28px] px-7 pt-11 pb-8 sm:px-9">
+          {/* strip of tape */}
+          <div aria-hidden="true" className="absolute -top-3.5 left-1/2 -ml-[60px] w-[120px] h-7 bg-yellow-400/85 -rotate-2 rounded-sm" />
+
           {/* Logo & Header */}
-          <div className="text-center mb-8">
-            <div className="inline-block relative mb-4 group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur-md opacity-40 group-hover:opacity-75 transition duration-500" />
+          <div className="text-center mb-7">
+            {/* Logo tile with a soft blue glow */}
+            <div className="relative inline-block mb-3">
+              <div aria-hidden="true" className="absolute -inset-2 rounded-3xl bg-blue-500/30 blur-xl" />
               <img
                 src="/logo.jpg"
                 alt="SIFS Official Badge"
-                className="relative w-20 h-20 mx-auto rounded-2xl shadow-xl border border-slate-600/60 object-cover"
+                className="relative w-20 h-20 rounded-2xl object-cover border border-slate-600/70 shadow-[0_0_22px_2px_rgba(96,165,250,0.35)]"
               />
             </div>
-            <h1 className="text-2xl font-black tracking-tight text-white">
+            <p className="text-sm font-semibold uppercase tracking-widest text-blue-400">Welcome back</p>
+            <h1 className="mt-1 text-[26px] font-black tracking-tight text-slate-50">
               Smart ID Formatting System
             </h1>
-            <p className="text-xs uppercase tracking-widest text-slate-400 font-semibold mt-1.5 flex items-center justify-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <p className="mt-1 text-sm font-semibold text-slate-300">
               Institutional ID Management Platform
             </p>
           </div>
@@ -73,48 +66,52 @@ export default function Login() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-rose-500/15 border border-rose-500/30 text-rose-300 px-4 py-3 rounded-xl text-xs font-medium animate-shake flex items-start gap-2">
-                <span className="text-rose-400 font-bold">⚠️</span>
+              <div role="alert" className="bg-rose-500/15 border-2 border-rose-500/40 text-rose-200 px-4 py-3 rounded-2xl text-sm font-semibold animate-shake flex items-start gap-2">
+                <svg aria-hidden="true" className="w-5 h-5 shrink-0 text-rose-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01" /><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /></svg>
                 <span>{error}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Staff Email
+              <label htmlFor="login-email" className="block text-sm font-extrabold text-slate-200 mb-1.5">
+                Staff email
               </label>
               <input
+                id="login-email"
                 type="email"
                 required
+                autoComplete="username"
                 placeholder="name@university.edu"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all"
+                className="w-full h-[52px] px-4 bg-slate-900 border-2 border-slate-700 rounded-2xl text-base font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label htmlFor="login-password" className="block text-sm font-extrabold text-slate-200 mb-1.5">
                 Password
               </label>
               <input
+                id="login-password"
                 type="password"
                 required
+                autoComplete="current-password"
                 placeholder="••••••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all font-mono"
+                className="w-full h-[52px] px-4 bg-slate-900 border-2 border-slate-700 rounded-2xl text-base font-semibold text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 transition-all"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-600/30 active:scale-[0.99] transition-all text-sm disabled:opacity-60 cursor-pointer"
+              className="btn-chunky w-full mt-2 h-[54px] bg-blue-400 text-[#0B1B3A] font-bold rounded-2xl text-base disabled:opacity-60 cursor-pointer"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -125,12 +122,12 @@ export default function Login() {
               )}
             </button>
           </form>
-        </div>
 
-        {/* Footer Copyright */}
-        <p className="mt-6 text-center text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} Smart ID Formatting System (SIFS). All rights reserved.
-        </p>
+          {/* Footer Copyright */}
+          <p className="mt-6 text-center text-xs font-semibold text-slate-400">
+            &copy; {new Date().getFullYear()} Smart ID Formatting System (SIFS). All rights reserved.
+          </p>
+        </div>
       </div>
     </div>
   );

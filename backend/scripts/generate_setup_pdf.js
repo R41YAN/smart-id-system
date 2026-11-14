@@ -180,9 +180,9 @@ codeBlock([
   '(Run directly in PowerShell from the smart-id-system project root folder):',
   'Set-Content -Path "backend\\.env" -Value @"',
   'PORT=5000',
-  'DATABASE_URL=postgresql://postgres.qwqnrvpubmnarseleegr:[YOUR_PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres',
-  'JWT_SECRET=smart_id_super_secret_key_2026',
-  'JWT_EXPIRES_IN=7d',
+  'DATABASE_URL=postgresql://postgres.[PROJECT_REF]:[YOUR_PASSWORD]@[POOLER_HOST]:5432/postgres',
+  'JWT_SECRET=[YOUR_OWN_RANDOM_64_CHARACTER_SECRET]',
+  'JWT_EXPIRES_IN=8h',
   '"@'
 ]);
 

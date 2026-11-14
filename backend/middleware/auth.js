@@ -1,7 +1,5 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
-
-const JWT_SECRET = process.env.JWT_SECRET || 'smart_id_super_secret_key_2026';
+const { JWT_SECRET } = require('../config');
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -10,7 +8,7 @@ const verifyToken = (req, res, next) => {
   }
   const token = authHeader.split(' ')[1];
   try {
-    req.user = jwt.verify(token, JWT_SECRET);
+    req.user = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
     next();
   } catch {
     return res.status(401).json({ message: 'Invalid or expired token' });
