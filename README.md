@@ -41,7 +41,7 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
    - Database storage in PostgreSQL (`students.photo TEXT`).
    - Late photo upload via `PATCH /api/students/:id/photo` directly from the student directory.
    - Default academic silhouette placeholder when no photo is provided.
-5. **Option B "View / Print ID Card" Modal**:
+5. **View / Print ID Card**:
    - In Student Directory (`StudentList.jsx`), click "ID Card" button on any student row to open an interactive modal with full digital ID card, Code 128 barcode, student photo, late photo upload, and instant print stylesheet.
 6. **Dual Department Fields & Active Directory**:
    - Full Department Name (`full_name`) + Normalized Short Code (`code`).
@@ -54,7 +54,7 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
    - Photo-style upload frame with client-side canvas auto-resizing.
    - Strict fallback to clean university icon when no custom logo is uploaded.
    - Express body-parser configured for a 3 MB payload (`backend/index.js`); images are validated and limited to ~1 MB each.
-8. **Option 3 Hybrid Modern UI/UX Architecture, 3D Smart Card Tilt & Collapsible Navigation**:
+8. **Hybrid Modern UI/UX Architecture, 3D Smart Card Tilt & Collapsible Navigation**:
    - **Cinematic Dark Login Screen**: Deep-space slate (`#070C18`), ambient radial glow orbs, and frosted glassmorphic card (`backdrop-blur-2xl bg-slate-900/80`).
    - **Collapsible Dual-Mode Executive Sidebar**: One-click smooth transition between Wide (256px) and Mini Rail (80px) with `localStorage` state persistence (`sifs_sidebar_collapsed`).
    - **Pixel-Synchronized Vertical Alignment**: Header container (`h-[178px]`), role badge, active portal indicator, 5 navigation icons (`Dashboard`, `Departments`, `Batches`, `Admit Student`, `Student List`), and Sign Out footer maintain identical Y-coordinates with zero vertical shifting during collapse/expand.
@@ -83,7 +83,8 @@ SIFS solves the critical challenges of manual entry errors, race conditions duri
     - Standardized naming: `SIFS - [UniShort]_[Dept]_[Batch/Intake]_[Action]` (e.g., `SIFS - UIU_CSE_54(2026)_ID_Cards.pdf` or `SP'26`).
     - Static read-only student photo avatars across Recent Admissions and Recycle Bin.
 14. **Automated Master Test Suite (89 Tests, 100% Pass Rate)**:
-    - Backend: 61 tests (Jest + Supertest), including 19 security regression tests. Frontend: 28 tests (Vitest + React Testing Library).
+    - Backend: 61 tests (Jest + Supertest), including 19 security regression tests.
+    - Frontend: 28 tests (Vitest + React Testing Library).
 
 ---
 
