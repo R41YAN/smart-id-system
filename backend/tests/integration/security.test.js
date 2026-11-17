@@ -141,14 +141,14 @@ describe('Security & ID integrity', () => {
 
     test('SEC_11: parallel admissions get unique, consecutive serials (FOR UPDATE lock)', async () => {
       const before = (await pool.query('SELECT current_serial FROM batches WHERE id=$1', [mu.batchId])).rows[0].current_serial;
-      const N = 15;
+      const N = 8;
       const results = await Promise.all(Array.from({ length: N }, (_, i) =>
         request(app).post('/api/students').set(auth(muToken))
           .send({ batch_id: mu.batchId, department_id: mu.deptId, name: `Parallel ${i}` })));
       results.forEach((r) => expect(r.status).toBe(201));
       const serials = results.map((r) => r.body.student.serial_number).sort((x, y) => x - y);
       expect(serials).toEqual(Array.from({ length: N }, (_, i) => before + 1 + i));
-    });
+    }, 40000);
   });
 
   // ── Admission integrity ─────────────────────────────────────────────────

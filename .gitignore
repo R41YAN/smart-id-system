@@ -25,3 +25,7 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local sample CSVs
+docs/sample_csvs/
+

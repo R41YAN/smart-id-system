@@ -78,9 +78,10 @@ CREATE TABLE IF NOT EXISTS batches (
 -- Students table
 CREATE TABLE IF NOT EXISTS students (
   id            SERIAL PRIMARY KEY,
+  university_id INT NOT NULL REFERENCES universities(id) ON DELETE RESTRICT,
   batch_id      INT NOT NULL REFERENCES batches(id) ON DELETE RESTRICT,
   department_id INT NOT NULL REFERENCES departments(id) ON DELETE RESTRICT,
-  student_id    VARCHAR(30) UNIQUE NOT NULL,
+  student_id    VARCHAR(30) NOT NULL,
   name          VARCHAR(100) NOT NULL,
   email         VARCHAR(150),
   phone         VARCHAR(20),
@@ -89,10 +90,12 @@ CREATE TABLE IF NOT EXISTS students (
   admitted_by   INT REFERENCES users(id) ON DELETE SET NULL,
   admitted_at   TIMESTAMPTZ DEFAULT NOW(),
   deleted_at    TIMESTAMPTZ,
-  -- Safety net: a serial can be used only once per batch (IDs are never reused)
+  -- Safety nets: IDs are unique per university campus; serials are monotonic per batch
+  CONSTRAINT uq_students_uni_student_id UNIQUE (university_id, student_id),
   CONSTRAINT uq_students_batch_serial UNIQUE (batch_id, serial_number)
 );
 
+CREATE INDEX IF NOT EXISTS idx_students_uni    ON students(university_id);
 CREATE INDEX IF NOT EXISTS idx_students_dept   ON students(department_id);
 CREATE INDEX IF NOT EXISTS idx_students_batch  ON students(batch_id);
 CREATE INDEX IF NOT EXISTS idx_batches_dept    ON batches(department_id);

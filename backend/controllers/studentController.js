@@ -142,9 +142,9 @@ const admit = async (req, res) => {
 
     // ── INSERT STUDENT ────────────────────────────────────────────────────
     const studentResult = await client.query(
-      `INSERT INTO students (batch_id, department_id, student_id, name, email, phone, photo, serial_number, admitted_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [batch.id, batch.department_id, studentId, name.trim(), email || null, phone || null, photo || null, newSerial, req.user.id]
+      `INSERT INTO students (batch_id, department_id, university_id, student_id, name, email, phone, photo, serial_number, admitted_by)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [batch.id, batch.department_id, batch.uni_id, studentId, name.trim(), email || null, phone || null, photo || null, newSerial, req.user.id]
     );
 
     await client.query('COMMIT');
@@ -238,9 +238,9 @@ const bulkAdmit = async (req, res) => {
         });
 
         const ins = await client.query(
-          `INSERT INTO students (batch_id, department_id, student_id, name, email, phone, photo, serial_number, admitted_by)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-          [batch.id, batch.department_id, studentId, s.name.trim(), s.email || null, s.phone || null, s.photo || null, runningSerial, req.user.id]
+          `INSERT INTO students (batch_id, department_id, university_id, student_id, name, email, phone, photo, serial_number, admitted_by)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+          [batch.id, batch.department_id, batch.uni_id, studentId, s.name.trim(), s.email || null, s.phone || null, s.photo || null, runningSerial, req.user.id]
         );
         admittedStudents.push(ins.rows[0]);
       }

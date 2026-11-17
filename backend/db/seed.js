@@ -121,9 +121,9 @@ async function seed({ adminPassword, closePool = true, quiet = false } = {}) {
       serial: 1,
     });
     await pool.query(
-      `INSERT INTO students (batch_id, department_id, student_id, name, email, serial_number, admitted_by)
-       VALUES ($1, $2, $3, 'Arafat Rahman', 'arafat@example.com', 1, $4)`,
-      [nsuBatchSpring.id, deptCseNsu.id, nsuId1, nsuAdmin.id]
+      `INSERT INTO students (batch_id, department_id, university_id, student_id, name, email, serial_number, admitted_by)
+       VALUES ($1, $2, $3, $4, 'Arafat Rahman', 'arafat@example.com', 1, $5)`,
+      [nsuBatchSpring.id, deptCseNsu.id, nsu.id, nsuId1, nsuAdmin.id]
     );
 
     // NSU Student 2: Open Credit -> CSE26SP002
@@ -135,9 +135,9 @@ async function seed({ adminPassword, closePool = true, quiet = false } = {}) {
       serial: 2,
     });
     await pool.query(
-      `INSERT INTO students (batch_id, department_id, student_id, name, email, serial_number, admitted_by)
-       VALUES ($1, $2, $3, 'Nusrat Jahan', 'nusrat@example.com', 2, $4)`,
-      [nsuBatchSpring.id, deptCseNsu.id, nsuId2, nsuAdmin.id]
+      `INSERT INTO students (batch_id, department_id, university_id, student_id, name, email, serial_number, admitted_by)
+       VALUES ($1, $2, $3, $4, 'Nusrat Jahan', 'nusrat@example.com', 2, $5)`,
+      [nsuBatchSpring.id, deptCseNsu.id, nsu.id, nsuId2, nsuAdmin.id]
     );
 
     // MU Student 1: Close Credit -> CSE5426001
@@ -149,9 +149,9 @@ async function seed({ adminPassword, closePool = true, quiet = false } = {}) {
       serial: 1,
     });
     await pool.query(
-      `INSERT INTO students (batch_id, department_id, student_id, name, email, serial_number, admitted_by)
-       VALUES ($1, $2, $3, 'Tanvir Ahmed', 'tanvir@example.com', 1, $4)`,
-      [muBatch54.id, deptCseMu.id, muId1, muAdmin.id]
+      `INSERT INTO students (batch_id, department_id, university_id, student_id, name, email, serial_number, admitted_by)
+       VALUES ($1, $2, $3, $4, 'Tanvir Ahmed', 'tanvir@example.com', 1, $5)`,
+      [muBatch54.id, deptCseMu.id, mu.id, muId1, muAdmin.id]
     );
 
     // MU Student 2: Close Credit -> CSE5426002
@@ -163,9 +163,9 @@ async function seed({ adminPassword, closePool = true, quiet = false } = {}) {
       serial: 2,
     });
     await pool.query(
-      `INSERT INTO students (batch_id, department_id, student_id, name, email, serial_number, admitted_by)
-       VALUES ($1, $2, $3, 'Sadia Islam', 'sadia@example.com', 2, $4)`,
-      [muBatch54.id, deptCseMu.id, muId2, muAdmin.id]
+      `INSERT INTO students (batch_id, department_id, university_id, student_id, name, email, serial_number, admitted_by)
+       VALUES ($1, $2, $3, $4, 'Sadia Islam', 'sadia@example.com', 2, $5)`,
+      [muBatch54.id, deptCseMu.id, mu.id, muId2, muAdmin.id]
     );
 
     // Mark universities as locked
